@@ -9,6 +9,7 @@ import org.graphstream.algo.generator.geography.shapeFile.mergeops.PointMergeOpe
 import org.graphstream.algo.generator.geography.shapeFile.mergeops.PointMergeOperations;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.ui.swingViewer.Viewer;
 
@@ -25,7 +26,7 @@ public class TestShapeFileGenerator
 		new TestShapeFileGenerator();
 	}
 	
-	public static String graphId = "Strasbourg";
+	public static String graphId = "LeHavreMini";
 	
 	public TestShapeFileGenerator()
 	{
@@ -204,6 +205,10 @@ public class TestShapeFileGenerator
 			}
 			else System.err.printf( "no length !!!%n" );
 		}
+		
+		for(Node node: graph) {
+			node.setAttribute("ui.label",node.getId());
+		}
 	}
 	
 	protected int speedCatToKph( String cat )
@@ -258,7 +263,7 @@ public class TestShapeFileGenerator
 	}
 	
 	protected static final String styleSheet = 
-		"node { width: 3px; }" +
+		"node { width: 5px; }" +
 		"edge { color: #808080; arrow-length: 7px; arrow-width: 3px; }" +
 		"edge.freeway  { width: 2px; border-width: 1px; border-color: red; }" +
 		"edge.laneCat2 { color:#E0D040; }" +

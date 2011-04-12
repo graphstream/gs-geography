@@ -52,7 +52,7 @@ public class TestShapeFileGenerator
 {
 	public static void main( String args[] )
 	{
-//		System.setProperty( "gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer" );
+		System.setProperty( "gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer" );
 		new TestShapeFileGenerator();
 	}
 	
@@ -165,7 +165,7 @@ public class TestShapeFileGenerator
 		try
 		{
 			int count1 = 0;
-			gen.begin( graph, "/home/antoine/Bureau/NavTeq/"+graphId+"/"+graphId+"_ZLevels.shp" );
+			gen.begin( graph, "/home/antoine/Bureau/Bordel/NavTeq/"+graphId+"/"+graphId+"_ZLevels.shp" );
 			
 			while( gen.nextElement() )
 			{
@@ -181,7 +181,7 @@ public class TestShapeFileGenerator
 			
 			int count2 = 0;
 			gen.setMergeOperations( mergeOps );
-			gen.begin( graph, "/home/antoine/Bureau/NavTeq/"+graphId+"/"+graphId+"_Streets.shp" );
+			gen.begin( graph, "/home/antoine/Bureau/Bordel/NavTeq/"+graphId+"/"+graphId+"_Streets.shp" );
 			
 			while( gen.nextElement() )
 			{
@@ -294,13 +294,13 @@ public class TestShapeFileGenerator
 	
 	protected static final String styleSheet = 
 		"node { width: 5px; }" +
-		"edge { color: #808080; arrow-length: 7px; arrow-width: 3px; }" +
+		"edge { shape: polyline; color: #808080; arrow-length: 7px; arrow-width: 3px; }" +
 		"edge.freeway  { width: 2px; border-width: 1px; border-color: red; }" +
 		"edge.laneCat2 { color:#E0D040; }" +
 		"edge.laneCat3 { color:#F0F060; }";
 	protected static final String styleSheetNew = 
 		"node { size: 3px; }" +
-		"edge { fill-color: #808080; arrow-size: 3px, 3px; }" +
+		"edge { shape:polyline; fill-color: #808080; arrow-size: 3px, 3px; }" +
 		"edge.freeway  { size: 2px; stroke-width: 1px; stroke-color: red; shadow-mode: plain; shadow-color: red; shadow-width: 1px; shadow-offset: 0px, 0px; }" +
 		"edge.laneCat2 { fill-color:#E0D040; }" +
 		"edge.laneCat3 { fill-color:#F0F060; }";

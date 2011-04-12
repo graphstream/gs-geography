@@ -46,11 +46,14 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.ui.geom.Point3;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 
 /**
  * Graph generator using shape files as input.
@@ -432,6 +435,10 @@ public class ShapeFileGenerator //extends BaseGenerator
 				edge.addAttribute( "length",
 						((Geometry)feature.getDefaultGeometry()).getLength() );
 			}
+			
+			if( addEdgeShapeAttribute ) {
+				addEdgeShape(edge, ((Geometry)feature.getDefaultGeometry()).getCoordinates());
+			}
 		
 			mergeAttributes( edge, attr, edgeAttributeFilter, feature );
 		}
@@ -541,11 +548,11 @@ public class ShapeFileGenerator //extends BaseGenerator
 
 		int n = coos.length - 1;
 	
-		if( (n-1) > 0 )
+		if( n > 1 )
 		{
 			style.append(  "edge-shape:"  );
 			
-			for( int i=1; i<n; i++ )
+			for( int i=0; i<n; i++ )
 			{
 				style.append( '(' );
 				style.append( coos[i].x );
@@ -569,21 +576,20 @@ public class ShapeFileGenerator //extends BaseGenerator
 	{
 		int n = coos.length;
 
-		if( n > 2 )
+		if( n > 1 )
 		{
-			n--;
 			Object xyz[] = new Object[n*3];
 			
-			for( int i=1; i<n; ++i )
+			for( int i=0; i<n; ++i )
 			{
-				int j = (i-1)*3;
+				int j = i*3;
 				
 				xyz[j+0] = (float) coos[i].x;
 				xyz[j+1] = (float) coos[i].y;
 				xyz[j+2] = (float) 0;
 			}
 			
-			edge.setAttribute( "xyz", xyz );
+			edge.setAttribute( "ui.points", xyz );
 		}
 	}
 	

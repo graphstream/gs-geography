@@ -65,7 +65,7 @@ public class TestShapeFileGenerator
 	
 		Viewer viewer = graph.display( false );
 		graph.addAttribute( "stylesheet", styleSheetNew );
-		graph.addAttribute( "ui.quality" );
+		graph.removeAttribute( "ui.quality" );
 		graph.removeAttribute( "ui.antialias" );
 		viewer.setCloseFramePolicy( Viewer.CloseFramePolicy.EXIT );
 	
@@ -292,14 +292,8 @@ public class TestShapeFileGenerator
 		}
 	}
 	
-	protected static final String styleSheet = 
-		"node { width: 5px; }" +
-		"edge { shape: polyline; color: #808080; arrow-length: 7px; arrow-width: 3px; }" +
-		"edge.freeway  { width: 2px; border-width: 1px; border-color: red; }" +
-		"edge.laneCat2 { color:#E0D040; }" +
-		"edge.laneCat3 { color:#F0F060; }";
 	protected static final String styleSheetNew = 
-		"node { size: 3px; }" +
+		"node { size: 3px; text-visibility-mode: hidden; }" +
 		"edge { shape:polyline; fill-color: #808080; arrow-size: 3px, 3px; }" +
 		"edge.freeway  { size: 2px; stroke-width: 1px; stroke-color: red; shadow-mode: plain; shadow-color: red; shadow-width: 1px; shadow-offset: 0px, 0px; }" +
 		"edge.laneCat2 { fill-color:#E0D040; }" +

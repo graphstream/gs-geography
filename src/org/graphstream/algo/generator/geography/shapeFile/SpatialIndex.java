@@ -102,7 +102,7 @@ public class SpatialIndex
 	 * @param y The ordinate.
 	 * @return The set of points at (x,y) or null if nothing is found.
 	 */
-	public ArrayList<Point> searchForPointsAt( float x, float y )
+	public ArrayList<Point> searchForPointsAt( double x, double y )
 	{
 		Cell cell = pbox.getNTree().getRootCell();
 		
@@ -119,7 +119,7 @@ public class SpatialIndex
 	 * @param y The ordinate of the point to search.
 	 * @return The set of points close to the given point or null if nothing is found.
 	 */
-	protected ArrayList<Point> searchInCell( Cell cell, float x, float y, int level )
+	protected ArrayList<Point> searchInCell( Cell cell, double x, double y, int level )
 	{
 		if( cell.isLeaf() )
 		{

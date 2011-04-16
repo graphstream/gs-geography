@@ -479,8 +479,8 @@ public class ShapeFileGenerator //extends BaseGenerator
 	{
 		HashMap<String,AttributeSet> attributes = point.getAttributes();
 		
-		float x = point.getPosition().x;
-		float y = point.getPosition().y;
+		double x = point.getPosition().x;
+		double y = point.getPosition().y;
 		
 		node.setAttribute( "xyz", x, y, 0 );
 		
@@ -581,9 +581,9 @@ public class ShapeFileGenerator //extends BaseGenerator
 			{
 				int j = i*3;
 				
-				xyz[j+0] = (float) coos[i].x;
-				xyz[j+1] = (float) coos[i].y;
-				xyz[j+2] = (float) 0;
+				xyz[j+0] = (double) coos[i].x;
+				xyz[j+1] = (double) coos[i].y;
+				xyz[j+2] = (double) 0;
 			}
 			
 			edge.setAttribute( "ui.points", xyz );

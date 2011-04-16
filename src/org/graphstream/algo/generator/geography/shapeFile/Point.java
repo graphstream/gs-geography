@@ -55,7 +55,7 @@ public class Point extends Particle
 	/**
 	 * The offset at which a location is considered aligned with this particle.
 	 */
-	public static final float OFFSET = 0.001f;
+	public static final double OFFSET = 0.001f;
 	
 	/**
 	 * Various sets of attributes. There is only one set if this point represents only one feature
@@ -82,7 +82,7 @@ public class Point extends Particle
 	 * @param x The abscissa. 
 	 * @param y The ordinate.
 	 */
-	public Point( Object id, float x, float y )
+	public Point( Object id, double x, double y )
 	{
 		super( id, x, y, 0 );
 	}
@@ -125,7 +125,7 @@ public class Point extends Particle
 		if( cooIndex < 0 )
 			cooIndex = ( coos.length + cooIndex );
 	
-		initPos( (float)coos[cooIndex].x, (float)coos[cooIndex].y, 0 );
+		initPos( (double)coos[cooIndex].x, (double)coos[cooIndex].y, 0 );
 		attributes.put( getId().toString(), new AttributeSet( feature, filter ) );
 		moved = true;
 	}
@@ -197,10 +197,10 @@ public class Point extends Particle
 	 * @param y The point ordinate.
 	 * @return True if aligned with (x,y).
 	 */
-	public boolean isAt( float x, float y )
+	public boolean isAt( double x, double y )
 	{
-		float dx = pos.x - x;
-		float dy = pos.y - y;
+		double dx = pos.x - x;
+		double dy = pos.y - y;
 		
 		if( dx < 0 ) dx = -dx;
 		if( dy < 0 ) dy = -dy;

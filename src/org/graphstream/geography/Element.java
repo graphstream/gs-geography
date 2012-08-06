@@ -28,14 +28,77 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
-package org.graphstream.algo.generator.geography.shapeFile;
+
+package org.graphstream.geography;
+
+import java.util.HashMap;
 
 /**
- * Filter on the input feature.
+ * A point pertaining to one or more features.
  * 
- * @author Antoine Dutot
+ * As the main purpose of this code is to fusion points so that several features will share the
+ * intersection points, a point contains a location and potentially several sets of attributes, one
+ * for each feature it aggregates.
+ * 
+ * @author Merwan Achibet
  */
-public class FeatureFilter
-{
+public abstract class Element {
+	
+	protected String id;
+	
+	protected HashMap<String,Object> attributes;
+	
+	public Element(String id) {
+		
+		this.id = id;
+		this.attributes = new HashMap<String,Object>();
+	}
+	
+	public String getId() {
+	
+		return new String(this.id);
+	}
 
+	public HashMap<String,Object> getAttributes() {
+		
+		return this.attributes;
+	}
+
+	public Object getAttribute(String key) {
+	
+		return this.attributes.get(key);
+	}
+	
+	public boolean hasAttribute(String key) {
+		
+		return this.attributes.containsKey(key);
+	}
+	
+	public void addAttribute(String key, Object value) {
+		
+		this.attributes.put(key, value);
+	}
+	
+	public void removeAttribute(String key) {
+		
+		this.attributes.remove(key);
+	}
+
+	// Really necessary???
+	/*
+	public boolean isPoint() {
+	
+		return this instanceof Point;
+	}
+	
+	public boolean isPolyline() {
+		
+		return this instanceof Line;
+	}
+
+	public boolean isPolygon() {
+	
+		return this instanceof Point;
+	}
+	*/
 }

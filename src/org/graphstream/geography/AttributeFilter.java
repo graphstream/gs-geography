@@ -28,7 +28,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
-package org.graphstream.algo.generator.geography.shapeFile;
+package org.graphstream.geography;
 
 import java.util.HashSet;
 
@@ -39,10 +39,9 @@ import java.util.HashSet;
  */
 public class AttributeFilter
 {
-// Attribute
 	
 	/**
-	 * Keep or filter the specified attributes ?.
+	 * Keep or filter the specified attributes?
 	 */
 	public static enum Mode { KEEP, FILTER };
 	
@@ -56,25 +55,24 @@ public class AttributeFilter
 	 */
 	protected HashSet<String> attributes = new HashSet<String>();
 	
-// Constructor
-	
 	/**
 	 * New filter with the given mode.
 	 * @param keep If true, the set represent the set of attributes to preserve and store, else
 	 * this set is the set of attributes to filter and ignore.
 	 */
-	public AttributeFilter( boolean keep )
+	public AttributeFilter(boolean keep)
 	{
-		if( keep )
-		     mode = Mode.KEEP;
-		else mode = Mode.FILTER;
+		if(keep)
+			mode = Mode.KEEP;
+		else
+			mode = Mode.FILTER;
 	}
 	
 	/**
 	 * New filter with the given mode.
 	 * @param mode The mode (one of Mode.KEEP or Mode.FILTER). 
 	 */
-	public AttributeFilter( Mode mode )
+	public AttributeFilter(Mode mode)
 	{
 		this.mode = mode;
 	}
@@ -90,7 +88,8 @@ public class AttributeFilter
 	{
 		if( mode == Mode.KEEP )
 		     return( ! attributes.contains( attribute ) );
-		else return(   attributes.contains( attribute ) );
+
+		return(   attributes.contains( attribute ) );
 	}
 	
 	/**
@@ -111,7 +110,7 @@ public class AttributeFilter
 	 */
 	public boolean isKeepMode()
 	{
-		return( mode == Mode.KEEP );
+		return mode == Mode.KEEP;
 	}
 
 	/**
@@ -120,7 +119,7 @@ public class AttributeFilter
 	 */
 	public boolean isFilterMode()
 	{
-		return( mode == Mode.FILTER );
+		return mode == Mode.FILTER;
 	}
 	
 // Command

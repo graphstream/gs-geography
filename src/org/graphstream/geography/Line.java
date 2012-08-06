@@ -28,23 +28,43 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
-package org.graphstream.algo.generator.geography.shapeFile.mergeops;
 
-import org.graphstream.algo.generator.geography.shapeFile.Point;
+package org.graphstream.geography;
 
-public class AttributePointMergeOperation extends PointMergeOperation
-{
-	public String attributeMatch;
+import java.util.ArrayList;
+
+/**
+ * A point pertaining to one or more features.
+ * 
+ * As the main purpose of this code is to fusion points so that several features will share the
+ * intersection points, a point contains a location and potentially several sets of attributes, one
+ * for each feature it aggregates.
+ * 
+ * @author Merwan Achibet
+ */
+public class Line extends Element {
 	
-	public AttributePointMergeOperation( String attribute, PointMergeOperation.PointOperation mergeOperation )
-	{
-		super( mergeOperation );
-		this.attributeMatch = attribute;
+	private ArrayList<Point> points;
+	
+	public Line(String id) {
+		super(id);
+		
+		this.points = new ArrayList<Point>();
 	}
-
-	@Override
-	public boolean matches( Point oldOne, Point newOne )
-	{
-		return attributeMatches( attributeMatch, oldOne, newOne );
+	
+	public ArrayList<Point> getPoints() {
+		
+		return this.points;
 	}
+	
+	public void insertPoint(Point point) {
+		
+		this.points.add(point);
+	}
+	
+	public void insertPoint(Point point, int index) {
+		
+		this.points.add(index, point);
+	}
+	
 }

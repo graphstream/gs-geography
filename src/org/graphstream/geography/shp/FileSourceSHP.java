@@ -41,6 +41,7 @@ import org.geotools.feature.FeatureIterator;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.FileSourceAbstract;
+import org.graphstream.geography.Line;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -50,29 +51,29 @@ public class FileSourceSHP extends FileSourceAbstract {
 	 * Iterator on the shapefile features.
 	 */
 	protected FeatureIterator<SimpleFeature> iterator;
-	
+
 	public FileSourceSHP() {
 
 		this.elements = new ArrayList<Element>();
 	}
 
 	public void begin(String fileName) throws IOException {
-	
+
 		if(this.iterator == null) {
-			
+
 			try {
-				
+
 				URL url = this.getClass().getResource(fileName);
-				
+
 				ShapefileDataStore store = new ShapefileDataStore(url);
 
 				String type = store.getTypeNames()[0];
-				FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource( type );
+				FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource(type);
 
 				this.iterator = source.getFeatures().features();
 			}
-			catch(IOException e) {
-				
+			catch (IOException e) {
+
 				throw new RuntimeException("I/O error : " + e.getMessage());
 			}
 		}
@@ -81,50 +82,73 @@ public class FileSourceSHP extends FileSourceAbstract {
 	public void end() throws IOException {
 		// Nothing to do.
 	}
-	
+
 	public void all() throws IOException {
 
-		while(next());
-		
-		transform();
+		while(this.iterator != null && this.iterator.hasNext()) {
+
+			next();
+
+			Thread.yield();
+		}
+
+		this.iterator = null;
 	}
 
-	protected boolean next() throws IOException {
+	protected void next() throws IOException {
 
-		if(iterator != null && iterator.hasNext()) {
-			
-			// Get the current feature.
-			
-			SimpleFeature feature = iterator.next();
-			
-			// 
-			
-			for(Descriptor descriptor : this.descriptors)
-				if(descriptor.matches(feature))
-					this.keep(feature, descriptor);
-			
-			return true;
-		}
-				
-	    return false;
+		// Get the current feature.
+
+		SimpleFeature feature = iterator.next();
+
+		// Check if the feature can be categorized among the user's interests.
+
+		for(Descriptor descriptor : this.descriptors)
+			if(descriptor.matches(feature))
+				this.keep(feature, descriptor);
 	}
 
 	protected void keep(Object o, Descriptor descriptor) {
-		
+
 		Element element = descriptor.newElement(o);
-		
+
 		this.elements.add(element);
 	}
-	
-	protected void transform() {
+
+	public void transform() {
+
+		// TODO: take care of the Z index issue.
+		// TODO: a spatial index would be way better to store elements and query
+		// them faster. Only later should the elements be transfered to the graph.
 		
-		for(Element e : this.elements) {
-			
-			sendNodeAdded(this.sourceId, e.getId());
-			
-			for(String key : e.getAttributes().keySet())
-				sendNodeAttributeAdded(this.sourceId, e.getId(), key, e.getAttribute(key));
-		}
+		for(Element e : this.elements)
+			if(e.getCategory().equals("Z")) {
+
+				sendNodeAdded(this.sourceId, e.getId());
+
+				sendNodeAttributeAdded(this.sourceId, e.getId(), "x", e.getAttribute("x"));
+				sendNodeAttributeAdded(this.sourceId, e.getId(), "y", e.getAttribute("y"));
+
+				// for(String key : e.getAttributes().keySet())
+				// sendNodeAttributeAdded(this.sourceId, e.getId(), key,
+				// e.getAttribute(key));
+			}
+
+		for(Element e : this.elements)
+			if(e.getCategory().equals("ROAD")) {
+
+				String idFrom = System.nanoTime() + "";
+				sendNodeAdded(this.sourceId, idFrom);
+				sendNodeAttributeAdded(this.sourceId, idFrom, "x", ((Line)e).getEndPositions()[0].x);
+				sendNodeAttributeAdded(this.sourceId, idFrom, "y", ((Line)e).getEndPositions()[0].y);
+
+				String idTo = System.nanoTime() + "";
+				sendNodeAdded(this.sourceId, idTo);
+				sendNodeAttributeAdded(this.sourceId, idTo, "x", ((Line)e).getEndPositions()[1].x);
+				sendNodeAttributeAdded(this.sourceId, idTo, "y", ((Line)e).getEndPositions()[1].y);
+
+				sendEdgeAdded(this.sourceId, e.getId(), idFrom, idTo, false);
+			}
 	}
 
 }

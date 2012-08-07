@@ -31,34 +31,33 @@
 
 package org.graphstream.geography;
 
+import com.vividsolutions.jts.geom.Coordinate;
+
 /**
- * A point pertaining to one or more features.
+ * A point.
  * 
- * As the main purpose of this code is to fusion points so that several features will share the
- * intersection points, a point contains a location and potentially several sets of attributes, one
- * for each feature it aggregates.
+ * TODO
  * 
  * @author Antoine Dutot
  * @author Merwan Achibet
  */
 public class Point extends Element {
 	
-	private int x;
-	private int y;
+	private Coordinate position;
 	
-	public Point(String id) {
-		super(id);
+	public Point(String id, String category) {
+		super(id, category);
 	}
 	
-	public int[] getPosition() {
+	public Coordinate getPosition() {
 		
-		return new int[]{this.x, this.y};
+		return new Coordinate(this.position);
 	}
 	
 	public void setPosition(int x, int y) {
 		
-		this.x = x;
-		this.y = y;
+		this.position.x = x;
+		this.position.y = y;
 	}
 
 }

@@ -85,7 +85,7 @@ public abstract class FileSourceAbstract extends SourceBase {
 	 * @return True if there is still features left.
 	 * @throws IOException
 	 */
-	protected abstract boolean next() throws IOException;
+	protected abstract void next() throws IOException;
 
 	/**
 	 * 

@@ -33,38 +33,38 @@ package org.graphstream.geography;
 
 import java.util.ArrayList;
 
+import com.vividsolutions.jts.geom.Coordinate;
+
 /**
- * A point pertaining to one or more features.
+ * A Line.
  * 
- * As the main purpose of this code is to fusion points so that several features will share the
- * intersection points, a point contains a location and potentially several sets of attributes, one
- * for each feature it aggregates.
+ * TODO
  * 
  * @author Merwan Achibet
  */
 public class Line extends Element {
 	
-	private ArrayList<Point> points;
+	private ArrayList<Coordinate> positions;
 	
-	public Line(String id) {
-		super(id);
+	public Line(String id, String category) {
+		super(id, category);
 		
-		this.points = new ArrayList<Point>();
+		this.positions = new ArrayList<Coordinate>();
+	}
+
+	public void addPoint(double x, double y) {
+		
+		this.positions.add(new Coordinate(x, y));
+	}
+
+	public void addPoint(double x, double y, int index) {
+		
+		this.positions.add(index, new Coordinate(x, y));
 	}
 	
-	public ArrayList<Point> getPoints() {
+	public Coordinate[] getEndPositions() {
 		
-		return this.points;
-	}
-	
-	public void insertPoint(Point point) {
-		
-		this.points.add(point);
-	}
-	
-	public void insertPoint(Point point, int index) {
-		
-		this.points.add(index, point);
+		return new Coordinate[]{this.positions.get(0), this.positions.get(this.positions.size()-1)};
 	}
 	
 }

@@ -58,7 +58,9 @@ public abstract class Descriptor {
 
 		if(isPoint(o))
 			return newPoint(o);
-
+		else if(isLine(o))
+			return newLine(o);
+		
 		System.err.println("oops");
 		return null;
 	}
@@ -93,5 +95,24 @@ public abstract class Descriptor {
 	 * @return A graphStream geometric element.
 	 */
 	public abstract Point newPoint(Object o);
+
+	/**
+	 * Check if the supplied feature is a line.
+	 * 
+	 * @param o
+	 *            The considered feature.
+	 * @return True if the feature is a line, false otherwise (point or
+	 *         polygon).
+	 */
+	public abstract boolean isLine(Object o);
+
+	/**
+	 * Give a GraphStream geometric element based on the supplied feature.
+	 * 
+	 * @param o
+	 *            The object to convert.
+	 * @return A graphStream geometric element.
+	 */
+	public abstract Line newLine(Object o);
 
 }

@@ -54,6 +54,11 @@ public abstract class Element {
 	protected String id;
 
 	/**
+	 * The category of the feature.
+	 */
+	protected String category;
+	
+	/**
 	 * A key/value mapping of attributes.
 	 */
 	protected HashMap<String, Object> attributes;
@@ -64,9 +69,10 @@ public abstract class Element {
 	 * @param id
 	 *            The identifier of the element.
 	 */
-	public Element(String id) {
+	public Element(String id, String category) {
 
 		this.id = id;
+		this.category = category;
 
 		this.attributes = new HashMap<String, Object>();
 	}
@@ -74,6 +80,11 @@ public abstract class Element {
 	public String getId() {
 
 		return new String(this.id);
+	}
+	
+	public String getCategory() {
+		
+		return new String(this.category);
 	}
 
 	public HashMap<String, Object> getAttributes() {

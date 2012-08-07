@@ -48,38 +48,36 @@ import org.opengis.feature.simple.SimpleFeature;
  * @author Merwan Achibet
  */
 
-
-public class TestFileSourceSHP
-{
+public class TestFileSourceSHP {
 
 	public static void main(String args[]) {
-		
+
 		new TestFileSourceSHP();
 	}
-	
+
 	public static final String GRAPH_ID = "navteq";
-	
-	public TestFileSourceSHP()
-	{
+
+	public TestFileSourceSHP() {
 		Graph graph = new MultiGraph(GRAPH_ID);
-	
+
 		// Display the resulting graph.
-		
+
 		graph.addAttribute("stylesheet", styleSheetNew);
 		graph.removeAttribute("ui.quality");
 		graph.removeAttribute("ui.antialias");
-		
-		System.setProperty( "gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer" );
+
+		System.setProperty("gs.ui.renderer",
+				"org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 
 		Viewer viewer = graph.display(false);
 		viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.EXIT);
-		
+
 		// Prepare the file import.
-		
+
 		FileSourceSHP src = new FileSourceSHP();
-		
+
 		src.addSink(graph);
-		
+
 		// Filter the attributes to be kept in the final graph.
 
 		AttributeFilter filter = new AttributeFilter(AttributeFilter.Mode.KEEP);
@@ -89,136 +87,136 @@ public class TestFileSourceSHP
 		filter.add("INTRSECT");
 
 		// Filter the features to consider.
-		
+
 		DescriptorSHP descriptor = new DescriptorSHP("TEST", filter) {
 
 			@Override
 			public boolean matches(Object o) {
-				
-				SimpleFeature feature = (SimpleFeature)o;
-				
-				if(Math.random() < 0.1 && isPoint(feature) && feature.getProperty("INTRSECT") != null && feature.getProperty("INTRSECT").getValue().equals("Y"))
+
+				SimpleFeature feature = (SimpleFeature) o;
+
+				if(Math.random() < 0.1
+						&& isPoint(feature)
+						&& feature.getProperty("INTRSECT") != null
+						&& feature.getProperty("INTRSECT").getValue()
+								.equals("Y"))
 					return true;
-				
+
 				return false;
 			}
-			
+
 		};
-		
+
 		src.addDescriptor(descriptor);
 
 		// Go and read the data.
-		
-		try
-		{
-			
+
+		try {
+
 			src.begin("/res/Zlevels.shp");
 			src.all();
-			
-			/*src.setMergeOperations(mergeOps);
-			src.begin("Streets.shp");
-			src.all();
-			*/
-			//equipGraph(graph);
-			
-			//src.end();
-			//src.release();
 
-			//addStyle(graph);
+			/*
+			 * src.setMergeOperations(mergeOps); src.begin("Streets.shp");
+			 * src.all();
+			 */
+			// equipGraph(graph);
+
+			// src.end();
+			// src.release();
+
+			// addStyle(graph);
 
 			System.out.printf("OK%n");
 			System.out.println(graph.getNodeCount());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-        catch( Exception e )
-        {
-	        e.printStackTrace();
-        }
 	}
 
-	protected void equipGraph( Graph graph ) 
-	{
-		for( Edge edge: graph.getEachEdge() )
-		{
-			if( edge.hasAttribute( "length" ) ) {
-				double length = edge.getNumber( "length" );
+	protected void equipGraph(Graph graph) {
+		for(Edge edge : graph.getEachEdge()) {
+			if(edge.hasAttribute("length")) {
+				double length = edge.getNumber("length");
 				double maxCap = length;
-				
-				if( edge.hasLabel( "SPEED_CAT" ) ) {
-					String speed_cat = (String)edge.getLabel( "SPEED_CAT" );
-					double speed     = speedCatToKph( speed_cat );	// In kilometres per hour.
-					double time      = ( length / 1000 ) / speed;	// In hours.
-					time *= 60;	// In minutes.
-					edge.setAttribute( "time", time );
-				}
-				else System.err.printf( "no SPEED_CAT !!%n" );
-				
-				maxCap /= 5;	// A car uses 5 meters.
-				if( maxCap < 5 ) maxCap = 5;
-				edge.addAttribute( "maxCap", maxCap );
-			}
-			else System.err.printf( "no length !!!%n" );
+
+				if(edge.hasLabel("SPEED_CAT")) {
+					String speed_cat = (String) edge.getLabel("SPEED_CAT");
+					double speed = speedCatToKph(speed_cat); // In kilometres
+																// per hour.
+					double time = (length / 1000) / speed; // In hours.
+					time *= 60; // In minutes.
+					edge.setAttribute("time", time);
+				} else
+					System.err.printf("no SPEED_CAT !!%n");
+
+				maxCap /= 5; // A car uses 5 meters.
+				if(maxCap < 5)
+					maxCap = 5;
+				edge.addAttribute("maxCap", maxCap);
+			} else
+				System.err.printf("no length !!!%n");
 		}
-		
-		for(Node node: graph) {
-			node.setAttribute("ui.label",node.getId());
+
+		for(Node node : graph) {
+			node.setAttribute("ui.label", node.getId());
 		}
 	}
-	
-	protected int speedCatToKph( String cat )
-	{
-		int c = Integer.parseInt( cat );
-		
-		switch( c ) {
-			case 1: return 150;
-			case 2: return 130;
-			case 3: return 100;
-			case 4: return 90;
-			case 5: return 70;
-			case 6: return 50;
-			case 7: return 30;
-			case 8: return 11;
+
+	protected int speedCatToKph(String cat) {
+		int c = Integer.parseInt(cat);
+
+		switch (c) {
+		case 1:
+			return 150;
+		case 2:
+			return 130;
+		case 3:
+			return 100;
+		case 4:
+			return 90;
+		case 5:
+			return 70;
+		case 6:
+			return 50;
+		case 7:
+			return 30;
+		case 8:
+			return 11;
 		}
-		
+
 		return 5;
 	}
-	
-	protected void addStyle( Graph graph )
-	{
-		for( Edge edge: graph.getEachEdge() )
-		{
+
+	protected void addStyle(Graph graph) {
+		for(Edge edge : graph.getEachEdge()) {
 			StringBuilder cls = new StringBuilder();
 			int cnt = 0;
 
-			if( edge.getLabel( "LANE_CAT" ).equals( "2" ) )
-			{
-				cls.append( "laneCat2" );
+			if(edge.getLabel("LANE_CAT").equals("2")) {
+				cls.append("laneCat2");
+				cnt++;
+			} else if(edge.getLabel("LANE_CAT").equals("3")) {
+				cls.append("laneCat3");
 				cnt++;
 			}
-			else if( edge.getLabel( "LANE_CAT" ).equals( "3" ) )
-			{
-				cls.append( "laneCat3" );
+
+			if(edge.getLabel("CONTRACC").equals("Y")) {
+				if(cnt > 0)
+					cls.append(",");
+				cls.append("freeway");
 				cnt++;
 			}
-			
-			if( edge.getLabel( "CONTRACC" ).equals( "Y" ) )
-			{
-				if( cnt>0 )
-					cls.append( "," );
-				cls.append( "freeway" );
-				cnt++;
-			}
-			
-			if( cnt > 0 )
-			{
-				edge.addAttribute( "ui.class", cls.toString() );
+
+			if(cnt > 0) {
+				edge.addAttribute("ui.class", cls.toString());
 			}
 		}
 	}
-	
-	protected static final String styleSheetNew = 
-		"node { size: 3px; text-visibility-mode: hidden; }" +
-		"edge { shape:polyline; fill-color: #808080; arrow-size: 3px, 3px; }" +
-		"edge.freeway  { size: 2px; stroke-width: 1px; stroke-color: red; shadow-mode: plain; shadow-color: red; shadow-width: 1px; shadow-offset: 0px, 0px; }" +
-		"edge.laneCat2 { fill-color:#E0D040; }" +
-		"edge.laneCat3 { fill-color:#F0F060; }";
+
+	protected static final String styleSheetNew = "node { size: 3px; text-visibility-mode: hidden; }"
+			+ "edge { shape:polyline; fill-color: #808080; arrow-size: 3px, 3px; }"
+			+ "edge.freeway  { size: 2px; stroke-width: 1px; stroke-color: red; shadow-mode: plain; shadow-color: red; shadow-width: 1px; shadow-offset: 0px, 0px; }"
+			+ "edge.laneCat2 { fill-color:#E0D040; }"
+			+ "edge.laneCat3 { fill-color:#F0F060; }";
 }

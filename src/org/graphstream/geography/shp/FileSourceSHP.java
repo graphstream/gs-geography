@@ -78,6 +78,10 @@ public class FileSourceSHP extends FileSourceAbstract {
 		}
 	}
 
+	public void end() throws IOException {
+		// Nothing to do.
+	}
+	
 	public void all() throws IOException {
 
 		while(next());

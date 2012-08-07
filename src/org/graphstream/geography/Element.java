@@ -34,71 +34,71 @@ package org.graphstream.geography;
 import java.util.HashMap;
 
 /**
- * A point pertaining to one or more features.
+ * An abstract geometric element.
  * 
- * As the main purpose of this code is to fusion points so that several features will share the
- * intersection points, a point contains a location and potentially several sets of attributes, one
- * for each feature it aggregates.
+ * This class and its implementations are used as intermediary representations
+ * for any kind of geographical features coming from an external source. The
+ * original input formats can be quite heterogeneous the features they contain
+ * are library-dependent.
+ * 
+ * An Element consists of an identifier and a list of attributes from the
+ * original data source.
  * 
  * @author Merwan Achibet
  */
 public abstract class Element {
-	
+
+	/**
+	 * The ID of the feature.
+	 */
 	protected String id;
-	
-	protected HashMap<String,Object> attributes;
-	
+
+	/**
+	 * A key/value mapping of attributes.
+	 */
+	protected HashMap<String, Object> attributes;
+
+	/**
+	 * Instantiate a new element.
+	 * 
+	 * @param id
+	 *            The identifier of the element.
+	 */
 	public Element(String id) {
-		
+
 		this.id = id;
-		this.attributes = new HashMap<String,Object>();
+
+		this.attributes = new HashMap<String, Object>();
 	}
-	
+
 	public String getId() {
-	
+
 		return new String(this.id);
 	}
 
-	public HashMap<String,Object> getAttributes() {
-		
+	public HashMap<String, Object> getAttributes() {
+
 		return this.attributes;
 	}
 
 	public Object getAttribute(String key) {
-	
+
 		return this.attributes.get(key);
 	}
-	
+
 	public boolean hasAttribute(String key) {
-		
+
 		return this.attributes.containsKey(key);
 	}
-	
+
 	public void addAttribute(String key, Object value) {
-		
+
 		this.attributes.put(key, value);
 	}
-	
+
 	public void removeAttribute(String key) {
-		
+
 		this.attributes.remove(key);
 	}
 
-	// Really necessary???
-	/*
-	public boolean isPoint() {
-	
-		return this instanceof Point;
-	}
-	
-	public boolean isPolyline() {
-		
-		return this instanceof Line;
-	}
-
-	public boolean isPolygon() {
-	
-		return this instanceof Point;
-	}
-	*/
 }

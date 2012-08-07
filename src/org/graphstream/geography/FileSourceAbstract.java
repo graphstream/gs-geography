@@ -5,42 +5,97 @@ import java.util.ArrayList;
 
 import org.graphstream.stream.SourceBase;
 
+/**
+ * Abstract source for geographical data files.
+ * 
+ * It contains a list of descriptors which goal is to filter and classify the
+ * features coming from data sources. This process has dual advantages. First,
+ * it obviously gives better control to the user over the data as he can bind
+ * matching features to custom categories (e.g. "ROAD", "LAKE", "SHOP") for a
+ * later use. Secondly, geographical data files are often huge in size and
+ * reducing the memory usage at the first step of the import surely is a good
+ * idea.
+ * 
+ * @author Merwan Achibet
+ */
 public abstract class FileSourceAbstract extends SourceBase {
 
 	/**
-	 * The ID of this source. 
+	 * The ID of this source.
 	 */
 	protected String sourceId;
-	
+
 	/**
-	 * Descriptors for the input features.
+	 * Descriptors for the features that we want to consider.
 	 */
 	protected ArrayList<Descriptor> descriptors;
-	
-	//
+
+	/**
+	 * 
+	 */
+	// TODO: a spatial index or something along these lines
 	protected ArrayList<Element> elements;
-	
-	public FileSourceAbstract() {
-		
+
+	protected FileSourceAbstract() {
+
 		this.sourceId = String.format("<DGS stream %x>", System.nanoTime());
-		
+
 		this.descriptors = new ArrayList<Descriptor>();
 	}
-	
+
+	/**
+	 * Add a descriptor to the description list.
+	 * 
+	 * @param descriptor
+	 */
 	public void addDescriptor(Descriptor descriptor) {
 
 		this.descriptors.add(descriptor);
 	}
-	
+
 	// Abstract
-	
+
+	/**
+	 * Prepare the import, generally by opening the source file or reading it in
+	 * one batch and caching the data.
+	 * 
+	 * @param fileName
+	 *            The name of the file to import data from.
+	 * @throws IOException
+	 */
 	public abstract void begin(String fileName) throws IOException;
-	
+
+	/**
+	 * Finish the file import, generally by closing input files.
+	 * 
+	 * @throws IOException
+	 */
+	public abstract void end() throws IOException;
+
+	/**
+	 * Process every feature from the input data in one batch.
+	 * 
+	 * @throws IOException
+	 */
 	public abstract void all() throws IOException;
-	
+
+	/**
+	 * Process the next feature from the input data.
+	 * 
+	 * @return True if there is still features left.
+	 * @throws IOException
+	 */
 	protected abstract boolean next() throws IOException;
-	
+
+	/**
+	 * 
+	 * @param o
+	 * @param descriptor
+	 */
 	protected abstract void keep(Object o, Descriptor descriptor);
-	
+
+	/**
+	 * 
+	 */
 	protected abstract void transform();
 }

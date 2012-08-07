@@ -40,51 +40,29 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureIterator;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
-import org.graphstream.stream.SourceBase;
-import org.graphstream.util.parser.ParseException;
+import org.graphstream.geography.FileSourceAbstract;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-public class FileSourceSHP extends SourceBase {
+public class FileSourceSHP extends FileSourceAbstract {
 
-	/**
-	 * The ID of this source. 
-	 */
-	protected String sourceId;
-	
 	/**
 	 * Iterator on the shapefile features.
 	 */
 	protected FeatureIterator<SimpleFeature> iterator;
-
-	/**
-	 * Descriptors for the input features.
-	 */
-	protected ArrayList<Descriptor> descriptors;
-
-	//
-	protected ArrayList<Element> elements;
 	
 	public FileSourceSHP() {
 
-		this.sourceId = String.format("<DGS stream %x>", System.nanoTime());
-			
-		this.descriptors = new ArrayList<Descriptor>();
 		this.elements = new ArrayList<Element>();
 	}
 
-	public void addDescriptor(Descriptor descriptor) {
-
-		this.descriptors.add(descriptor);
-	}
-
-	public void begin(String filename) throws IOException {
+	public void begin(String fileName) throws IOException {
 	
 		if(this.iterator == null) {
 			
 			try {
 				
-				URL url = this.getClass().getResource(filename);
+				URL url = this.getClass().getResource(fileName);
 				
 				ShapefileDataStore store = new ShapefileDataStore(url);
 
@@ -100,14 +78,14 @@ public class FileSourceSHP extends SourceBase {
 		}
 	}
 
-	public void all() throws IOException, ParseException {
+	public void all() throws IOException {
 
 		while(next());
 		
 		transform();
 	}
 
-	public boolean next() throws IOException {
+	protected boolean next() throws IOException {
 
 		if(iterator != null && iterator.hasNext()) {
 			
@@ -127,14 +105,14 @@ public class FileSourceSHP extends SourceBase {
 	    return false;
 	}
 
-	private void keep(Object o, Descriptor descriptor) {
+	protected void keep(Object o, Descriptor descriptor) {
 		
 		Element element = descriptor.newElement(o);
 		
 		this.elements.add(element);
 	}
 	
-	private void transform() {
+	protected void transform() {
 		
 		for(Element e : this.elements) {
 			

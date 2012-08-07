@@ -126,7 +126,7 @@ public class TestFileSourceSHP
 
 			//addStyle(graph);
 
-			System.out.printf("OK Finished%n");
+			System.out.printf("OK%n");
 			System.out.println(graph.getNodeCount());
 		}
         catch( Exception e )

@@ -40,19 +40,19 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureIterator;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
-import org.graphstream.geography.FileSourceAbstract;
+import org.graphstream.geography.GeoSource;
 import org.graphstream.geography.Line;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-public class FileSourceSHP extends FileSourceAbstract {
+public class GeoSourceSHP extends GeoSource {
 
 	/**
 	 * Iterator on the shapefile features.
 	 */
 	protected FeatureIterator<SimpleFeature> iterator;
 
-	public FileSourceSHP() {
+	public GeoSourceSHP() {
 
 		this.elements = new ArrayList<Element>();
 	}

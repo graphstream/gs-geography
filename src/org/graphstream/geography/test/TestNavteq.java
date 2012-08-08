@@ -33,7 +33,7 @@ package org.graphstream.geography.test;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.shp.DescriptorSHP;
-import org.graphstream.geography.shp.FileSourceSHP;
+import org.graphstream.geography.shp.GeoSourceSHP;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.ui.swingViewer.Viewer;
@@ -77,7 +77,7 @@ public class TestNavteq {
 		
 		// Prepare the file import.
 
-		FileSourceSHP src = new FileSourceSHP();
+		GeoSourceSHP src = new GeoSourceSHP();
 
 		src.addSink(graph);
 

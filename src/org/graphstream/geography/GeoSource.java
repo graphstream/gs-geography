@@ -18,7 +18,7 @@ import org.graphstream.stream.SourceBase;
  * 
  * @author Merwan Achibet
  */
-public abstract class FileSourceAbstract extends SourceBase {
+public abstract class GeoSource extends SourceBase {
 
 	/**
 	 * The ID of this source.
@@ -36,7 +36,7 @@ public abstract class FileSourceAbstract extends SourceBase {
 	// TODO: a spatial index or something along these lines
 	protected ArrayList<Element> elements;
 
-	protected FileSourceAbstract() {
+	protected GeoSource() {
 
 		this.sourceId = String.format("<DGS stream %x>", System.nanoTime());
 

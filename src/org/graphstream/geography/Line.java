@@ -67,4 +67,11 @@ public class Line extends Element {
 		return new Coordinate[]{this.positions.get(0), this.positions.get(this.positions.size()-1)};
 	}
 	
+	@Override
+	public boolean at(double x, double y) {
+		
+		// TODO true intersection test
+		return this.positions.get(0).x == x && this.positions.get(0).y == y;
+	}
+	
 }

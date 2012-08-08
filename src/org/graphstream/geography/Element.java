@@ -57,7 +57,7 @@ public abstract class Element {
 	 * The category of the feature.
 	 */
 	protected String category;
-	
+
 	/**
 	 * A key/value mapping of attributes.
 	 */
@@ -81,9 +81,9 @@ public abstract class Element {
 
 		return new String(this.id);
 	}
-	
+
 	public String getCategory() {
-		
+
 		return new String(this.category);
 	}
 
@@ -111,5 +111,18 @@ public abstract class Element {
 
 		this.attributes.remove(key);
 	}
+
+	// Abstract
+
+	/**
+	 * Check if the element is placed at a given position.
+	 * 
+	 * @param x
+	 *            The x coordinate.
+	 * @param y
+	 *            The y coordinate.
+	 * @return True if the element is at position (x,y).
+	 */
+	public abstract boolean at(double x, double y);
 
 }

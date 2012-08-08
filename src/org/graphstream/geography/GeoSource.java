@@ -31,10 +31,9 @@ public abstract class GeoSource extends SourceBase {
 	protected ArrayList<Descriptor> descriptors;
 
 	/**
-	 * 
+	 * Spatial index storing geometric elements representing features.
 	 */
-	// TODO: a spatial index or something along these lines
-	protected ArrayList<Element> elements;
+	protected SpatialIndex elements;
 
 	protected GeoSource() {
 
@@ -88,9 +87,13 @@ public abstract class GeoSource extends SourceBase {
 	protected abstract void next() throws IOException;
 
 	/**
+	 * Add a given object to the GraphStream geometric representation of the
+	 * studied space.
 	 * 
 	 * @param o
+	 *            The object to add.
 	 * @param descriptor
+	 *            The descriptor that classified the object.
 	 */
 	protected abstract void keep(Object o, Descriptor descriptor);
 

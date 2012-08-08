@@ -33,11 +33,11 @@ package org.graphstream.geography.shp;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureIterator;
+import org.graphstream.geography.BasicSpatialIndex;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
@@ -54,7 +54,7 @@ public class GeoSourceSHP extends GeoSource {
 
 	public GeoSourceSHP() {
 
-		this.elements = new ArrayList<Element>();
+		this.elements = new BasicSpatialIndex();
 	}
 
 	public void begin(String fileName) throws IOException {

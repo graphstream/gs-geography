@@ -59,5 +59,11 @@ public class Point extends Element {
 		this.position.x = x;
 		this.position.y = y;
 	}
+	
+	@Override
+	public boolean at(double x, double y) {
+		
+		return this.position.x == x && this.position.y == y;
+	}
 
 }

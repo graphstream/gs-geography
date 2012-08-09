@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.GeoSource;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
 import org.opengis.feature.Property;
@@ -14,8 +15,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class DescriptorSHP extends Descriptor {
 
-	public DescriptorSHP(String category, AttributeFilter filter) {
-		super(category, filter);
+	public DescriptorSHP(GeoSource source, String category, AttributeFilter filter) {
+		super(source, category, filter);
 	}
 
 	@Override
@@ -92,10 +93,10 @@ public abstract class DescriptorSHP extends Descriptor {
 		// Shape the line.
 		
 		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
-		
+		/*
 		for(int i = 0; i < coords.length; ++i)
 			line.addPoint(coords[i].x, coords[i].y);
-		
+		*/
 		// Bind the attributes according to the filter.
 
 		Collection<Property> properties = feature.getProperties();

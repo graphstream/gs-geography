@@ -87,7 +87,7 @@ public class TestOpenStreetMap {
 				// Add it to the spatial index.
 
 				if(element != null)
-					this.elements.add(element);
+					this.index.add(element);
 			}
 
 			@Override
@@ -95,7 +95,7 @@ public class TestOpenStreetMap {
 				
 				ArrayList<String> addedIds = new ArrayList<String>();
 
-				for(Element e : this.elements)
+				for(Element e : this.index)
 					if(e.getCategory().equals("ROAD")) {
 
 						Line line = (Line)e;

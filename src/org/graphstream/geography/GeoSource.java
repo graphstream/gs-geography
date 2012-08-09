@@ -33,7 +33,7 @@ public abstract class GeoSource extends SourceBase {
 	/**
 	 * Spatial index storing geometric elements representing features.
 	 */
-	protected SpatialIndex elements;
+	protected SpatialIndex index;
 
 	protected GeoSource() {
 

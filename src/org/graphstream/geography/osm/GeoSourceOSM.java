@@ -56,7 +56,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 
 	public GeoSourceOSM() {
 
-		this.elements = new BasicSpatialIndex();
+		this.index = new BasicSpatialIndex();
 	}
 
 	public void begin(String fileName) throws IOException {

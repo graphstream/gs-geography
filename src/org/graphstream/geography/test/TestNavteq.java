@@ -90,7 +90,7 @@ public class TestNavteq {
 				
 				// Add it to the spatial index.
 
-				this.elements.add(element);
+				this.index.add(element);
 			}
 
 			@Override
@@ -102,17 +102,17 @@ public class TestNavteq {
 				
 				ArrayList<String> addedIds = new ArrayList<String>();
 
-				for(Element e : this.elements)
+				for(Element e : this.index)
 					if(e.getCategory().equals("ROAD")) {
 
 						// TODO take care of the Z index issue.
 						
 						Line line = (Line)e;
 
-						Coordinate[] endPoints = line.getEndPositions();
+						Coordinate[] endPoints = line.getEndPoints();
 
 						String idFrom = null;
-						ArrayList<Element> here = this.elements.getElementsAt(endPoints[0].x, endPoints[0].y);
+						ArrayList<Element> here = this.index.getElementsAt(endPoints[0].x, endPoints[0].y);
 						if(here.size() > 0)
 							idFrom = here.get(0).getId();
 						
@@ -124,7 +124,7 @@ public class TestNavteq {
 						}
 						
 						String idTo = null;
-						here = this.elements.getElementsAt(endPoints[1].x, endPoints[1].y);
+						here = this.index.getElementsAt(endPoints[1].x, endPoints[1].y);
 						if(here.size() > 0)
 							idTo = here.get(0).getId();
 						
@@ -137,6 +137,7 @@ public class TestNavteq {
 						
 						if(idFrom != null && idTo != null)
 						sendEdgeAdded(this.sourceId, e.getId(), idFrom, idTo, false);
+						
 					}
 			}
 
@@ -151,7 +152,7 @@ public class TestNavteq {
 		filterZ.add("Z_LEVEL");
 		filterZ.add("LINK_ID");
 
-		DescriptorSHP descriptorZ = new DescriptorSHP("Z", filterZ) {
+		DescriptorSHP descriptorZ = new DescriptorSHP(src, "Z", filterZ) {
 
 			@Override
 			public boolean matches(Object o) {
@@ -184,7 +185,7 @@ public class TestNavteq {
 		filterRoad.add("LINK_ID");
 		filterRoad.add("SPEED_CAT");
 
-		DescriptorSHP descriptorRoad = new DescriptorSHP("ROAD", filterRoad) {
+		DescriptorSHP descriptorRoad = new DescriptorSHP(src, "ROAD", filterRoad) {
 
 			@Override
 			public boolean matches(Object o) {

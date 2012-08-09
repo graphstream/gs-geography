@@ -52,7 +52,7 @@ public abstract class GeoSourceSHP extends GeoSource {
 
 	public GeoSourceSHP() {
 
-		this.elements = new BasicSpatialIndex();
+		this.index = new BasicSpatialIndex();
 	}
 
 	public void begin(String fileName) throws IOException {

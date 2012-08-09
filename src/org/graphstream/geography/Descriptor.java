@@ -19,6 +19,11 @@ package org.graphstream.geography;
 public abstract class Descriptor {
 
 	/**
+	 * The source.
+	 */
+	protected GeoSource source;
+	
+	/**
 	 * ID of the described class of elements.
 	 */
 	protected String category;
@@ -36,8 +41,9 @@ public abstract class Descriptor {
 	 * @param filter
 	 *            The attribute filter used on matching features.
 	 */
-	public Descriptor(String category, AttributeFilter filter) {
+	public Descriptor(GeoSource source, String category, AttributeFilter filter) {
 
+		this.source = source;
 		this.category = category;
 		this.filter = filter;
 	}
@@ -60,8 +66,11 @@ public abstract class Descriptor {
 			return newPoint(o);
 		else if(isLine(o))
 			return newLine(o);
+
+		// TODO polygons
+
+		// TODO What happens in other cases?
 		
-		System.err.println("oops");
 		return null;
 	}
 

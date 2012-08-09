@@ -47,7 +47,7 @@ import org.graphstream.ui.swingViewer.Viewer;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * Test the shapefile import.
+ * Test the OpenStreetMap import.
  * 
  * @author Merwan Achibet
  */
@@ -92,7 +92,7 @@ public class TestOpenStreetMap {
 
 			@Override
 			public void transform() {
-
+				
 				ArrayList<String> addedIds = new ArrayList<String>();
 
 				for(Element e : this.elements)
@@ -102,22 +102,22 @@ public class TestOpenStreetMap {
 
 						ArrayList<Point> points = line.getPoints();
 
-						for(int i = 0, l = points.size() - 1; i < l; ++i) {
-							
-							Point from = points.get(i);
-							String idFrom = from.getId();
+						Point from = points.get(0);
+						String idFrom = from.getId();
 
-							if(!addedIds.contains(idFrom)) {
+						if(!addedIds.contains(idFrom)) {
 
-								sendNodeAdded(this.sourceId, idFrom);
-								addedIds.add(idFrom);
+							sendNodeAdded(this.sourceId, idFrom);
+							addedIds.add(idFrom);
 
-								Coordinate position = getNodePosition(idFrom);
-								sendNodeAttributeAdded(this.sourceId, idFrom, "x", position.x);
-								sendNodeAttributeAdded(this.sourceId, idFrom, "y", position.y);
-							}
+							Coordinate position = getNodePosition(idFrom);
+							sendNodeAttributeAdded(this.sourceId, idFrom, "x", position.x);
+							sendNodeAttributeAdded(this.sourceId, idFrom, "y", position.y);
+						}
+						
+						for(int i = 1, l = points.size(); i < l; ++i) {
 
-							Point to = points.get(i+1);
+							Point to = points.get(i);
 							String idTo = to.getId();
 
 							if(!addedIds.contains(idTo)) {
@@ -131,6 +131,8 @@ public class TestOpenStreetMap {
 							}
 
 							sendEdgeAdded(this.sourceId, e.getId()+"_"+idFrom+" "+idTo, idFrom, idTo, false);
+							
+							idFrom = idTo;
 						}
 					}
 			}

@@ -39,13 +39,11 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureIterator;
 import org.graphstream.geography.BasicSpatialIndex;
 import org.graphstream.geography.Descriptor;
-import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
-import org.graphstream.geography.Line;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-public class GeoSourceSHP extends GeoSource {
+public abstract class GeoSourceSHP extends GeoSource {
 
 	/**
 	 * Iterator on the shapefile features.
@@ -89,6 +87,7 @@ public class GeoSourceSHP extends GeoSource {
 
 			next();
 
+			// XXX: Does this really work?
 			Thread.yield();
 		}
 
@@ -106,49 +105,6 @@ public class GeoSourceSHP extends GeoSource {
 		for(Descriptor descriptor : this.descriptors)
 			if(descriptor.matches(feature))
 				this.keep(feature, descriptor);
-	}
-
-	protected void keep(Object o, Descriptor descriptor) {
-
-		Element element = descriptor.newElement(o);
-
-		this.elements.add(element);
-	}
-
-	public void transform() {
-
-		// TODO: take care of the Z index issue.
-		// TODO: a spatial index would be way better to store elements and query
-		// them faster. Only later should the elements be transfered to the graph.
-		
-		for(Element e : this.elements)
-			if(e.getCategory().equals("Z")) {
-
-				sendNodeAdded(this.sourceId, e.getId());
-
-				sendNodeAttributeAdded(this.sourceId, e.getId(), "x", e.getAttribute("x"));
-				sendNodeAttributeAdded(this.sourceId, e.getId(), "y", e.getAttribute("y"));
-
-				// for(String key : e.getAttributes().keySet())
-				// sendNodeAttributeAdded(this.sourceId, e.getId(), key,
-				// e.getAttribute(key));
-			}
-
-		for(Element e : this.elements)
-			if(e.getCategory().equals("ROAD")) {
-
-				String idFrom = System.nanoTime() + "";
-				sendNodeAdded(this.sourceId, idFrom);
-				sendNodeAttributeAdded(this.sourceId, idFrom, "x", ((Line)e).getEndPositions()[0].x);
-				sendNodeAttributeAdded(this.sourceId, idFrom, "y", ((Line)e).getEndPositions()[0].y);
-
-				String idTo = System.nanoTime() + "";
-				sendNodeAdded(this.sourceId, idTo);
-				sendNodeAttributeAdded(this.sourceId, idTo, "x", ((Line)e).getEndPositions()[1].x);
-				sendNodeAttributeAdded(this.sourceId, idTo, "y", ((Line)e).getEndPositions()[1].y);
-
-				sendEdgeAdded(this.sourceId, e.getId(), idFrom, idTo, false);
-			}
 	}
 
 }

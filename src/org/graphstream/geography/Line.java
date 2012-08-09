@@ -69,9 +69,9 @@ public class Line extends Element {
 	
 	@Override
 	public boolean at(double x, double y) {
-		
-		// TODO true intersection test
-		return this.positions.get(0).x == x && this.positions.get(0).y == y;
+
+		// TODO
+		return Math.abs(this.positions.get(0).x - x) < 10 && Math.abs(this.positions.get(0).y - y) < 10;
 	}
 	
 }

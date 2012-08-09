@@ -52,11 +52,16 @@ public abstract class DescriptorSHP extends Descriptor {
 
 		Point point = new Point(id, getCategory());
 
+		// Set the position.
+		
+		Coordinate[] coord = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
+		
+		point.setPosition(coord[0].x, coord[0].y);
+
 		// Bind the position as two "x" and "y" attributes.
-		// XXX: too soon ?
-		Coordinate[] c = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
-		point.addAttribute("x", c[0].x);
-		point.addAttribute("y", c[0].y);
+		// XXX: too soon?
+		point.addAttribute("x", point.getPosition().x);
+		point.addAttribute("y", point.getPosition().y);
 
 		// Bind the other attributes according to the filter.
 
@@ -86,10 +91,10 @@ public abstract class DescriptorSHP extends Descriptor {
 
 		// Shape the line.
 		
-		Coordinate[] c = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
+		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
 		
-		for(int i = 0; i < c.length; ++i)
-			line.addPoint(c[i].x, c[i].y);
+		for(int i = 0; i < coords.length; ++i)
+			line.addPoint(coords[i].x, coords[i].y);
 		
 		// Bind the attributes according to the filter.
 

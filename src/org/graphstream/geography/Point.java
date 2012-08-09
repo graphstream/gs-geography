@@ -47,6 +47,8 @@ public class Point extends Element {
 	
 	public Point(String id, String category) {
 		super(id, category);
+		
+		this.position = new Coordinate();
 	}
 	
 	public Coordinate getPosition() {
@@ -54,7 +56,7 @@ public class Point extends Element {
 		return new Coordinate(this.position);
 	}
 	
-	public void setPosition(int x, int y) {
+	public void setPosition(double x, double y) {
 		
 		this.position.x = x;
 		this.position.y = y;

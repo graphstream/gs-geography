@@ -41,6 +41,12 @@ public class BasicSpatialIndex implements SpatialIndex {
 	}
 
 	@Override
+	public int size() {
+	
+		return this.elements.size();
+	}
+	
+	@Override
 	public Iterator<Element> iterator() {
 		
 		return this.elements.iterator();

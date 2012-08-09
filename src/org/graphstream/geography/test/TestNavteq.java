@@ -31,13 +31,20 @@
 
 package org.graphstream.geography.test;
 
+import java.util.ArrayList;
+
 import org.graphstream.geography.AttributeFilter;
+import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.Element;
+import org.graphstream.geography.Line;
 import org.graphstream.geography.shp.DescriptorSHP;
 import org.graphstream.geography.shp.GeoSourceSHP;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.ui.swingViewer.Viewer;
 import org.opengis.feature.simple.SimpleFeature;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Test the shapefile import.
@@ -53,19 +60,14 @@ public class TestNavteq {
 		new TestNavteq();
 	}
 
-	public static final String GRAPH_ID = "navteq";
-	
-	protected static final String style = 
-			"node { size: 2px; text-visibility-mode: hidden; }" +
-			"edge { shape:polyline; fill-color: #808080; arrow-size: 3px, 3px; }" +
-			"edge.freeway  { size: 2px; stroke-width: 1px; stroke-color: red; shadow-mode: plain; shadow-color: red; shadow-width: 1px; shadow-offset: 0px, 0px; }";
+	protected static final String style = "node { size: 2px; text-visibility-mode: hidden; } edge { shape:polyline; fill-color: #808080; }";
 
 	public TestNavteq() {
 
-		Graph graph = new MultiGraph(GRAPH_ID);
+		Graph graph = new MultiGraph("navteq");
 
 		// Display the resulting graph.
-		
+
 		graph.removeAttribute("ui.quality");
 		graph.removeAttribute("ui.antialias");
 		graph.addAttribute("stylesheet", TestNavteq.style);
@@ -74,10 +76,71 @@ public class TestNavteq {
 
 		Viewer viewer = graph.display(false);
 		viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.EXIT);
-		
+
 		// Prepare the file import.
 
-		GeoSourceSHP src = new GeoSourceSHP();
+		GeoSourceSHP src = new GeoSourceSHP() {
+
+			@Override
+			protected void keep(Object o, Descriptor descriptor) {
+
+				// Convert the object to a GraphStream geometric element.
+
+				Element element = descriptor.newElement(o);
+				
+				// Add it to the spatial index.
+
+				this.elements.add(element);
+			}
+
+			@Override
+			public void transform() {
+
+				// Add the roads to the graph as edges. The Z
+				// points of the spatial index are used to resolve the Z level
+				// conflicts.
+				
+				ArrayList<String> addedIds = new ArrayList<String>();
+
+				for(Element e : this.elements)
+					if(e.getCategory().equals("ROAD")) {
+
+						// TODO take care of the Z index issue.
+						
+						Line line = (Line)e;
+
+						Coordinate[] endPoints = line.getEndPositions();
+
+						String idFrom = null;
+						ArrayList<Element> here = this.elements.getElementsAt(endPoints[0].x, endPoints[0].y);
+						if(here.size() > 0)
+							idFrom = here.get(0).getId();
+						
+						if(idFrom != null && !addedIds.contains(idFrom)) {
+							sendNodeAdded(this.sourceId, idFrom);
+							sendNodeAttributeAdded(this.sourceId, idFrom, "x", endPoints[0].x);
+							sendNodeAttributeAdded(this.sourceId, idFrom, "y", endPoints[0].y);
+							addedIds.add(idFrom);
+						}
+						
+						String idTo = null;
+						here = this.elements.getElementsAt(endPoints[1].x, endPoints[1].y);
+						if(here.size() > 0)
+							idTo = here.get(0).getId();
+						
+						if(idTo != null && !addedIds.contains(idTo)) {
+							sendNodeAdded(this.sourceId, idTo);
+							sendNodeAttributeAdded(this.sourceId, idTo, "x", endPoints[1].x);
+							sendNodeAttributeAdded(this.sourceId, idTo, "y", endPoints[1].y);
+							addedIds.add(idTo);
+						}
+						
+						if(idFrom != null && idTo != null)
+						sendEdgeAdded(this.sourceId, e.getId(), idFrom, idTo, false);
+					}
+			}
+
+		};
 
 		src.addSink(graph);
 
@@ -87,14 +150,13 @@ public class TestNavteq {
 
 		filterZ.add("Z_LEVEL");
 		filterZ.add("LINK_ID");
-		filterZ.add("INTRSECT");
 
 		DescriptorSHP descriptorZ = new DescriptorSHP("Z", filterZ) {
 
 			@Override
 			public boolean matches(Object o) {
 
-				SimpleFeature feature = (SimpleFeature) o;
+				SimpleFeature feature = (SimpleFeature)o;
 
 				return Math.random() < 0.1 && isPoint(feature) && feature.getProperty("INTRSECT") != null && feature.getProperty("INTRSECT").getValue().equals("Y");
 			}
@@ -102,7 +164,7 @@ public class TestNavteq {
 		};
 
 		src.addDescriptor(descriptorZ);
-		
+
 		// Read the Z level data.
 
 		try {
@@ -114,31 +176,32 @@ public class TestNavteq {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		// Filter the features and attributes to be kept in the final graph.
 
 		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
 
 		filterRoad.add("LINK_ID");
 		filterRoad.add("SPEED_CAT");
-		
+
 		DescriptorSHP descriptorRoad = new DescriptorSHP("ROAD", filterRoad) {
 
 			@Override
 			public boolean matches(Object o) {
-				
+
 				SimpleFeature feature = (SimpleFeature)o;
 
-				return isLine(feature) && feature.getProperty("SPEED_CAT") != null && feature.getProperty("SPEED_CAT").getValue().equals("7");
+				return isLine(feature) && feature.getProperty("SPEED_CAT") != null && feature.getProperty("SPEED_CAT").getValue().equals("4");
 			}
-			
+
 		};
 
 		src.addDescriptor(descriptorRoad);
-		
+
 		// Read the streets data.
+
 		try {
-			
+
 			src.begin("/res/Streets.shp");
 			src.all();
 			src.end();
@@ -146,11 +209,10 @@ public class TestNavteq {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		// Final step.
-		
+
 		src.transform();
 		
 		System.out.printf("OK%n");
+		System.out.println(graph.getNodeCount());
 	}
 }

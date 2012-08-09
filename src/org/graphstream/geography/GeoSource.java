@@ -100,5 +100,5 @@ public abstract class GeoSource extends SourceBase {
 	/**
 	 * 
 	 */
-	protected abstract void transform();
+	public abstract void transform();
 }

@@ -43,35 +43,40 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author Merwan Achibet
  */
 public class Line extends Element {
-	
-	private ArrayList<Coordinate> positions;
-	
+
+	private ArrayList<Point> points;
+
 	public Line(String id, String category) {
 		super(id, category);
-		
-		this.positions = new ArrayList<Coordinate>();
+
+		this.points = new ArrayList<Point>();
 	}
 
-	public void addPoint(double x, double y) {
+	public void addPoint(String id, double x, double y) {
+
+		Point point = new Point(id, null);
 		
-		this.positions.add(new Coordinate(x, y));
+		point.setPosition(x, y);
+		
+		this.points.add(point);	
 	}
 
-	public void addPoint(double x, double y, int index) {
-		
-		this.positions.add(index, new Coordinate(x, y));
+	public ArrayList<Point> getPoints() {
+
+		// TODO copy
+		return this.points;
 	}
 	
-	public Coordinate[] getEndPositions() {
-		
-		return new Coordinate[]{this.positions.get(0), this.positions.get(this.positions.size()-1)};
+	public Point[] getEndPoints() {
+
+		return new Point[]{this.points.get(0), this.points.get(this.points.size() - 1)};
 	}
-	
+
 	@Override
 	public boolean at(double x, double y) {
 
 		// TODO
-		return Math.abs(this.positions.get(0).x - x) < 10 && Math.abs(this.positions.get(0).y - y) < 10;
+		return false;
 	}
-	
+
 }

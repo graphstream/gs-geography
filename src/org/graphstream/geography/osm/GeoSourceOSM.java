@@ -96,19 +96,15 @@ public abstract class GeoSourceOSM extends GeoSource {
 		// Nothing to do.
 	}
 
-	public void all() throws IOException {
+	public void read() throws IOException {
 
-		Elements features = this.root.getChildElements();
+		Elements elements = this.root.getChildElements();
 		
-		for(int i = 0, l = features.size(); i < l; ++i) {
-			
-			Element feature = features.get(i);
-			
-			checkFeature(feature);
-		}
+		for(int i = 0, l = elements.size(); i < l; ++i)
+			process(elements.get(i));
 	}
 
-	private void checkFeature(Element element) {
+	private void process(Element element) {
 	
 		for(Descriptor descriptor : this.descriptors)
 			if(descriptor.matches(element))

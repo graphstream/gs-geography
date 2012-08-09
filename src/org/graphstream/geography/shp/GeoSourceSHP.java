@@ -81,24 +81,15 @@ public abstract class GeoSourceSHP extends GeoSource {
 		// Nothing to do.
 	}
 
-	public void all() throws IOException {
+	public void read() throws IOException {
 
-		while(this.iterator != null && this.iterator.hasNext()) {
-
-			next();
-
-			// XXX: Does this really work?
-			Thread.yield();
-		}
+		while(this.iterator != null && this.iterator.hasNext())
+			process(iterator.next());
 
 		this.iterator = null;
 	}
 
-	protected void next() throws IOException {
-
-		// Get the current feature.
-
-		SimpleFeature feature = iterator.next();
+	protected void process(SimpleFeature feature) throws IOException {
 
 		// Check if the feature can be categorized among the user's interests.
 

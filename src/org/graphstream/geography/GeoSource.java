@@ -76,15 +76,7 @@ public abstract class GeoSource extends SourceBase {
 	 * 
 	 * @throws IOException
 	 */
-	public abstract void all() throws IOException;
-
-	/**
-	 * Process the next feature from the input data.
-	 * 
-	 * @return True if there is still features left.
-	 * @throws IOException
-	 */
-	protected abstract void next() throws IOException;
+	public abstract void read() throws IOException;
 
 	/**
 	 * Add a given object to the GraphStream geometric representation of the

@@ -32,7 +32,7 @@ public abstract class DescriptorOSM extends Descriptor {
 	}
 
 	@Override
-	public Point newPoint(Object o) {
+	protected Point newPoint(Object o) {
 
 		// Cast the object to a XOM element.
 
@@ -65,7 +65,7 @@ public abstract class DescriptorOSM extends Descriptor {
 	}
 
 	@Override
-	public Line newLine(Object o) {
+	protected Line newLine(Object o) {
 
 		// Cast the object to a GeoTools SimpleFeature.
 
@@ -101,7 +101,7 @@ public abstract class DescriptorOSM extends Descriptor {
 		return line;
 	}
 
-	private void bindAttributesToElement(nu.xom.Element xmlElement, Element element) {
+	protected void bindAttributesToElement(nu.xom.Element xmlElement, Element element) {
 
 		nu.xom.Elements tags = xmlElement.getChildElements("tag");
 

@@ -39,7 +39,7 @@ public abstract class DescriptorSHP extends Descriptor {
 	}
 
 	@Override
-	public Point newPoint(Object o) {
+	protected Point newPoint(Object o) {
 
 		// Cast the object to a GeoTools SimpleFeature.
 
@@ -76,7 +76,7 @@ public abstract class DescriptorSHP extends Descriptor {
 	}
 
 	@Override
-	public Line newLine(Object o) {
+	protected Line newLine(Object o) {
 
 		// Cast the object to a GeoTools SimpleFeature.
 

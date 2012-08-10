@@ -103,7 +103,7 @@ public abstract class Descriptor {
 	 *            The object to convert.
 	 * @return A graphStream geometric element.
 	 */
-	public abstract Point newPoint(Object o);
+	protected abstract Point newPoint(Object o);
 
 	/**
 	 * Check if the supplied feature is a line.
@@ -122,6 +122,6 @@ public abstract class Descriptor {
 	 *            The object to convert.
 	 * @return A graphStream geometric element.
 	 */
-	public abstract Line newLine(Object o);
+	protected abstract Line newLine(Object o);
 
 }

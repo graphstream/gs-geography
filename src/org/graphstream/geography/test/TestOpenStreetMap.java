@@ -34,7 +34,6 @@ package org.graphstream.geography.test;
 import java.util.ArrayList;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
@@ -76,19 +75,6 @@ public class TestOpenStreetMap {
 		// Prepare the file import.
 
 		GeoSourceOSM src = new GeoSourceOSM() {
-
-			@Override
-			protected void keep(Object o, Descriptor descriptor) {
-
-				// Convert the object to a GraphStream geometric element.
-
-				Element element = descriptor.newElement(o);
-
-				// Add it to the spatial index.
-
-				if(element != null)
-					this.index.add(element);
-			}
 
 			@Override
 			public void transform() {
@@ -145,23 +131,14 @@ public class TestOpenStreetMap {
 
 		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
 
-		// filterRoad.add("highway");
+		filterRoad.add("highway");
 
 		DescriptorOSM descriptorRoad = new DescriptorOSM(src, "ROAD", filterRoad) {
 
 			@Override
-			public boolean matches(Object o) {
+			public boolean matches(Element e) {
 
-				nu.xom.Element element = (nu.xom.Element)o;
-
-				boolean r = false;
-				nu.xom.Elements tags = element.getChildElements("tag");
-
-				for(int i = 0, l = tags.size(); i < l; ++i)
-					if(tags.get(i).getAttributeValue("k").equals("highway"))
-						r = true;
-
-				return element.getLocalName().equals("way") && r;
+				return e.isLine() && e.hasAttribute("highway");
 			}
 
 		};
@@ -173,7 +150,7 @@ public class TestOpenStreetMap {
 		try {
 
 			src.begin("/home/merwan/map.osm");
-			src.all();
+			src.read();
 			src.end();
 		}
 		catch (Exception e) {

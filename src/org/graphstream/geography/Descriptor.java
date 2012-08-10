@@ -22,7 +22,7 @@ public abstract class Descriptor {
 	 * The source.
 	 */
 	protected GeoSource source;
-	
+
 	/**
 	 * ID of the described class of elements.
 	 */
@@ -70,7 +70,7 @@ public abstract class Descriptor {
 		// TODO polygons
 
 		// TODO What happens in other cases?
-		
+
 		return null;
 	}
 
@@ -80,11 +80,11 @@ public abstract class Descriptor {
 	 * Check if the supplied feature conforms to the inner definition of the
 	 * descriptor.
 	 * 
-	 * @param o
-	 *            The considered feature.
-	 * @return True if the feature should be categorized by the descriptor.
+	 * @param element
+	 *            The considered element.
+	 * @return True if the element should be categorized by the descriptor.
 	 */
-	public abstract boolean matches(Object o);
+	public abstract boolean matches(Element element);
 
 	/**
 	 * Check if the supplied feature is a point.
@@ -94,7 +94,7 @@ public abstract class Descriptor {
 	 * @return True if the feature is a point, false otherwise (line or
 	 *         polygon).
 	 */
-	public abstract boolean isPoint(Object o);
+	protected abstract boolean isPoint(Object o);
 
 	/**
 	 * Give a GraphStream geometric element based on the supplied feature.
@@ -113,7 +113,7 @@ public abstract class Descriptor {
 	 * @return True if the feature is a line, false otherwise (point or
 	 *         polygon).
 	 */
-	public abstract boolean isLine(Object o);
+	protected abstract boolean isLine(Object o);
 
 	/**
 	 * Give a GraphStream geometric element based on the supplied feature.

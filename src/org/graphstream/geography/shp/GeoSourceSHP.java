@@ -39,6 +39,7 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureIterator;
 import org.graphstream.geography.BasicSpatialIndex;
 import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -91,11 +92,13 @@ public abstract class GeoSourceSHP extends GeoSource {
 
 	protected void process(SimpleFeature feature) throws IOException {
 
-		// Check if the feature can be categorized among the user's interests.
-
-		for(Descriptor descriptor : this.descriptors)
-			if(descriptor.matches(feature))
-				this.keep(feature, descriptor);
+		for(Descriptor descriptor : this.descriptors) {
+			
+			Element element = descriptor.newElement(feature);
+		
+			if(element != null && descriptor.matches(element))
+				this.keep(element, descriptor);
+		}
 	}
 
 }

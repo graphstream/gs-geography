@@ -87,11 +87,6 @@ public abstract class Element {
 		return new String(this.category);
 	}
 
-	public HashMap<String, Object> getAttributes() {
-
-		return this.attributes;
-	}
-
 	public Object getAttribute(String key) {
 
 		return this.attributes.get(key);
@@ -100,6 +95,11 @@ public abstract class Element {
 	public boolean hasAttribute(String key) {
 
 		return this.attributes.containsKey(key);
+	}
+	
+	public boolean hasAttribute(String key, Object value) {
+
+		return this.attributes.containsKey(key) && this.attributes.get(key).equals(value);
 	}
 
 	public void addAttribute(String key, Object value) {
@@ -112,6 +112,16 @@ public abstract class Element {
 		this.attributes.remove(key);
 	}
 
+	public boolean isPoint() {
+		
+		return this instanceof Point;
+	}
+
+	public boolean isLine() {
+		
+		return this instanceof Line;
+	}
+	
 	// Abstract
 
 	/**

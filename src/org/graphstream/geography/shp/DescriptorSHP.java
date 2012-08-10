@@ -20,7 +20,7 @@ public abstract class DescriptorSHP extends Descriptor {
 	}
 
 	@Override
-	public boolean isPoint(Object o) {
+	protected boolean isPoint(Object o) {
 
 		// TODO: A better way to do this?
 		SimpleFeature feature = (SimpleFeature)o;
@@ -29,7 +29,7 @@ public abstract class DescriptorSHP extends Descriptor {
 	}
 
 	@Override
-	public boolean isLine(Object o) {
+	protected boolean isLine(Object o) {
 
 		// TODO: A better way to do this?
 		SimpleFeature feature = (SimpleFeature)o;
@@ -93,7 +93,7 @@ public abstract class DescriptorSHP extends Descriptor {
 		// Shape the line.
 		
 		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
-		/*
+		/* TODO
 		for(int i = 0; i < coords.length; ++i)
 			line.addPoint(coords[i].x, coords[i].y);
 		*/

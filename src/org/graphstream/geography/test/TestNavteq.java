@@ -34,15 +34,14 @@ package org.graphstream.geography.test;
 import java.util.ArrayList;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.Line;
+import org.graphstream.geography.Point;
 import org.graphstream.geography.shp.DescriptorSHP;
 import org.graphstream.geography.shp.GeoSourceSHP;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.ui.swingViewer.Viewer;
-import org.opengis.feature.simple.SimpleFeature;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -82,62 +81,53 @@ public class TestNavteq {
 		GeoSourceSHP src = new GeoSourceSHP() {
 
 			@Override
-			protected void keep(Object o, Descriptor descriptor) {
-
-				// Convert the object to a GraphStream geometric element.
-
-				Element element = descriptor.newElement(o);
-				
-				// Add it to the spatial index.
-
-				this.index.add(element);
-			}
-
-			@Override
 			public void transform() {
 
 				// Add the roads to the graph as edges. The Z
 				// points of the spatial index are used to resolve the Z level
 				// conflicts.
-				
+
 				ArrayList<String> addedIds = new ArrayList<String>();
 
 				for(Element e : this.index)
 					if(e.getCategory().equals("ROAD")) {
 
 						// TODO take care of the Z index issue.
-						
+
 						Line line = (Line)e;
 
-						Coordinate[] endPoints = line.getEndPoints();
+						Point[] endPoints = line.getEndPoints();
 
+						Point from = endPoints[0];
 						String idFrom = null;
-						ArrayList<Element> here = this.index.getElementsAt(endPoints[0].x, endPoints[0].y);
+						Coordinate positionFrom = from.getPosition();
+						ArrayList<Element> here = this.index.getElementsAt(positionFrom.x, positionFrom.y);
 						if(here.size() > 0)
 							idFrom = here.get(0).getId();
-						
+
 						if(idFrom != null && !addedIds.contains(idFrom)) {
 							sendNodeAdded(this.sourceId, idFrom);
-							sendNodeAttributeAdded(this.sourceId, idFrom, "x", endPoints[0].x);
-							sendNodeAttributeAdded(this.sourceId, idFrom, "y", endPoints[0].y);
+							sendNodeAttributeAdded(this.sourceId, idFrom, "x", positionFrom.x);
+							sendNodeAttributeAdded(this.sourceId, idFrom, "y", positionFrom.y);
 							addedIds.add(idFrom);
 						}
-						
+
+						Point to = endPoints[1];
 						String idTo = null;
-						here = this.index.getElementsAt(endPoints[1].x, endPoints[1].y);
+						Coordinate positionTo = to.getPosition();
+						here = this.index.getElementsAt(positionTo.x, positionTo.y);
 						if(here.size() > 0)
 							idTo = here.get(0).getId();
-						
+
 						if(idTo != null && !addedIds.contains(idTo)) {
 							sendNodeAdded(this.sourceId, idTo);
-							sendNodeAttributeAdded(this.sourceId, idTo, "x", endPoints[1].x);
-							sendNodeAttributeAdded(this.sourceId, idTo, "y", endPoints[1].y);
+							sendNodeAttributeAdded(this.sourceId, idTo, "x", positionTo.x);
+							sendNodeAttributeAdded(this.sourceId, idTo, "y", positionTo.y);
 							addedIds.add(idTo);
 						}
-						
+
 						if(idFrom != null && idTo != null)
-						sendEdgeAdded(this.sourceId, e.getId(), idFrom, idTo, false);
-						
+							sendEdgeAdded(this.sourceId, e.getId(), idFrom, idTo, false);
 					}
 			}
 
@@ -155,11 +145,9 @@ public class TestNavteq {
 		DescriptorSHP descriptorZ = new DescriptorSHP(src, "Z", filterZ) {
 
 			@Override
-			public boolean matches(Object o) {
+			public boolean matches(Element e) {
 
-				SimpleFeature feature = (SimpleFeature)o;
-
-				return Math.random() < 0.1 && isPoint(feature) && feature.getProperty("INTRSECT") != null && feature.getProperty("INTRSECT").getValue().equals("Y");
+				return Math.random() < 0.1 && e.hasAttribute("INTRSECT", "Y");
 			}
 
 		};
@@ -171,7 +159,7 @@ public class TestNavteq {
 		try {
 
 			src.begin("/res/Zlevels.shp");
-			src.all();
+			src.read();
 			src.end();
 		}
 		catch (Exception e) {
@@ -188,11 +176,9 @@ public class TestNavteq {
 		DescriptorSHP descriptorRoad = new DescriptorSHP(src, "ROAD", filterRoad) {
 
 			@Override
-			public boolean matches(Object o) {
+			public boolean matches(Element e) {
 
-				SimpleFeature feature = (SimpleFeature)o;
-
-				return isLine(feature) && feature.getProperty("SPEED_CAT") != null && feature.getProperty("SPEED_CAT").getValue().equals("4");
+				return e.isLine() && e.hasAttribute("SPEED_CAT", "4");
 			}
 
 		};
@@ -204,7 +190,7 @@ public class TestNavteq {
 		try {
 
 			src.begin("/res/Streets.shp");
-			src.all();
+			src.read();
 			src.end();
 		}
 		catch (Exception e) {
@@ -212,7 +198,7 @@ public class TestNavteq {
 		}
 
 		src.transform();
-		
+
 		System.out.printf("OK%n");
 		System.out.println(graph.getNodeCount());
 	}

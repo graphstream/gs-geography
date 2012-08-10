@@ -52,6 +52,20 @@ public abstract class GeoSource extends SourceBase {
 		this.descriptors.add(descriptor);
 	}
 
+	/**
+	 * Add a given object to the GraphStream geometric representation of the
+	 * studied space.
+	 * 
+	 * @param o
+	 *            The object to add.
+	 * @param descriptor
+	 *            The descriptor that classified the object.
+	 */
+	public void keep(Element element, Descriptor descriptor) {
+System.out.println(1);
+		this.index.add(element);
+	}
+
 	// Abstract
 
 	/**
@@ -77,17 +91,6 @@ public abstract class GeoSource extends SourceBase {
 	 * @throws IOException
 	 */
 	public abstract void read() throws IOException;
-
-	/**
-	 * Add a given object to the GraphStream geometric representation of the
-	 * studied space.
-	 * 
-	 * @param o
-	 *            The object to add.
-	 * @param descriptor
-	 *            The descriptor that classified the object.
-	 */
-	protected abstract void keep(Object o, Descriptor descriptor);
 
 	/**
 	 * 

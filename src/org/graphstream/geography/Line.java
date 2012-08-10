@@ -33,8 +33,6 @@ package org.graphstream.geography;
 
 import java.util.ArrayList;
 
-import com.vividsolutions.jts.geom.Coordinate;
-
 /**
  * A Line.
  * 

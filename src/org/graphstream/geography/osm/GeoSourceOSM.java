@@ -37,6 +37,7 @@ import java.util.HashMap;
 
 import org.graphstream.geography.BasicSpatialIndex;
 import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -46,8 +47,11 @@ public abstract class GeoSourceOSM extends GeoSource {
 	/**
 	 * The root of the XML document.
 	 */
-	protected nu.xom.Element root;
+	protected nu.xom.Element xmlRoot;
 
+	/**
+	 * TODO
+	 */
 	protected HashMap<String, Coordinate> nodePositions;
 
 	public GeoSourceOSM() {
@@ -62,14 +66,14 @@ public abstract class GeoSourceOSM extends GeoSource {
 			File file = new File(fileName);
 
 			nu.xom.Builder builder = new nu.xom.Builder();
-			this.root = builder.build(file).getRootElement();
+			this.xmlRoot = builder.build(file).getRootElement();
 
 			// Store the position of every node as they will be referred to by
 			// most of the other elements.
 
 			this.nodePositions = new HashMap<String, Coordinate>();
 
-			nu.xom.Elements nodes = this.root.getChildElements("node");
+			nu.xom.Elements nodes = this.xmlRoot.getChildElements("node");
 
 			for(int i = 0, l = nodes.size(); i < l; ++i) {
 
@@ -94,19 +98,23 @@ public abstract class GeoSourceOSM extends GeoSource {
 
 	public void read() throws IOException {
 
-		nu.xom.Elements elements = this.root.getChildElements();
+		nu.xom.Elements xmlElements = this.xmlRoot.getChildElements();
 
-		for(int i = 0, l = elements.size(); i < l; ++i)
-			process(elements.get(i));
+		for(int i = 0, l = xmlElements.size(); i < l; ++i)
+			process(xmlElements.get(i));
 	}
 
-	private void process(nu.xom.Element element) {
+	private void process(nu.xom.Element xmlElement) {
 
-		for(Descriptor descriptor : this.descriptors)
-			if(descriptor.matches(element))
+		for(Descriptor descriptor : this.descriptors) {
+			
+			Element element = descriptor.newElement(xmlElement);
+
+			if(element != null && descriptor.matches(element))
 				this.keep(element, descriptor);
+		}
 	}
-
+	
 	protected void next() throws IOException {
 
 	}

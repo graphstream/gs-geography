@@ -35,10 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import nu.xom.Builder;
-import nu.xom.Element;
-import nu.xom.Elements;
-
 import org.graphstream.geography.BasicSpatialIndex;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.GeoSource;
@@ -50,7 +46,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 	/**
 	 * The root of the XML document.
 	 */
-	protected Element root;
+	protected nu.xom.Element root;
 
 	protected HashMap<String, Coordinate> nodePositions;
 
@@ -65,7 +61,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 
 			File file = new File(fileName);
 
-			Builder builder = new Builder();
+			nu.xom.Builder builder = new nu.xom.Builder();
 			this.root = builder.build(file).getRootElement();
 
 			// Store the position of every node as they will be referred to by
@@ -73,11 +69,11 @@ public abstract class GeoSourceOSM extends GeoSource {
 
 			this.nodePositions = new HashMap<String, Coordinate>();
 
-			Elements nodes = this.root.getChildElements("node");
+			nu.xom.Elements nodes = this.root.getChildElements("node");
 
 			for(int i = 0, l = nodes.size(); i < l; ++i) {
 
-				Element node = nodes.get(i);
+				nu.xom.Element node = nodes.get(i);
 
 				String id = node.getAttributeValue("id");
 
@@ -98,25 +94,25 @@ public abstract class GeoSourceOSM extends GeoSource {
 
 	public void read() throws IOException {
 
-		Elements elements = this.root.getChildElements();
-		
+		nu.xom.Elements elements = this.root.getChildElements();
+
 		for(int i = 0, l = elements.size(); i < l; ++i)
 			process(elements.get(i));
 	}
 
-	private void process(Element element) {
-	
+	private void process(nu.xom.Element element) {
+
 		for(Descriptor descriptor : this.descriptors)
 			if(descriptor.matches(element))
 				this.keep(element, descriptor);
 	}
-	
+
 	protected void next() throws IOException {
 
 	}
-	
+
 	public Coordinate getNodePosition(String id) {
-		
+
 		return this.nodePositions.get(id);
 	}
 

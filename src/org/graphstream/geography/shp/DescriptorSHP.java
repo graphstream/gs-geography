@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
@@ -24,6 +25,7 @@ public abstract class DescriptorSHP extends Descriptor {
 
 		// TODO: A better way to do this?
 		SimpleFeature feature = (SimpleFeature)o;
+
 		return (feature.getType().getGeometryDescriptor().getType().getBinding() == com.vividsolutions.jts.geom.Point.class);
 
 	}
@@ -33,6 +35,7 @@ public abstract class DescriptorSHP extends Descriptor {
 
 		// TODO: A better way to do this?
 		SimpleFeature feature = (SimpleFeature)o;
+
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
 
 		return ((binding == com.vividsolutions.jts.geom.MultiLineString.class) || (binding == com.vividsolutions.jts.geom.LineString.class));
@@ -54,9 +57,9 @@ public abstract class DescriptorSHP extends Descriptor {
 		Point point = new Point(id, getCategory());
 
 		// Set the position.
-		
+
 		Coordinate[] coord = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
-		
+
 		point.setPosition(coord[0].x, coord[0].y);
 
 		// Bind the position as two "x" and "y" attributes.
@@ -66,11 +69,7 @@ public abstract class DescriptorSHP extends Descriptor {
 
 		// Bind the other attributes according to the filter.
 
-		Collection<Property> properties = feature.getProperties();
-
-		for(Property property : properties)
-			if(this.filter == null || this.filter.isKept(property.getName().toString()))
-				point.addAttribute(property.getName().toString(), property.getValue());
+		bindAttributesToElement(feature, point);
 
 		return point;
 	}
@@ -91,21 +90,37 @@ public abstract class DescriptorSHP extends Descriptor {
 		Line line = new Line(id, getCategory());
 
 		// Shape the line.
-		
+
 		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
-		/* TODO
-		for(int i = 0; i < coords.length; ++i)
-			line.addPoint(coords[i].x, coords[i].y);
-		*/
+	
+		// TODO
+		//for(int i = 0; i < coords.length; ++i)
+		//	line.addPoint(coords[i].x, coords[i].y);
+
 		// Bind the attributes according to the filter.
+
+		bindAttributesToElement(feature, line);
+
+		return line;
+	}
+
+	/**
+	 * Copy the attributes of an element from its input format to the simple
+	 * geometric format. This is where a potential attribute filter is applied.
+	 * 
+	 * @param feature
+	 *            The GeoTools feature where attributes are copied from.
+	 * @param element
+	 *            The simple geometric element where filtered attributes are
+	 *            copied to.
+	 */
+	protected void bindAttributesToElement(SimpleFeature feature, Element element) {
 
 		Collection<Property> properties = feature.getProperties();
 
 		for(Property property : properties)
 			if(this.filter == null || this.filter.isKept(property.getName().toString()))
-				line.addAttribute(property.getName().toString(), property.getValue());
-		
-		return line;
+				element.addAttribute(property.getName().toString(), property.getValue());
 	}
 
 }

@@ -82,7 +82,7 @@ public abstract class GeoSourceSHP extends GeoSource {
 		// Nothing to do.
 	}
 
-	public void read() throws IOException {
+	public void read() {
 
 		while(this.iterator != null && this.iterator.hasNext())
 			process(iterator.next());
@@ -90,12 +90,21 @@ public abstract class GeoSourceSHP extends GeoSource {
 		this.iterator = null;
 	}
 
-	protected void process(SimpleFeature feature) throws IOException {
+	/**
+	 * Process a single feature coming from the data source and check if it
+	 * suits the user's needs. If it is the case, keep it for a later use,
+	 * ignore it otherwise.
+	 * 
+	 * @param feature
+	 *            The GeoTools feature to consider.
+	 * @throws IOException
+	 */
+	protected void process(SimpleFeature feature) {
 
 		for(Descriptor descriptor : this.descriptors) {
-			
+
 			Element element = descriptor.newElement(feature);
-		
+
 			if(element != null && descriptor.matches(element))
 				this.keep(element, descriptor);
 		}

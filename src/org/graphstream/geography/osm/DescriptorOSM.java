@@ -18,7 +18,11 @@ public abstract class DescriptorOSM extends Descriptor {
 	@Override
 	protected boolean isPoint(Object o) {
 
+		// Cast the object to a XOM element.
+
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// The name of XML entries representing points is "node".
 
 		return xmlElement.getLocalName().equals("node");
 	}
@@ -26,7 +30,10 @@ public abstract class DescriptorOSM extends Descriptor {
 	@Override
 	protected boolean isLine(Object o) {
 
+		// Cast the object to a XOM element.
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// The name of XML entries representing lines is "way".
 
 		return xmlElement.getLocalName().equals("way");
 	}
@@ -57,7 +64,7 @@ public abstract class DescriptorOSM extends Descriptor {
 		point.addAttribute("x", coord.x);
 		point.addAttribute("y", coord.y);
 
-		// Bind the other attributes according to the filter.
+		// Bind the attributes according to the filter.
 
 		bindAttributesToElement(xmlElement, point);
 
@@ -67,7 +74,7 @@ public abstract class DescriptorOSM extends Descriptor {
 	@Override
 	protected Line newLine(Object o) {
 
-		// Cast the object to a GeoTools SimpleFeature.
+		// Cast the object to a XOM element.
 
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
 
@@ -94,13 +101,23 @@ public abstract class DescriptorOSM extends Descriptor {
 			line.addPoint(lineNodeId, coord.x, coord.y);
 		}
 
-		// Bind the other attributes according to the filter.
+		// Bind the attributes according to the filter.
 
 		bindAttributesToElement(xmlElement, line);
 
 		return line;
 	}
 
+	/**
+	 * Copy the attributes of an element from its input format to the simple
+	 * geometric format. This is where a potential attribute filter is applied.
+	 * 
+	 * @param xmlElement
+	 *            The XOM element where attributes are copied from.
+	 * @param element
+	 *            The simple geometric element where filtered attributes are
+	 *            copied to.
+	 */
 	protected void bindAttributesToElement(nu.xom.Element xmlElement, Element element) {
 
 		nu.xom.Elements tags = xmlElement.getChildElements("tag");
@@ -116,5 +133,5 @@ public abstract class DescriptorOSM extends Descriptor {
 				element.addAttribute(key, value);
 		}
 	}
-	
+
 }

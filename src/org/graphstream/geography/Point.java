@@ -36,35 +36,36 @@ import com.vividsolutions.jts.geom.Coordinate;
 /**
  * A point.
  * 
- * TODO
+ * The goal of this class is to represent in the simpler manner possible a point
+ * element. Its main features are an ID, a position and a set of attributes
+ * copied from its original format (potentially filtered).
  * 
- * @author Antoine Dutot
  * @author Merwan Achibet
  */
 public class Point extends Element {
-	
+
 	private Coordinate position;
-	
+
 	public Point(String id, String category) {
 		super(id, category);
-		
+
 		this.position = new Coordinate();
 	}
-	
+
 	public Coordinate getPosition() {
-		
+
 		return new Coordinate(this.position);
 	}
-	
+
 	public void setPosition(double x, double y) {
-		
+
 		this.position.x = x;
 		this.position.y = y;
 	}
-	
+
 	@Override
 	public boolean at(double x, double y) {
-		
+
 		return this.position.x == x && this.position.y == y;
 	}
 

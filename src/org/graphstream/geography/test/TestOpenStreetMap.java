@@ -64,11 +64,6 @@ public class TestOpenStreetMap {
 
 		// Display the resulting graph.
 
-		graph.removeAttribute("ui.quality");
-		graph.removeAttribute("ui.antialias");
-
-		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-
 		Viewer viewer = graph.display(false);
 		viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.EXIT);
 
@@ -127,12 +122,14 @@ public class TestOpenStreetMap {
 
 		src.addSink(graph);
 
-		// Filter the features and attributes to be kept in the final graph.
+		// Filter the attributes to be kept in the final graph.
 
 		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
 
 		filterRoad.add("highway");
 
+		// Filter the elements to be kept in the final graph.
+		
 		DescriptorOSM descriptorRoad = new DescriptorOSM(src, "ROAD", filterRoad) {
 
 			@Override

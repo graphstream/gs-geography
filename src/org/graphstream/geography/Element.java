@@ -36,13 +36,14 @@ import java.util.HashMap;
 /**
  * An abstract geometric element.
  * 
- * This class and its implementations are used as intermediary representations
- * for any kind of geographical features coming from an external source. The
- * original input formats can be quite heterogeneous the features they contain
- * are library-dependent.
+ * This class serves as a base for Point, Line and Polygon. These are used as
+ * intermediary representations for any kind of geographical features coming
+ * from an external source. The original input formats can be quite
+ * heterogeneous as the data they contain is library-dependent and we don't want
+ * force the user to learn GeoTools, XOM or whatever other library.
  * 
- * An Element consists of an identifier and a list of attributes from the
- * original data source.
+ * An Element consists of an identifier and a list of attributes copied from the
+ * original format of the element (potentially filtered).
  * 
  * @author Merwan Achibet
  */
@@ -54,7 +55,8 @@ public abstract class Element {
 	protected String id;
 
 	/**
-	 * The category of the feature.
+	 * The category of the feature (attributed by the descriptor that
+	 * instantiated the object from a matching feature).
 	 */
 	protected String category;
 
@@ -77,51 +79,109 @@ public abstract class Element {
 		this.attributes = new HashMap<String, Object>();
 	}
 
+	/**
+	 * Give the ID of the element.
+	 * 
+	 * @return The ID.
+	 */
 	public String getId() {
 
 		return new String(this.id);
 	}
 
+	/**
+	 * Give the category of the element.
+	 * 
+	 * @return The category.
+	 */
 	public String getCategory() {
 
 		return new String(this.category);
 	}
 
+	/**
+	 * Give the value of the attribute which name is supplied.
+	 * 
+	 * @param key
+	 *            The key of the attribute.
+	 * @return The value of the attribute or null if it does not exist.
+	 */
 	public Object getAttribute(String key) {
 
 		return this.attributes.get(key);
 	}
 
+	/**
+	 * Check if the element possesses the supplied attribute.
+	 * 
+	 * @param key
+	 *            The key of the attribute.
+	 * @return True if the attribute is contained within the element, false
+	 *         otherwise.
+	 */
 	public boolean hasAttribute(String key) {
 
 		return this.attributes.containsKey(key);
 	}
-	
+
+	/**
+	 * Check if the element possesses the supplied attribute AND if it equals
+	 * the supplied value.
+	 * 
+	 * @param key
+	 *            The key of the attribute.
+	 * @param value
+	 *            The value that the attribute should have.
+	 * @return True if the attribute matches.
+	 */
 	public boolean hasAttribute(String key, Object value) {
 
 		return this.attributes.containsKey(key) && this.attributes.get(key).equals(value);
 	}
 
+	/**
+	 * Add an key/value pair to the element as an attribute.
+	 * 
+	 * @param key
+	 *            The key of the attribute.
+	 * @param value
+	 *            The value of the attribute.
+	 */
 	public void addAttribute(String key, Object value) {
 
 		this.attributes.put(key, value);
 	}
 
+	/**
+	 * Remove an attribute from the element.
+	 * 
+	 * @param key
+	 *            The key of the attribute to remove.
+	 */
 	public void removeAttribute(String key) {
 
 		this.attributes.remove(key);
 	}
 
+	/**
+	 * Check if the element is a point.
+	 * 
+	 * @return True if the element is a point, false otherwise.
+	 */
 	public boolean isPoint() {
-		
+
 		return this instanceof Point;
 	}
-
+	/**
+	 * Check if the element is a line.
+	 * 
+	 * @return True if the element is a line, false otherwise.
+	 */
 	public boolean isLine() {
-		
+
 		return this instanceof Line;
 	}
-	
+
 	// Abstract
 
 	/**
@@ -131,7 +191,7 @@ public abstract class Element {
 	 *            The x coordinate.
 	 * @param y
 	 *            The y coordinate.
-	 * @return True if the element is at position (x,y).
+	 * @return True if the element is at position (x,y), false otherwise.
 	 */
 	public abstract boolean at(double x, double y);
 

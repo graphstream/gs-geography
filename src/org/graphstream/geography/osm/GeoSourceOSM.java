@@ -50,13 +50,21 @@ public abstract class GeoSourceOSM extends GeoSource {
 	protected nu.xom.Element xmlRoot;
 
 	/**
-	 * TODO
+	 * A hash map associating the ID of a node with its position.
+	 * 
+	 * An OpenStreetMap XML file contains nodes which sole attributes are an ID
+	 * and a position. More complex elements such as lines and polygons contain
+	 * references (by ID) to these nodes. As a first step, each node position
+	 * must be recorded in this list for faster access to the positions of the
+	 * points forming complex features.
 	 */
 	protected HashMap<String, Coordinate> nodePositions;
 
 	public GeoSourceOSM() {
 
 		this.index = new BasicSpatialIndex();
+
+		this.nodePositions = new HashMap<String, Coordinate>();
 	}
 
 	public void begin(String fileName) throws IOException {
@@ -65,13 +73,16 @@ public abstract class GeoSourceOSM extends GeoSource {
 
 			File file = new File(fileName);
 
+			// Instantiate a XOM parser.
+
 			nu.xom.Builder builder = new nu.xom.Builder();
+
+			// Save the root of the XML document.
+
 			this.xmlRoot = builder.build(file).getRootElement();
 
 			// Store the position of every node as they will be referred to by
 			// most of the other elements.
-
-			this.nodePositions = new HashMap<String, Coordinate>();
 
 			nu.xom.Elements nodes = this.xmlRoot.getChildElements("node");
 
@@ -83,8 +94,9 @@ public abstract class GeoSourceOSM extends GeoSource {
 
 				double x = Double.parseDouble(node.getAttributeValue("lon"));
 				double y = Double.parseDouble(node.getAttributeValue("lat"));
+				Coordinate pos = new Coordinate(x, y);
 
-				this.nodePositions.put(id, new Coordinate(x, y));
+				this.nodePositions.put(id, pos);
 			}
 		}
 		catch (Exception e) {
@@ -96,7 +108,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 		// Nothing to do.
 	}
 
-	public void read() throws IOException {
+	public void read() {
 
 		nu.xom.Elements xmlElements = this.xmlRoot.getChildElements();
 
@@ -104,24 +116,29 @@ public abstract class GeoSourceOSM extends GeoSource {
 			process(xmlElements.get(i));
 	}
 
+	/**
+	 * Process a single feature coming from the data source and check if it
+	 * suits the user's needs. If it is the case, keep it for a later use,
+	 * ignore it otherwise.
+	 * 
+	 * @param xmlElement
+	 *            The XOM XML element to consider.
+	 * @throws IOException
+	 */
 	private void process(nu.xom.Element xmlElement) {
 
 		for(Descriptor descriptor : this.descriptors) {
-			
+
 			Element element = descriptor.newElement(xmlElement);
 
 			if(element != null && descriptor.matches(element))
 				this.keep(element, descriptor);
 		}
 	}
-	
-	protected void next() throws IOException {
-
-	}
 
 	public Coordinate getNodePosition(String id) {
 
-		return this.nodePositions.get(id);
+		return new Coordinate(this.nodePositions.get(id));
 	}
 
 }

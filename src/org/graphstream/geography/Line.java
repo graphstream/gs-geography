@@ -36,7 +36,10 @@ import java.util.ArrayList;
 /**
  * A Line.
  * 
- * TODO
+ * The goal of this class is to represent in the simpler manner possible a line
+ * element. Its main features are an ID, a list of positions describing its
+ * shape and a set of attributes copied from its original format (potentially
+ * filtered).
  * 
  * @author Merwan Achibet
  */
@@ -53,10 +56,10 @@ public class Line extends Element {
 	public void addPoint(String id, double x, double y) {
 
 		Point point = new Point(id, null);
-		
+
 		point.setPosition(x, y);
-		
-		this.points.add(point);	
+
+		this.points.add(point);
 	}
 
 	public ArrayList<Point> getPoints() {
@@ -64,7 +67,7 @@ public class Line extends Element {
 		// TODO copy
 		return this.points;
 	}
-	
+
 	public Point[] getEndPoints() {
 
 		return new Point[]{this.points.get(0), this.points.get(this.points.size() - 1)};

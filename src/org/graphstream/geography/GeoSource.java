@@ -11,10 +11,13 @@ import org.graphstream.stream.SourceBase;
  * It contains a list of descriptors which goal is to filter and classify the
  * features coming from data sources. This process has dual advantages. First,
  * it obviously gives better control to the user over the data as he can bind
- * matching features to custom categories (e.g. "ROAD", "LAKE", "SHOP") for a
- * later use. Secondly, geographical data files are often huge in size and
+ * matching features to custom categories (e.g. "ROAD", "LAKE", "LAND LOT") for
+ * a later use. Secondly, geographical data files are often huge in size and
  * reducing the memory usage at the first step of the import surely is a good
  * idea.
+ * 
+ * All the geographical elements that pass the descriptors matching tests are
+ * kept in memory whereas the others are simply ignored.
  * 
  * @author Merwan Achibet
  */
@@ -37,13 +40,13 @@ public abstract class GeoSource extends SourceBase {
 
 	protected GeoSource() {
 
-		this.sourceId = String.format("<DGS stream %x>", System.nanoTime());
+		this.sourceId = String.format("<GeoSource %x>", System.nanoTime());
 
 		this.descriptors = new ArrayList<Descriptor>();
 	}
 
 	/**
-	 * Add a descriptor to the description list.
+	 * Add a descriptor to filter geographical data.
 	 * 
 	 * @param descriptor
 	 */
@@ -53,16 +56,16 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * Add a given object to the GraphStream geometric representation of the
-	 * studied space.
+	 * Add a feature from the data source to the internal geometric
+	 * representation of the studied space.
 	 * 
-	 * @param o
-	 *            The object to add.
+	 * @param element
+	 *            The element to add.
 	 * @param descriptor
-	 *            The descriptor that classified the object.
+	 *            The descriptor that classified the element.
 	 */
 	public void keep(Element element, Descriptor descriptor) {
-System.out.println(1);
+
 		this.index.add(element);
 	}
 
@@ -79,21 +82,22 @@ System.out.println(1);
 	public abstract void begin(String fileName) throws IOException;
 
 	/**
-	 * Finish the file import, generally by closing input files.
+	 * Finalize the data import, generally by closing input data sources.
 	 * 
 	 * @throws IOException
 	 */
 	public abstract void end() throws IOException;
 
 	/**
-	 * Process every feature from the input data in one batch.
+	 * Process every feature from the input data.
 	 * 
 	 * @throws IOException
 	 */
-	public abstract void read() throws IOException;
+	public abstract void read();
 
 	/**
-	 * 
+	 * Convert the geographical elements accumulated during the reading step to
+	 * graph elements.
 	 */
 	public abstract void transform();
 }

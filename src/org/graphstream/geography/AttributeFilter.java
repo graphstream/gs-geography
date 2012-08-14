@@ -59,17 +59,13 @@ public class AttributeFilter {
 	protected HashSet<String> attributes = new HashSet<String>();
 
 	/**
-	 * New filter with the given mode.
-	 * 
-	 * @param keep
-	 *            If true, the set contains attributes to preserve, else it
-	 *            contains attributes to ignore.
+	 * New filter with the KEEP mode.
 	 */
-	public AttributeFilter(boolean keep) {
-
-		this.mode = keep ? Mode.KEEP : Mode.FILTER;
+	public AttributeFilter() {
+		
+		this.mode = AttributeFilter.Mode.KEEP;
 	}
-
+	
 	/**
 	 * New filter with the given mode.
 	 * 
@@ -79,6 +75,18 @@ public class AttributeFilter {
 	public AttributeFilter(Mode mode) {
 
 		this.mode = mode;
+	}
+
+	/**
+	 * New filter with the given mode.
+	 * 
+	 * @param keep
+	 *            If true, the set contains attributes to preserve, else it
+	 *            contains attributes to ignore.
+	 */
+	public AttributeFilter(boolean keep) {
+
+		this.mode = keep ? Mode.KEEP : Mode.FILTER;
 	}
 
 	// Access

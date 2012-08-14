@@ -14,7 +14,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
-public abstract class DescriptorSHP extends Descriptor {
+public class DescriptorSHP extends Descriptor {
 
 	public DescriptorSHP(GeoSource source, String category, AttributeFilter filter) {
 		super(source, category, filter);

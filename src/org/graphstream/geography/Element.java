@@ -32,6 +32,7 @@
 package org.graphstream.geography;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An abstract geometric element.
@@ -49,6 +50,10 @@ import java.util.HashMap;
  */
 public abstract class Element {
 
+	public static enum Type {
+		POINT, LINE, POLYGON
+	};
+
 	/**
 	 * The ID of the feature.
 	 */
@@ -63,7 +68,7 @@ public abstract class Element {
 	/**
 	 * A key/value mapping of attributes.
 	 */
-	protected HashMap<String, Object> attributes;
+	protected Map<String, Object> attributes;
 
 	/**
 	 * Instantiate a new element.
@@ -162,6 +167,19 @@ public abstract class Element {
 
 		this.attributes.remove(key);
 	}
+	
+	public boolean isType(Type type) {
+		
+		if(type == Type.POINT)
+			return isPoint();
+		
+		if(type == Type.LINE)
+			return isLine();
+		
+		// TODO polygon
+		
+		return false;
+	}
 
 	/**
 	 * Check if the element is a point.
@@ -172,6 +190,7 @@ public abstract class Element {
 
 		return this instanceof Point;
 	}
+
 	/**
 	 * Check if the element is a line.
 	 * 

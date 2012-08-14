@@ -9,7 +9,7 @@ import org.graphstream.geography.Point;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-public abstract class DescriptorOSM extends Descriptor {
+public class DescriptorOSM extends Descriptor {
 
 	public DescriptorOSM(GeoSource source, String category, AttributeFilter filter) {
 		super(source, category, filter);

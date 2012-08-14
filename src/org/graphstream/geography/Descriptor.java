@@ -1,5 +1,9 @@
 package org.graphstream.geography;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Definition of some elements that the user wants to keep in the output graph.
  * 
@@ -35,12 +39,27 @@ public abstract class Descriptor {
 	protected AttributeFilter filter;
 
 	/**
+	 * Optional element type (point, line, polygon) to filter down the features
+	 * matched by this descriptor.
+	 */
+	protected Element.Type type;
+
+	/**
+	 * Optional list of attribute keys that a matching feature must have.
+	 */
+	protected List<String> mustHaveKeys;
+
+	/**
+	 * Optional list of attribute keys/values that a matching feature must have.
+	 */
+	protected HashMap<String, Object> mustHaveValues;
+
+	/**
 	 * Instantiate a descriptor.
 	 * 
+	 * @param source
 	 * @param category
-	 *            The name of the category of elements described.
 	 * @param filter
-	 *            The attribute filter used on matching features.
 	 */
 	public Descriptor(GeoSource source, String category, AttributeFilter filter) {
 
@@ -57,6 +76,60 @@ public abstract class Descriptor {
 	public String getCategory() {
 
 		return new String(this.category);
+	}
+
+	public void mustBe(Element.Type type) {
+
+		this.type = type;
+	}
+
+	public void mustHave(String attributeKey) {
+
+		if(this.mustHaveKeys == null)
+			this.mustHaveKeys = new ArrayList<String>();
+
+		this.mustHaveKeys.add(attributeKey);
+	}
+
+	public void mustHave(String attributeKey, Object attributeValue) {
+
+		if(this.mustHaveValues == null)
+			this.mustHaveValues = new HashMap<String, Object>();
+
+		this.mustHaveValues.put(attributeKey, attributeValue);
+	}
+
+	/**
+	 * Check if the supplied feature conforms to the inner definition of the
+	 * descriptor.
+	 * 
+	 * @param element
+	 *            The considered element.
+	 * @return True if the element should be categorized by the descriptor,
+	 *         false otherwise.
+	 */
+	public boolean matches(Element element) {
+		
+		// Check for an optional geometric type condition.
+
+		if(this.type != null && !element.isType(this.type))
+			return false;
+		
+		// Check for optional attribute presence conditions.
+
+		if(this.mustHaveKeys != null)
+			for(String key : this.mustHaveKeys)
+				if(!element.hasAttribute(key))
+					return false;
+		
+		// Check for optional attribute value conditions.
+
+		if(this.mustHaveValues != null)
+			for(String key : this.mustHaveValues.keySet())
+				if(!element.hasAttribute(key, this.mustHaveValues.get(key)))
+					return false;
+		
+		return true;
 	}
 
 	/**
@@ -81,17 +154,6 @@ public abstract class Descriptor {
 	}
 
 	// Abstract
-
-	/**
-	 * Check if the supplied feature conforms to the inner definition of the
-	 * descriptor.
-	 * 
-	 * @param element
-	 *            The considered element.
-	 * @return True if the element should be categorized by the descriptor,
-	 *         false otherwise.
-	 */
-	public abstract boolean matches(Element element);
 
 	/**
 	 * Check if the supplied feature is a point according to the descriptor

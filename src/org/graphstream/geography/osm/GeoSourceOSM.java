@@ -39,6 +39,7 @@ import org.graphstream.geography.BasicSpatialIndex;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
+import org.graphstream.geography.Polygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -130,7 +131,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 		for(Descriptor descriptor : this.descriptors) {
 
 			Element element = descriptor.newElement(xmlElement);
-
+				
 			if(element != null && descriptor.matches(element))
 				this.keep(element, descriptor);
 		}

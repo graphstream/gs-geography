@@ -45,7 +45,7 @@ import java.util.ArrayList;
  */
 public class Line extends Element {
 
-	private ArrayList<Point> points;
+	protected ArrayList<Point> points;
 
 	public Line(String id, String category) {
 		super(id, category);

@@ -31,6 +31,8 @@
 
 package org.graphstream.geography;
 
+import com.vividsolutions.jts.geom.Coordinate;
+
 /**
  * A Line.
  * 
@@ -45,6 +47,24 @@ public class Polygon extends Line {
 
 	public Polygon(String id, String category) {
 		super(id, category);
+	}
+
+	public Coordinate getCentroid() {
+
+		Coordinate sum = new Coordinate();
+
+		for(int i = 0; i < this.points.size(); ++i) {
+
+			Coordinate p = this.points.get(i).getPosition();
+
+			sum.x += p.x;
+			sum.y += p.y;
+		}
+
+		sum.x /= this.points.size();
+		sum.y /= this.points.size();
+		
+		return sum;
 	}
 
 }

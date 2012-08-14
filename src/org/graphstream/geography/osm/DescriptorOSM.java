@@ -32,32 +32,34 @@ public class DescriptorOSM extends Descriptor {
 	protected boolean isLine(Object o) {
 
 		// Cast the object to a XOM element.
-		
+
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
 
-		// The name of XML entries representing lines is "way".
+		// The name of XML entries representing lines is "way" and it must be
+		// open (otherwise it would be a polygon).
 
-		return xmlElement.getLocalName().equals("way");
+		return xmlElement.getLocalName().equals("way") && !isClosed(xmlElement);
 	}
-	
+
 	@Override
 	protected boolean isPolygon(Object o) {
 
 		// Cast the object to a XOM element.
-		
+
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
-		
-		// A polygon is a way...
-		
-		if(!xmlElement.getLocalName().equals("way"))
-			return false;
-		
-		// ... That is closed (start and end points are the same).
-		
+
+		// A polygon is a closed way.
+
+		return xmlElement.getLocalName().equals("way") && isClosed(xmlElement);
+	}
+
+	protected boolean isClosed(nu.xom.Element xmlElement) {
+
 		nu.xom.Elements xmlNodes = xmlElement.getChildElements("nd");
+
 		String idFirst = xmlNodes.get(0).getAttributeValue("ref");
-		String idLast = xmlNodes.get(0).getAttributeValue("ref");
-		
+		String idLast = xmlNodes.get(xmlNodes.size() - 1).getAttributeValue("ref");
+
 		return idFirst.equals(idLast);
 	}
 
@@ -130,9 +132,9 @@ public class DescriptorOSM extends Descriptor {
 
 		return line;
 	}
-	
+
 	@Override
-	protected Line newPolygon(Object o) {
+	protected Polygon newPolygon(Object o) {
 
 		// Cast the object to a XOM element.
 
@@ -142,19 +144,19 @@ public class DescriptorOSM extends Descriptor {
 
 		String id = xmlElement.getAttributeValue("id");
 
-		// Instantiate a new line.
+		// Instantiate a new polygon.
 
 		Polygon polygon = new Polygon(id, getCategory());
 
-		// Shape the line.
+		// Shape the polygon.
 
-		nu.xom.Elements lineNodes = xmlElement.getChildElements("nd");
+		nu.xom.Elements polygonNodes = xmlElement.getChildElements("nd");
 
-		for(int i = 0, l = lineNodes.size(); i < l; ++i) {
+		for(int i = 0, l = polygonNodes.size() - 1; i < l; ++i) {
 
-			nu.xom.Element lineNode = lineNodes.get(i);
+			nu.xom.Element polygonNode = polygonNodes.get(i);
 
-			String lineNodeId = lineNode.getAttributeValue("ref");
+			String lineNodeId = polygonNode.getAttributeValue("ref");
 
 			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(lineNodeId);
 

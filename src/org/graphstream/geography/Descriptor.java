@@ -109,19 +109,20 @@ public abstract class Descriptor {
 	 *         false otherwise.
 	 */
 	public boolean matches(Element element) {
+		System.out.println(element);
 		
 		// Check for an optional geometric type condition.
 
 		if(this.type != null && !element.isType(this.type))
 			return false;
-		
+
 		// Check for optional attribute presence conditions.
 
 		if(this.mustHaveKeys != null)
 			for(String key : this.mustHaveKeys)
 				if(!element.hasAttribute(key))
 					return false;
-		
+
 		// Check for optional attribute value conditions.
 
 		if(this.mustHaveValues != null)
@@ -141,6 +142,7 @@ public abstract class Descriptor {
 	 */
 	public Element newElement(Object o) {
 
+		System.out.println(o+" "+isPoint(o)+" "+isLine(o)+" "+isPolygon(o));
 		if(isPoint(o))
 			return newPoint(o);
 		else if(isLine(o))

@@ -168,6 +168,27 @@ public abstract class Element {
 		this.attributes.remove(key);
 	}
 
+	public String toString() {
+		
+		String s = new String();
+
+		if(isPoint())
+			s += "Point ";
+		else if(isLine())
+			s += "Line ";
+		else if(isPolygon())
+			s += "Polygon ";
+		
+		s += "[" + this.id + "] ";
+
+		s += "{ ";
+		for(String key : this.attributes.keySet())
+			s += key + ":" + this.attributes.get(key) + " ";
+		s+= "}";
+		
+		return s;
+	}
+	
 	public boolean isType(Type type) {
 
 		if(type == Type.POINT)

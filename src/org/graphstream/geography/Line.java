@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2011 
+ * Copyright 2006 - 2012 
  *     Julien Baudry	<julien.baudry@graphstream-project.org>
  *     Antoine Dutot	<antoine.dutot@graphstream-project.org>
  *     Yoann Pigné		<yoann.pigne@graphstream-project.org>
@@ -64,8 +64,7 @@ public class Line extends Element {
 
 	public ArrayList<Point> getPoints() {
 
-		// TODO copy
-		return this.points;
+		return new ArrayList<Point>(this.points);
 	}
 
 	public Point[] getEndPoints() {

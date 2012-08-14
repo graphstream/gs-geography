@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2011 
+ * Copyright 2006 - 2012 
  *     Julien Baudry	<julien.baudry@graphstream-project.org>
  *     Antoine Dutot	<antoine.dutot@graphstream-project.org>
  *     Yoann Pigné		<yoann.pigne@graphstream-project.org>
@@ -41,10 +41,10 @@ import java.util.Map;
  * intermediary representations for any kind of geographical features coming
  * from an external source. The original input formats can be quite
  * heterogeneous as the data they contain is library-dependent and we don't want
- * force the user to learn GeoTools, XOM or whatever other library.
+ * to force the user to learn GeoTools, XOM or whatever other library.
  * 
  * An Element consists of an identifier and a list of attributes copied from the
- * original format of the element (potentially filtered).
+ * original format of the feature (potentially filtered).
  * 
  * @author Merwan Achibet
  */
@@ -117,6 +117,16 @@ public abstract class Element {
 	}
 
 	/**
+	 * Give all of the element attributes.
+	 * 
+	 * @return The attributes.
+	 */
+	public HashMap<String, Object> getAttributes() {
+
+		return new HashMap<String, Object>(this.attributes);
+	}
+
+	/**
 	 * Check if the element possesses the supplied attribute.
 	 * 
 	 * @param key
@@ -169,7 +179,7 @@ public abstract class Element {
 	}
 
 	public String toString() {
-		
+
 		String s = new String();
 
 		if(isPoint())
@@ -178,17 +188,17 @@ public abstract class Element {
 			s += "Line ";
 		else if(isPolygon())
 			s += "Polygon ";
-		
+
 		s += "[" + this.id + "] ";
 
 		s += "{ ";
 		for(String key : this.attributes.keySet())
 			s += key + ":" + this.attributes.get(key) + " ";
-		s+= "}";
-		
+		s += "}";
+
 		return s;
 	}
-	
+
 	public boolean isType(Type type) {
 
 		if(type == Type.POINT)

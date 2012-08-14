@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2011 
+ * Copyright 2006 - 2012 
  *     Julien Baudry	<julien.baudry@graphstream-project.org>
  *     Antoine Dutot	<antoine.dutot@graphstream-project.org>
  *     Yoann Pigné		<yoann.pigne@graphstream-project.org>
@@ -34,12 +34,12 @@ package org.graphstream.geography;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * A Line.
+ * A Polygon.
  * 
- * The goal of this class is to represent in the simpler manner possible a line
- * element. Its main features are an ID, a list of positions describing its
- * shape and a set of attributes copied from its original format (potentially
- * filtered).
+ * The goal of this class is to represent in the simpler manner possible a
+ * polygon element. Its main features are an ID, a list of positions describing
+ * its shape and a set of attributes copied from its original format
+ * (potentially filtered).
  * 
  * @author Merwan Achibet
  */
@@ -63,7 +63,7 @@ public class Polygon extends Line {
 
 		sum.x /= this.points.size();
 		sum.y /= this.points.size();
-		
+
 		return sum;
 	}
 

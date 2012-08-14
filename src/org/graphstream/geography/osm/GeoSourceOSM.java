@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2011 
+ * Copyright 2006 - 2012 
  *     Julien Baudry	<julien.baudry@graphstream-project.org>
  *     Antoine Dutot	<antoine.dutot@graphstream-project.org>
  *     Yoann Pigné		<yoann.pigne@graphstream-project.org>
@@ -39,10 +39,18 @@ import org.graphstream.geography.BasicSpatialIndex;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
-import org.graphstream.geography.Polygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
+/**
+ * An abstract OpenStreetMap source.
+ * 
+ * It has the capability to read OpenStreetMap XML files but the accumulated
+ * data is not exploited. This work is reserved to more specific implementations
+ * of this class.
+ * 
+ * @author Merwan Achibet
+ */
 public abstract class GeoSourceOSM extends GeoSource {
 
 	/**
@@ -116,7 +124,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 	public void end() throws IOException {
 		// Nothing to do.
 	}
-	
+
 	/**
 	 * Process a single feature coming from the data source and check if it
 	 * suits the user's needs. If it is the case, keep it for a later use,
@@ -131,7 +139,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 		for(Descriptor descriptor : this.descriptors) {
 
 			Element element = descriptor.newElement(xmlElement);
-				
+
 			if(element != null && descriptor.matches(element))
 				this.keep(element, descriptor);
 		}

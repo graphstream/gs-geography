@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2011 
+ * Copyright 2006 - 2012 
  *     Julien Baudry	<julien.baudry@graphstream-project.org>
  *     Antoine Dutot	<antoine.dutot@graphstream-project.org>
  *     Yoann Pigné		<yoann.pigne@graphstream-project.org>
@@ -44,6 +44,15 @@ import org.graphstream.geography.GeoSource;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+/**
+ * An abstract shapefile source.
+ * 
+ * It has the capability to read shapefiles but the accumulated data is not
+ * exploited. This work is reserved to more specific implementations of this
+ * class.
+ * 
+ * @author Merwan Achibet
+ */
 public abstract class GeoSourceSHP extends GeoSource {
 
 	/**

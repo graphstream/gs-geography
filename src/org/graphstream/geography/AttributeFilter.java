@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2011 
+ * Copyright 2006 - 2012 
  *     Julien Baudry	<julien.baudry@graphstream-project.org>
  *     Antoine Dutot	<antoine.dutot@graphstream-project.org>
  *     Yoann Pigné		<yoann.pigne@graphstream-project.org>
@@ -34,8 +34,7 @@ package org.graphstream.geography;
 import java.util.HashSet;
 
 /**
- * Specify which attributes are kept or filtered when importing or exporting
- * data.
+ * Specify which attributes are kept or filtered when importing data.
  * 
  * @author Antoine Dutot
  */
@@ -62,10 +61,10 @@ public class AttributeFilter {
 	 * New filter with the KEEP mode.
 	 */
 	public AttributeFilter() {
-		
+
 		this.mode = AttributeFilter.Mode.KEEP;
 	}
-	
+
 	/**
 	 * New filter with the given mode.
 	 * 
@@ -128,7 +127,7 @@ public class AttributeFilter {
 	 * @return False if the set of attributes define what must be ignored.
 	 */
 	public boolean isKeepMode() {
-		
+
 		return mode == Mode.KEEP;
 	}
 
@@ -138,7 +137,7 @@ public class AttributeFilter {
 	 * @return False if the set of attributes define what must be kept.
 	 */
 	public boolean isFilterMode() {
-		
+
 		return mode == Mode.FILTER;
 	}
 
@@ -151,7 +150,7 @@ public class AttributeFilter {
 	 *            The attribute to add to the set.
 	 */
 	public void add(String attribute) {
-		
+
 		attributes.add(attribute);
 	}
 
@@ -162,8 +161,8 @@ public class AttributeFilter {
 	 *            The attribute to remove from the set.
 	 */
 	public void remove(String attribute) {
-		
+
 		attributes.remove(attribute);
 	}
-	
+
 }

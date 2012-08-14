@@ -1,3 +1,34 @@
+/*
+ * Copyright 2006 - 2012 
+ *     Julien Baudry	<julien.baudry@graphstream-project.org>
+ *     Antoine Dutot	<antoine.dutot@graphstream-project.org>
+ *     Yoann Pigné		<yoann.pigne@graphstream-project.org>
+ *     Guilhelm Savin	<guilhelm.savin@graphstream-project.org>
+ * 
+ * This file is part of GraphStream <http://graphstream-project.org>.
+ * 
+ * GraphStream is a library whose purpose is to handle static or dynamic
+ * graph, create them from scratch, file or any source and display them.
+ * 
+ * This program is free software distributed under the terms of two licenses, the
+ * CeCILL-C license that fits European law, and the GNU Lesser General Public
+ * License. You can  use, modify and/ or redistribute the software under the terms
+ * of the CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
+ * URL <http://www.cecill.info> or under the terms of the GNU LGPL as published by
+ * the Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
+ */
+
 package org.graphstream.geography;
 
 import java.util.ArrayList;
@@ -5,19 +36,20 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Definition of some elements that the user wants to keep in the output graph.
+ * Definition of some elements that the user wants to keep in/out of the output
+ * graph.
  * 
- * The heart of a descriptor is its matching method. If an object matches its
- * inner definition then it is kept for the next step of the import. The
- * attributes of the element are also filtered using the attribute filter
- * provided via the constructor.
+ * The heart of a descriptor is its matching method. If an object matches the
+ * inner definition of a descriptor then it is kept for the next step of the
+ * import. The attributes of the element are also filtered using the attribute
+ * filter provided via the constructor.
  * 
- * Descriptors are in charge of converting the kept elements into GraphStream
- * geometric elements (simple Points, Lines and Polygons with attributes). As
- * such, the implementation of a descriptor needs to be capable of determining
- * the type of a feature (point, line or polygon) and to instantiate new Points,
- * Lines and Polygons from the input format of the considered objects by means
- * of the isXXX() and newXXX() methods.
+ * Descriptors are in charge of converting input geographical features into
+ * GraphStream geometric elements (simple Points, Lines and Polygons with
+ * attributes). As such, the implementation of a descriptor needs to be capable
+ * of determining the type of a feature (point, line or polygon) and to
+ * instantiate new Points, Lines and Polygons from the input format of the
+ * considered objects by means of the isXXX() and newXXX() methods.
  * 
  * @author Merwan Achibet
  */
@@ -109,8 +141,7 @@ public abstract class Descriptor {
 	 *         false otherwise.
 	 */
 	public boolean matches(Element element) {
-		System.out.println(element);
-		
+
 		// Check for an optional geometric type condition.
 
 		if(this.type != null && !element.isType(this.type))
@@ -129,7 +160,7 @@ public abstract class Descriptor {
 			for(String key : this.mustHaveValues.keySet())
 				if(!element.hasAttribute(key, this.mustHaveValues.get(key)))
 					return false;
-		
+
 		return true;
 	}
 
@@ -141,15 +172,14 @@ public abstract class Descriptor {
 	 * @return A simple geometric element.
 	 */
 	public Element newElement(Object o) {
-
-		System.out.println(o+" "+isPoint(o)+" "+isLine(o)+" "+isPolygon(o));
+		;
 		if(isPoint(o))
 			return newPoint(o);
 		else if(isLine(o))
 			return newLine(o);
 		else if(isPolygon(o))
 			return newPolygon(o);
-		
+
 		// XXX What happens in other cases?
 
 		return null;

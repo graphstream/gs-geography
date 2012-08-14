@@ -167,17 +167,18 @@ public abstract class Element {
 
 		this.attributes.remove(key);
 	}
-	
+
 	public boolean isType(Type type) {
-		
+
 		if(type == Type.POINT)
 			return isPoint();
-		
+
 		if(type == Type.LINE)
 			return isLine();
-		
-		// TODO polygon
-		
+
+		if(type == Type.POLYGON)
+			return isPolygon();
+
 		return false;
 	}
 
@@ -199,6 +200,16 @@ public abstract class Element {
 	public boolean isLine() {
 
 		return this instanceof Line;
+	}
+
+	/**
+	 * Check if the element is a polygon.
+	 * 
+	 * @return True if the element is a polygon, false otherwise.
+	 */
+	public boolean isPolygon() {
+
+		return this instanceof Polygon;
 	}
 
 	// Abstract

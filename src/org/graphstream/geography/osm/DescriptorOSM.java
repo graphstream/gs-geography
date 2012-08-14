@@ -6,6 +6,7 @@ import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
+import org.graphstream.geography.Polygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -31,11 +32,33 @@ public class DescriptorOSM extends Descriptor {
 	protected boolean isLine(Object o) {
 
 		// Cast the object to a XOM element.
+		
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
 
 		// The name of XML entries representing lines is "way".
 
 		return xmlElement.getLocalName().equals("way");
+	}
+	
+	@Override
+	protected boolean isPolygon(Object o) {
+
+		// Cast the object to a XOM element.
+		
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+		
+		// A polygon is a way...
+		
+		if(!xmlElement.getLocalName().equals("way"))
+			return false;
+		
+		// ... That is closed (start and end points are the same).
+		
+		nu.xom.Elements xmlNodes = xmlElement.getChildElements("nd");
+		String idFirst = xmlNodes.get(0).getAttributeValue("ref");
+		String idLast = xmlNodes.get(0).getAttributeValue("ref");
+		
+		return idFirst.equals(idLast);
 	}
 
 	@Override
@@ -106,6 +129,43 @@ public class DescriptorOSM extends Descriptor {
 		bindAttributesToElement(xmlElement, line);
 
 		return line;
+	}
+	
+	@Override
+	protected Line newPolygon(Object o) {
+
+		// Cast the object to a XOM element.
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// Retrieve its ID.
+
+		String id = xmlElement.getAttributeValue("id");
+
+		// Instantiate a new line.
+
+		Polygon polygon = new Polygon(id, getCategory());
+
+		// Shape the line.
+
+		nu.xom.Elements lineNodes = xmlElement.getChildElements("nd");
+
+		for(int i = 0, l = lineNodes.size(); i < l; ++i) {
+
+			nu.xom.Element lineNode = lineNodes.get(i);
+
+			String lineNodeId = lineNode.getAttributeValue("ref");
+
+			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(lineNodeId);
+
+			polygon.addPoint(lineNodeId, coord.x, coord.y);
+		}
+
+		// Bind the attributes according to the filter.
+
+		bindAttributesToElement(xmlElement, polygon);
+
+		return polygon;
 	}
 
 	/**

@@ -145,10 +145,10 @@ public abstract class Descriptor {
 			return newPoint(o);
 		else if(isLine(o))
 			return newLine(o);
-
-		// TODO polygons
-
-		// TODO What happens in other cases?
+		else if(isPolygon(o))
+			return newPolygon(o);
+		
+		// XXX What happens in other cases?
 
 		return null;
 	}
@@ -194,5 +194,25 @@ public abstract class Descriptor {
 	 * @return A graphStream geometric element.
 	 */
 	protected abstract Line newLine(Object o);
+
+	/**
+	 * Check if the supplied feature is a polygon according to the descriptor
+	 * rules.
+	 * 
+	 * @param o
+	 *            The considered feature.
+	 * @return True if the feature is a polygon, false otherwise (point or
+	 *         polygon).
+	 */
+	protected abstract boolean isPolygon(Object o);
+
+	/**
+	 * Give a GraphStream geometric element based on the supplied feature.
+	 * 
+	 * @param o
+	 *            The object to convert.
+	 * @return A graphStream geometric element.
+	 */
+	protected abstract Line newPolygon(Object o);
 
 }

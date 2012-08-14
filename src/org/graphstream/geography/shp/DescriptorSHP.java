@@ -8,12 +8,18 @@ import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
+import org.graphstream.geography.Polygon;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * A descriptor for features coming from shapefiles.
+ * 
+ * @author Merwan Achibet
+ */
 public class DescriptorSHP extends Descriptor {
 
 	public DescriptorSHP(GeoSource source, String category, AttributeFilter filter) {
@@ -26,7 +32,7 @@ public class DescriptorSHP extends Descriptor {
 		// TODO: A better way to do this?
 		SimpleFeature feature = (SimpleFeature)o;
 
-		return (feature.getType().getGeometryDescriptor().getType().getBinding() == com.vividsolutions.jts.geom.Point.class);
+		return feature.getType().getGeometryDescriptor().getType().getBinding() == com.vividsolutions.jts.geom.Point.class;
 
 	}
 
@@ -38,7 +44,18 @@ public class DescriptorSHP extends Descriptor {
 
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
 
-		return ((binding == com.vividsolutions.jts.geom.MultiLineString.class) || (binding == com.vividsolutions.jts.geom.LineString.class));
+		return binding == com.vividsolutions.jts.geom.MultiLineString.class || binding == com.vividsolutions.jts.geom.LineString.class;
+	}
+
+	@Override
+	protected boolean isPolygon(Object o) {
+
+		// TODO: A better way to do this?
+		SimpleFeature feature = (SimpleFeature)o;
+
+		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
+
+		return binding == com.vividsolutions.jts.geom.Polygon.class;
 	}
 
 	@Override
@@ -92,16 +109,46 @@ public class DescriptorSHP extends Descriptor {
 		// Shape the line.
 
 		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
-	
+
 		// TODO
-		//for(int i = 0; i < coords.length; ++i)
-		//	line.addPoint(coords[i].x, coords[i].y);
+		// for(int i = 0; i < coords.length; ++i)
+		// line.addPoint(coords[i].x, coords[i].y);
 
 		// Bind the attributes according to the filter.
 
 		bindAttributesToElement(feature, line);
 
 		return line;
+	}
+
+	@Override
+	protected Line newPolygon(Object o) {
+
+		// Cast the object to a GeoTools SimpleFeature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Retrieve its ID.
+
+		String id = feature.getID();
+
+		// Instantiate a new line.
+
+		Polygon polygon = new Polygon(id, getCategory());
+
+		// Shape the line.
+
+		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
+
+		// TODO
+		// for(int i = 0; i < coords.length; ++i)
+		// line.addPoint(coords[i].x, coords[i].y);
+
+		// Bind the attributes according to the filter.
+
+		bindAttributesToElement(feature, polygon);
+
+		return polygon;
 	}
 
 	/**

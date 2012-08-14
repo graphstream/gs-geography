@@ -40,7 +40,7 @@ import org.graphstream.geography.Point;
 import org.graphstream.geography.shp.DescriptorSHP;
 import org.graphstream.geography.shp.GeoSourceSHP;
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.Viewer;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -52,24 +52,19 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author Merwan Achibet
  */
 
-public class TestNavteq {
-
-	public static void main(String args[]) {
-
-		new TestNavteq();
-	}
+public class Test_Navteq {
 
 	protected static final String style = "node { size: 2px; text-visibility-mode: hidden; } edge { shape:polyline; fill-color: #808080; }";
 
-	public TestNavteq() {
+	public static void main(String args[]) {
 
-		Graph graph = new MultiGraph("navteq");
+		Graph graph = new SingleGraph("navteq");
 
 		// Display the resulting graph.
 
 		graph.removeAttribute("ui.quality");
 		graph.removeAttribute("ui.antialias");
-		graph.addAttribute("stylesheet", TestNavteq.style);
+		graph.addAttribute("stylesheet", Test_Navteq.style);
 
 		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 

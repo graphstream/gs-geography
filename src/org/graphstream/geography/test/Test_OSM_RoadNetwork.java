@@ -40,27 +40,22 @@ import org.graphstream.geography.Point;
 import org.graphstream.geography.osm.DescriptorOSM;
 import org.graphstream.geography.osm.GeoSourceOSM;
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.Viewer;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-/**
+/** 
  * Test the OpenStreetMap import.
  * 
  * @author Merwan Achibet
  */
 
-public class TestOpenStreetMap {
+public class Test_OSM_RoadNetwork {
 
 	public static void main(String args[]) {
 
-		new TestOpenStreetMap();
-	}
-
-	public TestOpenStreetMap() {
-
-		Graph graph = new MultiGraph("osm");
+		Graph graph = new SingleGraph("osm");
 
 		// Display the resulting graph.
 

@@ -151,15 +151,7 @@ public class Test_Navteq {
 
 		// Read the Z level data.
 
-		try {
-
-			src.begin("/res/Zlevels.shp");
-			src.read();
-			src.end();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		src.read("/res/Zlevels.shp");
 
 		// Filter the features and attributes to be kept in the final graph.
 
@@ -181,18 +173,7 @@ public class Test_Navteq {
 		src.addDescriptor(descriptorRoad);
 
 		// Read the streets data.
-
-		try {
-
-			src.begin("/res/Streets.shp");
-			src.read();
-			src.end();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		src.transform();
+		src.read("/res/Streets.shp");
 
 		System.out.printf("OK%n");
 		System.out.println(graph.getNodeCount());

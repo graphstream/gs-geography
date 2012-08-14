@@ -139,17 +139,7 @@ public class Test_OSM {
 
 		// Read the data.
 
-		try {
-
-			src.begin("/home/merwan/map.osm");
-			src.read();
-			src.end();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		src.transform();
+		src.read("/home/merwan/map.osm");
 
 		System.out.println("OK " + graph.getNodeCount());
 	}

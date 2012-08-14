@@ -78,16 +78,16 @@ public abstract class GeoSourceSHP extends GeoSource {
 		}
 	}
 
-	public void end() throws IOException {
-		// Nothing to do.
-	}
-
-	public void read() {
+	public void traverse() {
 
 		while(this.iterator != null && this.iterator.hasNext())
 			process(iterator.next());
 
 		this.iterator = null;
+	}
+
+	public void end() throws IOException {
+		// Nothing to do.
 	}
 
 	/**

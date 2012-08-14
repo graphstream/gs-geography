@@ -1,7 +1,5 @@
 package org.graphstream.geography.test;
 
-import java.io.IOException;
-
 import org.graphstream.geography.osm.GeoSourceOSM;
 import org.graphstream.geography.osm.GeoSourceOSM_RoadNetwork;
 import org.graphstream.graph.Graph;
@@ -17,16 +15,7 @@ public class Test_OSM_RoadNetwork {
 		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork();
 		src.addSink(graph);
 
-		try {
-			src.begin("/home/merwan/map.osm");
-			src.read();
-			src.end();
-
-			src.transform();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		src.read("/home/merwan/map.osm");
 	}
 
 }

@@ -104,11 +104,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 		}
 	}
 
-	public void end() throws IOException {
-		// Nothing to do.
-	}
-
-	public void read() {
+	public void traverse() {
 
 		nu.xom.Elements xmlElements = this.xmlRoot.getChildElements();
 
@@ -116,6 +112,10 @@ public abstract class GeoSourceOSM extends GeoSource {
 			process(xmlElements.get(i));
 	}
 
+	public void end() throws IOException {
+		// Nothing to do.
+	}
+	
 	/**
 	 * Process a single feature coming from the data source and check if it
 	 * suits the user's needs. If it is the case, keep it for a later use,

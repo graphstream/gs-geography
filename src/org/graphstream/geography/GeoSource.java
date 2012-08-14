@@ -69,8 +69,30 @@ public abstract class GeoSource extends SourceBase {
 		this.index.add(element);
 	}
 
-	// Abstract
+	/**
+	 * Read a data source.
+	 * 
+	 * @throws IOException
+	 */
+	public void read(String fileName) {
+		
+		try {
+			
+			begin(fileName);
+			
+			traverse();
+			
+			end();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 
+		transform();
+	}
+	
+	// Abstract
+	
 	/**
 	 * Prepare the import, generally by opening the source file or reading it in
 	 * one batch and caching the data.
@@ -79,21 +101,19 @@ public abstract class GeoSource extends SourceBase {
 	 *            The name of the file to import data from.
 	 * @throws IOException
 	 */
-	public abstract void begin(String fileName) throws IOException;
+	protected abstract void begin(String fileName) throws IOException;
 
+	/**
+	 * 
+	 */
+	protected abstract void traverse();
+	
 	/**
 	 * Finalize the data import, generally by closing input data sources.
 	 * 
 	 * @throws IOException
 	 */
-	public abstract void end() throws IOException;
-
-	/**
-	 * Process every feature from the input data.
-	 * 
-	 * @throws IOException
-	 */
-	public abstract void read();
+	protected abstract void end() throws IOException;
 
 	/**
 	 * Convert the geographical elements accumulated during the reading step to

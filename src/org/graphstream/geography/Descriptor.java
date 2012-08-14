@@ -164,6 +164,35 @@ public abstract class Descriptor {
 		return true;
 	}
 
+	public String toString() {
+
+		String s = new String();
+
+		s += super.toString() + " ";
+
+		if(this.mustHaveKeys != null) {
+
+			s += "must have keys { ";
+			
+			for(String key : this.mustHaveKeys)
+				s += key + " ";
+			
+			s += "} ";
+		}
+
+		if(this.mustHaveValues != null) {
+		
+			s += "must have key/value pairs { ";
+			
+			for(String key : this.mustHaveValues.keySet())
+				s += key + "/" + this.mustHaveValues.get(key) + " ";
+			
+			s += "}";
+		}
+
+		return s;
+	}
+
 	/**
 	 * Give the considered feature in the GraphStream geometric format.
 	 * 

@@ -165,4 +165,23 @@ public class AttributeFilter {
 		attributes.remove(attribute);
 	}
 
+	public String toString() {
+
+		String s = new String();
+
+		s += super.toString() + " ";
+
+		if(this.attributes != null) {
+
+			s += "will " + (this.mode == Mode.KEEP ? "keep" : "filter") + " { ";
+			
+			for(String key : this.attributes)
+				s += key + " ";
+			
+			s += "}";
+		}
+
+		return s;
+	}
+
 }

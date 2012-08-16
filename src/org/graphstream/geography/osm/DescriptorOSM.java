@@ -189,7 +189,7 @@ public class DescriptorOSM extends Descriptor {
 			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(firstNodeId);
 			line.addPoint(coord.x, coord.y);
 			
-			nu.xom.Element lastNode = lineNodes.get(0);
+			nu.xom.Element lastNode = lineNodes.get(lineNodes.size()-1);
 			String lastNodeId = lastNode.getAttributeValue("ref");
 			coord = ((GeoSourceOSM)this.source).getNodePosition(lastNodeId);
 			line.addPoint(coord.x, coord.y);

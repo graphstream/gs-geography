@@ -87,6 +87,11 @@ public abstract class Descriptor {
 	protected HashMap<String, Object> mustHaveValues;
 
 	/**
+	 * Should matching elements be stored in the spatial index?
+	 */
+	protected boolean toSpatialIndex;
+	
+	/**
 	 * Should we consider the full line or only its end points?
 	 */
 	protected boolean onlyLineEndPointsConsidered;
@@ -104,9 +109,20 @@ public abstract class Descriptor {
 		this.category = category;
 		this.filter = filter;
 		
+		this.toSpatialIndex = false;
 		this.onlyLineEndPointsConsidered = false;
 	}
 
+	public void sendElementsToSpatialIndex() {
+		
+		this.toSpatialIndex = true;
+	}
+	
+	public boolean areElementsSentToSpatialIndex() {
+		
+		return this.toSpatialIndex;
+	}
+	
 	public void onlyConsiderLineEndPoints() {
 	
 		this.onlyLineEndPointsConsidered = true;

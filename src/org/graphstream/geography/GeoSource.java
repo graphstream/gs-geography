@@ -104,31 +104,6 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * Open the spatial index.
-	 * 
-	 * Every element matched after this call will be stored in the spatial index
-	 * to later query them faster.
-	 */
-	public void openSpatialIndex() {
-
-		this.useSpatialIndex = true;
-
-		if(this.index == null)
-			this.index = new SpatialIndex();
-	}
-
-	/**
-	 * Close the spatial index.
-	 * 
-	 * Every element matched after this call will NOT be stored in the spatial
-	 * index.
-	 */
-	public void closeSpatialIndex() {
-
-		this.useSpatialIndex = false;
-	}
-
-	/**
 	 * Process a single feature coming from the data source and check if it
 	 * suits the user's needs. If it is the case, keep it for a later use,
 	 * ignore it otherwise.
@@ -157,7 +132,7 @@ public abstract class GeoSource extends SourceBase {
 
 		this.elements.add(element);
 
-		if(this.useSpatialIndex)
+		if(descriptor.areElementsSentToSpatialIndex())
 			this.index.add(element);
 	}
 

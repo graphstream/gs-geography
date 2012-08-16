@@ -65,15 +65,14 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		DescriptorSHP descriptorZ = new DescriptorSHP(this, "Z", filterZ);
 
+		descriptorZ.sendElementsToSpatialIndex();
 		descriptorZ.mustHave("INTRSECT", "Y");
 
 		addDescriptor(descriptorZ);
 
 		// Read the Z level file and store the data in the spatial index.
 
-		openSpatialIndex();
 		read(this.zFileName);
-		closeSpatialIndex();
 
 		// Remove the descriptor.
 

@@ -87,6 +87,11 @@ public abstract class Descriptor {
 	protected HashMap<String, Object> mustHaveValues;
 
 	/**
+	 * Should we consider the full line or only its end points?
+	 */
+	protected boolean onlyLineEndPointsConsidered;
+	
+	/**
 	 * Instantiate a descriptor.
 	 * 
 	 * @param source
@@ -98,8 +103,15 @@ public abstract class Descriptor {
 		this.source = source;
 		this.category = category;
 		this.filter = filter;
+		
+		this.onlyLineEndPointsConsidered = false;
 	}
 
+	public void onlyConsiderLineEndPoints() {
+	
+		this.onlyLineEndPointsConsidered = true;
+	}
+	
 	/**
 	 * Give the name of the category of elements described by the descriptor.
 	 * 

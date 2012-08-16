@@ -61,7 +61,7 @@ public class DescriptorSHP extends Descriptor {
 	protected boolean isPoint(Object o) {
 
 		// TODO: A better way to do this?
-		
+
 		SimpleFeature feature = (SimpleFeature)o;
 
 		return feature.getType().getGeometryDescriptor().getType().getBinding() == com.vividsolutions.jts.geom.Point.class;
@@ -72,7 +72,7 @@ public class DescriptorSHP extends Descriptor {
 	protected boolean isLine(Object o) {
 
 		// TODO: A better way to do this?
-		
+
 		SimpleFeature feature = (SimpleFeature)o;
 
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
@@ -84,7 +84,7 @@ public class DescriptorSHP extends Descriptor {
 	protected boolean isPolygon(Object o) {
 
 		// TODO: A better way to do this?
-		
+
 		SimpleFeature feature = (SimpleFeature)o;
 
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
@@ -94,32 +94,32 @@ public class DescriptorSHP extends Descriptor {
 
 	@Override
 	protected boolean hasKey(String key, Object o) {
-		
+
 		SimpleFeature feature = (SimpleFeature)o;
-		
+
 		Collection<Property> properties = feature.getProperties();
 
 		for(Property property : properties)
 			if(property.getName().toString().equals(key))
 				return true;
-		
+
 		return false;
 	}
-	
+
 	@Override
 	protected boolean hasKeyValue(String key, Object value, Object o) {
-		
+
 		SimpleFeature feature = (SimpleFeature)o;
-		
+
 		Collection<Property> properties = feature.getProperties();
 
 		for(Property property : properties)
 			if(property.getName().toString().equals(key) && property.getValue().equals(value))
 				return true;
-		
+
 		return false;
 	}
-	
+
 	@Override
 	protected Point newPoint(Object o) {
 
@@ -167,8 +167,14 @@ public class DescriptorSHP extends Descriptor {
 
 		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
 
-		for(int i = 0; i < coords.length; ++i)
-			line.addPoint(coords[i].x, coords[i].y);
+		// TODO same for DescriptorOSM
+		if(this.onlyLineEndPointsConsidered) {
+			line.addPoint(coords[0].x, coords[0].y);
+			line.addPoint(coords[coords.length-1].x, coords[coords.length-1].y);
+		}
+		else
+			for(int i = 0; i < coords.length; ++i)
+				line.addPoint(coords[i].x, coords[i].y);
 
 		// Bind the attributes according to the filter.
 

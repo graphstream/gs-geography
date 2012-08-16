@@ -101,40 +101,40 @@ public class DescriptorOSM extends Descriptor {
 
 	@Override
 	protected boolean hasKey(String key, Object o) {
-		
+
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
-		
+
 		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
-		
+
 		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
-			
+
 			nu.xom.Element xmlTag = xmlTags.get(i);
-			
+
 			if(xmlTag.getAttribute("k").getValue().equals(key))
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	protected boolean hasKeyValue(String key, Object value, Object o) {
 
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
-		
+
 		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
-		
+
 		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
-			
+
 			nu.xom.Element xmlTag = xmlTags.get(i);
-			
+
 			if(xmlTag.getAttribute("k").getValue().equals(key) && xmlTag.getAttribute("v").getValue().equals(value))
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	protected Point newPoint(Object o) {
 
@@ -182,16 +182,26 @@ public class DescriptorOSM extends Descriptor {
 
 		nu.xom.Elements lineNodes = xmlElement.getChildElements("nd");
 
-		for(int i = 0, l = lineNodes.size(); i < l; ++i) {
+		if(this.onlyLineEndPointsConsidered) {
 
-			nu.xom.Element lineNode = lineNodes.get(i);
-
-			String lineNodeId = lineNode.getAttributeValue("ref");
-
-			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(lineNodeId);
-
+			nu.xom.Element firstNode = lineNodes.get(0);
+			String firstNodeId = firstNode.getAttributeValue("ref");
+			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(firstNodeId);
+			line.addPoint(coord.x, coord.y);
+			
+			nu.xom.Element lastNode = lineNodes.get(0);
+			String lastNodeId = lastNode.getAttributeValue("ref");
+			coord = ((GeoSourceOSM)this.source).getNodePosition(lastNodeId);
 			line.addPoint(coord.x, coord.y);
 		}
+		else
+			for(int i = 0, l = lineNodes.size(); i < l; ++i) {
+
+				nu.xom.Element lineNode = lineNodes.get(i);
+				String lineNodeId = lineNode.getAttributeValue("ref");
+				Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(lineNodeId);
+				line.addPoint(coord.x, coord.y);
+			}
 
 		// Bind the attributes according to the filter.
 

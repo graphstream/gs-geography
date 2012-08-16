@@ -87,6 +87,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		DescriptorSHP descriptorRoad = new DescriptorSHP(this, "Z", filterRoad);
 
+		descriptorRoad.onlyConsiderLineEndPoints();
 		descriptorRoad.mustBe(Element.Type.LINE);
 
 		addDescriptor(descriptorRoad);

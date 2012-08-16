@@ -52,6 +52,8 @@ import com.vividsolutions.jts.geom.Coordinate;
  */
 public abstract class GeoSourceOSM extends GeoSource {
 
+	protected String fileName;
+	
 	/**
 	 * The root of the XML document.
 	 */
@@ -68,11 +70,28 @@ public abstract class GeoSourceOSM extends GeoSource {
 	 */
 	protected HashMap<String, Coordinate> nodePositions;
 
-	public GeoSourceOSM() {
+	public GeoSourceOSM(String fileName) {
 
+		this.fileName = fileName;
+		
 		this.nodePositions = new HashMap<String, Coordinate>();
 	}
+	
+	protected void read() {
 
+		try {
+
+			begin(this.fileName);
+
+			traverse();
+
+			end();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void begin(String fileName) throws IOException {
 
 		try {

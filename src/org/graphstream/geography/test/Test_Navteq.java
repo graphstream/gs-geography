@@ -37,7 +37,10 @@ import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
+import org.graphstream.geography.osm.GeoSourceOSM;
+import org.graphstream.geography.osm.GeoSourceOSM_RoadNetwork;
 import org.graphstream.geography.shp.DescriptorSHP;
+import org.graphstream.geography.shp.GeoSourceNavteq;
 import org.graphstream.geography.shp.GeoSourceSHP;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -54,23 +57,17 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 public class Test_Navteq {
 
-	protected static final String style = "node { size: 2px; text-visibility-mode: hidden; } edge { shape:polyline; fill-color: #808080; }";
+	public static void main(String[] args) {
 
-	public static void main(String args[]) {
+		Graph graph = new SingleGraph("road network");
+		graph.display(false);
 
-		Graph graph = new SingleGraph("navteq");
-
-		// Display the resulting graph.
-
-		graph.removeAttribute("ui.quality");
-		graph.removeAttribute("ui.antialias");
-		graph.addAttribute("stylesheet", Test_Navteq.style);
-
-		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-
-		Viewer viewer = graph.display(false);
-		viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.EXIT);
-
+		GeoSourceNavteq src = new GeoSourceNavteq("/home/merwan/navteq/Streets.shp", "/home/merwan/navteq/Zlevels.shp");
+		src.addSink(graph);
+		
+		src.transform();
+		
+		/*
 		// Prepare the file import.
 
 		GeoSourceSHP src = new GeoSourceSHP() {
@@ -127,55 +124,7 @@ public class Test_Navteq {
 			}
 
 		};
-
-		src.addSink(graph);
-
-		// Filter the features and attributes to be kept in the final graph.
-
-		AttributeFilter filterZ = new AttributeFilter(AttributeFilter.Mode.KEEP);
-
-		filterZ.add("Z_LEVEL");
-		filterZ.add("LINK_ID");
-
-		DescriptorSHP descriptorZ = new DescriptorSHP(src, "Z", filterZ) {
-
-			@Override
-			public boolean matches(Element e) {
-
-				return Math.random() < 0.1 && e.hasAttribute("INTRSECT", "Y");
-			}
-
-		};
-
-		src.addDescriptor(descriptorZ);
-
-		// Read the Z level data.
-
-		src.read("/res/Zlevels.shp");
-
-		// Filter the features and attributes to be kept in the final graph.
-
-		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
-
-		filterRoad.add("LINK_ID");
-		filterRoad.add("SPEED_CAT");
-
-		DescriptorSHP descriptorRoad = new DescriptorSHP(src, "ROAD", filterRoad) {
-
-			@Override
-			public boolean matches(Element e) {
-
-				return e.isLine() && e.hasAttribute("SPEED_CAT", "4");
-			}
-
-		};
-
-		src.addDescriptor(descriptorRoad);
-
-		// Read the streets data.
-		src.read("/res/Streets.shp");
-
-		System.out.printf("OK%n");
-		System.out.println(graph.getNodeCount());
+	*/
 	}
+	
 }

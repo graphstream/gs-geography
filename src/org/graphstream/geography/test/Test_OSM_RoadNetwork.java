@@ -43,10 +43,10 @@ public class Test_OSM_RoadNetwork {
 		Graph graph = new SingleGraph("road network");
 		graph.display(false);
 
-		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork();
+		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork("/home/merwan/map.osm");
 		src.addSink(graph);
-
-		src.read("/home/merwan/map.osm");
+		
+		src.transform();
 	}
 
 }

@@ -64,7 +64,7 @@ public class Test_OSM {
 
 		// Prepare the file import.
 
-		GeoSourceOSM src = new GeoSourceOSM() {
+		GeoSourceOSM src = new GeoSourceOSM("/home/merwan/map/osm") {
 
 			@Override
 			public void transform() {
@@ -137,10 +137,10 @@ public class Test_OSM {
 
 		src.addDescriptor(descriptorRoad);
 
-		// Read the data.
+		// Convert to a graph.
 
-		src.read("/home/merwan/map.osm");
-
+		src.transform();
+		
 		System.out.println("OK " + graph.getNodeCount());
 	}
 }

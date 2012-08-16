@@ -31,6 +31,7 @@
 
 package org.graphstream.geography.osm;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.graphstream.geography.AttributeFilter;
@@ -56,8 +57,10 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 */
 	private double radius;
 
-	public GeoSourceOSM_Neighborhood(double radius) {
-
+	public GeoSourceOSM_Neighborhood(String fileName, double radius) {
+		super(fileName);
+		
+		this.fileName = fileName;
 		this.radius = radius;
 
 		// The only attribute worth keeping is "building". If it equals "yes"
@@ -75,6 +78,10 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		descriptorBuilding.mustHave("building", "yes");
 
 		addDescriptor(descriptorBuilding);
+		
+		//
+			
+		read();
 	}
 
 	@Override

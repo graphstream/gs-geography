@@ -29,24 +29,50 @@
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
 
-package org.graphstream.geography.test;
+package org.graphstream.geography.shp;
 
-import org.graphstream.geography.GeoSource;
-import org.graphstream.geography.osm.GeoSourceOSM_Neighborhood;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.geography.AttributeFilter;
+import org.graphstream.geography.Element;
 
-public class Test_OSM_Neighborhood {
+/**
+ * This geographical source implementation extracts the road network from a
+ * Navteq shapefile and takes care of the Z-index conflicts.
+ * 
+ * @author Merwan Achibet
+ */
+public class GeoSourceNavteq extends GeoSourceSHP {
 
-	public static void main(String args[]) {
+	protected String roadsFileName;
+	
+	protected String zFileName;
+	
+	public GeoSourceNavteq(String roadsFileName, String zFileName) {
 
-		Graph graph = new SingleGraph("neighborhood");
-		graph.display(false);
-
-		GeoSource src = new GeoSourceOSM_Neighborhood("/home/merwan/map.osm", 0.0003);
-		src.addSink(graph);
+		this.roadsFileName = roadsFileName;
+		this.zFileName = zFileName;
 		
-		src.transform();
+		// We keep the Z-level attribute as it will be used to handle the false
+		// intersections. We also keep the Link ID that identify each road
+		// segment.
+
+		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
+
+		filterRoad.add("Z_LEVEL");
+		filterRoad.add("LINK_ID");
+
+		//
+
+		DescriptorSHP descriptorRoad = new DescriptorSHP(this, "ROAD", filterRoad);
+
+		descriptorRoad.mustBe(Element.Type.LINE);
+		descriptorRoad.mustHave("INTRSECT", "Y");
+
+		addDescriptor(descriptorRoad);
+	}
+
+	@Override
+	public void transform() {
+
 	}
 
 }

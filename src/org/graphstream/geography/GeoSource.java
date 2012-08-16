@@ -100,28 +100,6 @@ public abstract class GeoSource extends SourceBase {
 		this.index.add(element);
 	}
 
-	/**
-	 * Read a data source.
-	 * 
-	 * @throws IOException
-	 */
-	public void read(String fileName) {
-
-		try {
-
-			begin(fileName);
-
-			traverse();
-
-			end();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		transform();
-	}
-
 	// Abstract
 
 	/**

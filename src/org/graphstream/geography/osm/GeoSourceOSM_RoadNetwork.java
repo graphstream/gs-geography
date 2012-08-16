@@ -54,8 +54,9 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 */
 	protected List<String> addedNodeIds;
 
-	public GeoSourceOSM_RoadNetwork() {
-
+	public GeoSourceOSM_RoadNetwork(String fileName) {
+		super(fileName);
+		
 		// The only attribute worth keeping is "highway". If present, it
 		// indicates that the current element is some kind of road (e.g.
 		// highway:primary or highway:residential).
@@ -73,6 +74,10 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		descriptorRoad.mustHave("highway");
 
 		addDescriptor(descriptorRoad);
+		
+		//
+		
+		read();
 	}
 
 	@Override

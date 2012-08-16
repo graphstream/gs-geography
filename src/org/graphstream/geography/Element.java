@@ -245,6 +245,8 @@ public abstract class Element {
 
 	// Abstract
 
+	public abstract SpatialIndexPoint toSpatialIndexPoint();
+	
 	/**
 	 * Check if the element is placed at a given position.
 	 * 

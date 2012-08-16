@@ -79,4 +79,10 @@ public class Line extends Element {
 		return false;
 	}
 
+	@Override
+	public SpatialIndexPoint toSpatialIndexPoint() {
+		// TODO
+		return null;
+	}
+
 }

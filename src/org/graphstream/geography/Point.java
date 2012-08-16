@@ -46,6 +46,11 @@ public class Point extends Element {
 
 	private Coordinate position;
 
+	public Point(String id) {
+		
+		this(id, null);
+	}
+	
 	public Point(String id, String category) {
 		super(id, category);
 
@@ -61,6 +66,12 @@ public class Point extends Element {
 
 		this.position.x = x;
 		this.position.y = y;
+	}
+	
+	@Override
+	public SpatialIndexPoint toSpatialIndexPoint() {
+		
+		return new SpatialIndexPoint(this, this.position.x, this.position.y);
 	}
 
 	@Override

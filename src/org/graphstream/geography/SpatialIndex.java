@@ -32,17 +32,44 @@
 package org.graphstream.geography;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.miv.pherd.Particle;
+import org.miv.pherd.ParticleBox;
+import org.miv.pherd.ntree.Anchor;
+import org.miv.pherd.ntree.BarycenterCellData;
+import org.miv.pherd.ntree.Cell;
+import org.miv.pherd.ntree.CellSpace;
+import org.miv.pherd.ntree.QuadtreeCellSpace;
 
 /**
  * A spatial index used to store geographical elements.
  * 
- * Its implementations should be capable of returning elements upon spatial
- * queries in an efficient manner as this kind of process can rapidly become
- * expensive (especially with huge geographical data sets).
+ * TODO
  * 
+ * @author Antoine Dutot
  * @author Merwan Achibet
  */
-public interface SpatialIndex extends Iterable<Element> {
+public class SpatialIndex {
+
+	protected ParticleBox box;
+
+	protected int pointsPerCell = 10;
+
+	protected int maxDepth = 20;
+
+	protected double distanceOffset = 0.1;
+
+	protected int stepsbetweenReorganizations = 10;
+
+	public SpatialIndex() {
+
+		CellSpace space = new QuadtreeCellSpace(new Anchor(-1, -1, 0), new Anchor(1, 1, 0));
+
+		this.box = new ParticleBox(this.pointsPerCell, space, new BarycenterCellData());
+
+		this.box.getNTree().setDepthMax(this.maxDepth);
+	}
 
 	/**
 	 * Add an element to the spatial index.
@@ -50,23 +77,116 @@ public interface SpatialIndex extends Iterable<Element> {
 	 * @param element
 	 *            The geographical element to add.
 	 */
-	public void add(Element element);
+	public void add(Element element) {
+
+		SpatialIndexPoint particle = element.toSpatialIndexPoint();
+
+		this.box.addParticle(particle);
+
+		checkForReorganization();
+	}
 
 	/**
-	 * Count the number of stored elements.
+	 * Remove an element from the spatial index.
+	 * 
+	 * @param element
+	 *            The geographical element to remove.
+	 */
+	public void remove(Element element) {
+
+		this.box.removeParticle(element.getId());
+
+		checkForReorganization();
+	}
+
+	/**
+	 * TODO
+	 */
+	protected void checkForReorganization() {
+
+		if(this.box.getParticleCount() % this.stepsbetweenReorganizations == 0)
+			this.box.step();
+	}
+
+	/**
+	 * Count the stored elements.
 	 * 
 	 * @return The number of elements.
 	 */
-	public int size();
+	public int size() {
+
+		return this.box.getParticleCount();
+	}
 
 	/**
-	 * Give all the elements placed at the supplied position.
+	 * Check if an element is already stored in the spatial index.
+	 * 
+	 * @param element
+	 *            The queried element.
+	 * @return True if the element is already in the index, false otherwise.
+	 */
+	public boolean contains(Element element) {
+
+		return this.box.getParticle(element.getId()) != null;
+	}
+
+	/**
+	 * TODO
 	 * 
 	 * @param x
-	 *            The x coordinate.
 	 * @param y
-	 *            The y coordinate.
-	 * @return A list of geographical elements.
+	 * @return
 	 */
-	public ArrayList<Element> getElementsAt(double x, double y);
+	public ArrayList<Element> getElementsAt(double x, double y) {
+
+		Cell root = this.box.getNTree().getRootCell();
+
+		return searchInCell(root, x, y);
+	}
+
+	/**
+	 * TODO
+	 * 
+	 * @param cell
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	protected ArrayList<Element> searchInCell(Cell cell, double x, double y) {
+
+		if(cell.isLeaf()) {
+
+			// If we are in a leaf, accurately select the elements at the (x,y)
+			// position.
+
+			ArrayList<Element> elements = new ArrayList<Element>();
+
+			Iterator<? extends Particle> iterator = cell.getParticles();
+
+			while(iterator.hasNext()) {
+
+				SpatialIndexPoint point = (SpatialIndexPoint)iterator.next();
+
+				if(point.isAt(x, y, this.distanceOffset))
+					elements.add(point.getReferencedElement());
+			}
+
+			return elements;
+		}
+		else {
+
+			// Otherwise, go down the quadtree through the appropriate sub-cell.
+
+			for(int i = 0, divs = cell.getSpace().getDivisions(); i < divs; ++i) {
+
+				Cell subCell = cell.getSub(i);
+
+				if(subCell.contains(x, y, 0))
+					return searchInCell(subCell, x, y);
+			}
+		}
+
+		return null;
+	}
+
 }

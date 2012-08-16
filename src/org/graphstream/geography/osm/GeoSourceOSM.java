@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.graphstream.geography.BasicSpatialIndex;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
@@ -70,8 +69,6 @@ public abstract class GeoSourceOSM extends GeoSource {
 	protected HashMap<String, Coordinate> nodePositions;
 
 	public GeoSourceOSM() {
-
-		this.index = new BasicSpatialIndex();
 
 		this.nodePositions = new HashMap<String, Coordinate>();
 	}

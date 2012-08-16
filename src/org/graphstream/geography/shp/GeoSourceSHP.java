@@ -37,7 +37,6 @@ import java.net.URL;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureIterator;
-import org.graphstream.geography.BasicSpatialIndex;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
@@ -61,8 +60,7 @@ public abstract class GeoSourceSHP extends GeoSource {
 	protected FeatureIterator<SimpleFeature> iterator;
 
 	public GeoSourceSHP() {
-
-		this.index = new BasicSpatialIndex();
+		
 	}
 
 	public void begin(String fileName) throws IOException {

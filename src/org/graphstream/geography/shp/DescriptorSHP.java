@@ -100,7 +100,7 @@ public class DescriptorSHP extends Descriptor {
 		Collection<Property> properties = feature.getProperties();
 
 		for(Property property : properties)
-			if(property.getName().equals(key))
+			if(property.getName().toString().equals(key))
 				return true;
 		
 		return false;
@@ -114,7 +114,7 @@ public class DescriptorSHP extends Descriptor {
 		Collection<Property> properties = feature.getProperties();
 
 		for(Property property : properties)
-			if(property.getName().equals(key) && property.getValue().equals(value))
+			if(property.getName().toString().equals(key) && property.getValue().equals(value))
 				return true;
 		
 		return false;

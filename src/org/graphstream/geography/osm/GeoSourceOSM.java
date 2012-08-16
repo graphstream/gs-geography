@@ -35,8 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.graphstream.geography.Descriptor;
-import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -139,26 +137,6 @@ public abstract class GeoSourceOSM extends GeoSource {
 
 	public void end() throws IOException {
 		// Nothing to do.
-	}
-
-	/**
-	 * Process a single feature coming from the data source and check if it
-	 * suits the user's needs. If it is the case, keep it for a later use,
-	 * ignore it otherwise.
-	 * 
-	 * @param xmlElement
-	 *            The XOM XML element to consider.
-	 * @throws IOException
-	 */
-	private void process(nu.xom.Element xmlElement) {
-
-		for(Descriptor descriptor : this.descriptors) {
-
-			Element element = descriptor.newElement(xmlElement);
-
-			if(element != null && descriptor.matches(element))
-				this.keep(element, descriptor);
-		}
 	}
 
 	public Coordinate getNodePosition(String id) {

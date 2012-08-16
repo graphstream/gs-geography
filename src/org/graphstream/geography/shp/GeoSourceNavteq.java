@@ -32,7 +32,6 @@
 package org.graphstream.geography.shp;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.Element;
 import org.graphstream.geography.index.SpatialIndex;
 
 /**
@@ -71,7 +70,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		DescriptorSHP descriptorZ = new DescriptorSHP(this, "Z", filterZ);
 
-		descriptorZ.mustBe(Element.Type.POINT);
+		//descriptorZ.mustBe(Element.Type.POINT);
 		descriptorZ.mustHave("INTRSECT", "Y");
 		
 		addDescriptor(descriptorZ);

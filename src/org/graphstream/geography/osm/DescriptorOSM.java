@@ -110,7 +110,7 @@ public class DescriptorOSM extends Descriptor {
 			
 			nu.xom.Element xmlTag = xmlTags.get(i);
 			
-			if(xmlTag.getAttribute("k").equals(key))
+			if(xmlTag.getAttribute("k").getValue().equals(key))
 				return true;
 		}
 		
@@ -128,7 +128,7 @@ public class DescriptorOSM extends Descriptor {
 			
 			nu.xom.Element xmlTag = xmlTags.get(i);
 			
-			if(xmlTag.getAttribute("k").equals(key) && xmlTag.getAttribute("v").equals(value))
+			if(xmlTag.getAttribute("k").getValue().equals(key) && xmlTag.getAttribute("v").getValue().equals(value))
 				return true;
 		}
 		

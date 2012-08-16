@@ -160,7 +160,7 @@ public abstract class Descriptor {
 			for(String key : this.mustHaveValues.keySet())
 				if(!hasKeyValue(key, this.mustHaveValues.get(key), o))
 					return false;
-
+		
 		return true;
 	}
 
@@ -215,7 +215,7 @@ public abstract class Descriptor {
 	 * @return A simple geometric element.
 	 */
 	public Element newElement(Object o) {
-		;
+		
 		if(isPoint(o))
 			return newPoint(o);
 		else if(isLine(o))

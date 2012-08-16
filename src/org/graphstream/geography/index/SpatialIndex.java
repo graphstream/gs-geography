@@ -62,7 +62,7 @@ public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 
 	protected double distanceOffset = 0.1;
 
-	protected int stepsbetweenReorganizations = 10;
+	protected int stepsbetweenReorganizations = 10000;
 
 	public SpatialIndex() {
 

@@ -89,7 +89,7 @@ public class Line extends Element {
 
 		for(Point point : this.points) {
 			
-			SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this, point.getPosition().x, point.getPosition().y);
+			SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this, point.getId(), point.getPosition().x, point.getPosition().y);
 			
 			spatialIndexPoints.add(spatialIndexPoint);
 		}

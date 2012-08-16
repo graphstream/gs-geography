@@ -32,7 +32,7 @@
 package org.graphstream.geography.shp;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.index.SpatialIndex;
+import org.graphstream.geography.Element;
 
 /**
  * This geographical source implementation extracts the road network from a
@@ -57,11 +57,6 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		this.roadsFileName = roadsFileName;
 		this.zFileName = zFileName;
 
-		// Instantiate the spatial index as we will need it for this
-		// implementation.
-
-		this.index = new SpatialIndex();
-
 		// By default there is no attribute worth keeping.
 
 		AttributeFilter filterZ = new AttributeFilter(AttributeFilter.Mode.KEEP);
@@ -70,30 +65,50 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		DescriptorSHP descriptorZ = new DescriptorSHP(this, "Z", filterZ);
 
-		//descriptorZ.mustBe(Element.Type.POINT);
 		descriptorZ.mustHave("INTRSECT", "Y");
-		
+
 		addDescriptor(descriptorZ);
-		
+
+		// Read the Z level file and store the data in the spatial index.
+
+		openSpatialIndex();
 		read(this.zFileName);
+		closeSpatialIndex();
+
+		// Remove the descriptor.
+
+		this.descriptors.clear();
+
+		// By default there is no attribute worth keeping.
+
+		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
+
+		// We are only interested in line features..
+
+		DescriptorSHP descriptorRoad = new DescriptorSHP(this, "Z", filterRoad);
+
+		descriptorRoad.mustBe(Element.Type.LINE);
+
+		addDescriptor(descriptorRoad);
+
+		read(this.roadsFileName);
 	}
 
 	protected void read(String fileName) {
-		
+
 		try {
 			begin(fileName);
 			traverse();
 			end();
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void transform() {
 
-		System.out.println(this.elements.size());
 	}
 
 }

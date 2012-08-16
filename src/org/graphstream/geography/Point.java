@@ -82,12 +82,11 @@ public class Point extends Element {
 	@Override
 	public List<SpatialIndexPoint> toSpatialIndexPoints() {
 		
-		List<SpatialIndexPoint> points = new ArrayList<SpatialIndexPoint>();
+		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
 		
-		SpatialIndexPoint point = new SpatialIndexPoint(this, this.position.x, this.position.y);
-		points.add(point);
+		spatialIndexPoints.add(new SpatialIndexPoint(this, this.getId(), this.position.x, this.position.y));
 		
-		return points;
+		return spatialIndexPoints;
 	}
 
 }

@@ -75,6 +75,13 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	protected SpatialIndex index;
 
+	/**
+	 * Should the matching elements be stored in the spatial index? It can be
+	 * useful to switch this value when sequentially considering different
+	 * categories of features that must/must not be spatially queried.
+	 */
+	protected boolean useSpatialIndex;
+
 	protected GeoSource() {
 
 		this.sourceId = String.format("<GeoSource %x>", System.nanoTime());
@@ -82,6 +89,8 @@ public abstract class GeoSource extends SourceBase {
 		this.descriptors = new ArrayList<Descriptor>();
 
 		this.elements = new ArrayList<Element>();
+
+		this.useSpatialIndex = false;
 	}
 
 	/**
@@ -92,6 +101,31 @@ public abstract class GeoSource extends SourceBase {
 	public void addDescriptor(Descriptor descriptor) {
 
 		this.descriptors.add(descriptor);
+	}
+
+	/**
+	 * Open the spatial index.
+	 * 
+	 * Every element matched after this call will be stored in the spatial index
+	 * to later query them faster.
+	 */
+	public void openSpatialIndex() {
+
+		this.useSpatialIndex = true;
+
+		if(this.index == null)
+			this.index = new SpatialIndex();
+	}
+
+	/**
+	 * Close the spatial index.
+	 * 
+	 * Every element matched after this call will NOT be stored in the spatial
+	 * index.
+	 */
+	public void closeSpatialIndex() {
+
+		this.useSpatialIndex = false;
 	}
 
 	/**
@@ -109,7 +143,7 @@ public abstract class GeoSource extends SourceBase {
 			if(o != null && descriptor.matches(o))
 				this.keep(descriptor.newElement(o), descriptor);
 	}
-	
+
 	/**
 	 * Add a feature from the data source to the internal geometric
 	 * representation of the studied space.
@@ -122,8 +156,8 @@ public abstract class GeoSource extends SourceBase {
 	public void keep(Element element, Descriptor descriptor) {
 
 		this.elements.add(element);
-		
-		if(this.index != null)
+
+		if(this.useSpatialIndex)
 			this.index.add(element);
 	}
 

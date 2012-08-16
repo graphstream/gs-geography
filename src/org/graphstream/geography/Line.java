@@ -32,6 +32,9 @@
 package org.graphstream.geography;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.graphstream.geography.index.SpatialIndexPoint;
 
 /**
  * A Line.
@@ -80,9 +83,18 @@ public class Line extends Element {
 	}
 
 	@Override
-	public SpatialIndexPoint toSpatialIndexPoint() {
-		// TODO
-		return null;
+	public List<SpatialIndexPoint> toSpatialIndexPoints() {
+
+		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
+
+		for(Point point : this.points) {
+			
+			SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this, point.getPosition().x, point.getPosition().y);
+			
+			spatialIndexPoints.add(spatialIndexPoint);
+		}
+
+		return spatialIndexPoints;
 	}
 
 }

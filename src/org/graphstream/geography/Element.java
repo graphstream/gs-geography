@@ -32,7 +32,10 @@
 package org.graphstream.geography;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.graphstream.geography.index.SpatialIndexPoint;
 
 /**
  * An abstract geometric element.
@@ -245,7 +248,7 @@ public abstract class Element {
 
 	// Abstract
 
-	public abstract SpatialIndexPoint toSpatialIndexPoint();
+	public abstract List<SpatialIndexPoint> toSpatialIndexPoints();
 	
 	/**
 	 * Check if the element is placed at a given position.

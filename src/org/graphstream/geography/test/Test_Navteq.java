@@ -31,22 +31,9 @@
 
 package org.graphstream.geography.test;
 
-import java.util.ArrayList;
-
-import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.Element;
-import org.graphstream.geography.Line;
-import org.graphstream.geography.Point;
-import org.graphstream.geography.osm.GeoSourceOSM;
-import org.graphstream.geography.osm.GeoSourceOSM_RoadNetwork;
-import org.graphstream.geography.shp.DescriptorSHP;
 import org.graphstream.geography.shp.GeoSourceNavteq;
-import org.graphstream.geography.shp.GeoSourceSHP;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.ui.swingViewer.Viewer;
-
-import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Test the shapefile import.

@@ -31,7 +31,6 @@
 
 package org.graphstream.geography.osm;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import org.graphstream.geography.AttributeFilter;
@@ -60,7 +59,6 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	public GeoSourceOSM_Neighborhood(String fileName, double radius) {
 		super(fileName);
 		
-		this.fileName = fileName;
 		this.radius = radius;
 
 		// The only attribute worth keeping is "building". If it equals "yes"
@@ -89,31 +87,33 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		HashMap<String, Coordinate> placedBuildings = new HashMap<String, Coordinate>();
 
-		for(Element e : this.index) {
-
+		for(Element element : this.elements) {
+			
 			// Compute the center of the current building and add a new node at
 			// this position.
 
-			Coordinate centroid = ((Polygon)e).getCentroid();
+			Coordinate centroid = ((Polygon)element).getCentroid();
 
-			sendNodeAdded(this.sourceId, e.getId());
+			sendNodeAdded(this.sourceId, element.getId());
 
-			sendNodeAttributeAdded(this.sourceId, e.getId(), "x", centroid.x);
-			sendNodeAttributeAdded(this.sourceId, e.getId(), "y", centroid.y);
+			sendNodeAttributeAdded(this.sourceId, element.getId(), "x", centroid.x);
+			sendNodeAttributeAdded(this.sourceId, element.getId(), "y", centroid.y);
 
 			// Bind the attributes.
 
-			for(String key : e.getAttributes().keySet())
-				sendNodeAttributeAdded(this.sourceId, e.getId(), key, e.getAttribute(key));
+			for(String key : element.getAttributes().keySet())
+				sendNodeAttributeAdded(this.sourceId, element.getId(), key, element.getAttribute(key));
 			
 			// Draw an edge between the new node and already placed ones if
 			// their distance is below the neighborhood radius.
 
+			// TODO there surely is a faster way to do that using the quad tree.
+			
 			for(String id : placedBuildings.keySet())
 				if(centroid.distance(placedBuildings.get(id)) < this.radius)
-					sendEdgeAdded(this.sourceId, e.getId() + id, e.getId(), id, false);
+					sendEdgeAdded(this.sourceId, element.getId() + id, element.getId(), id, false);
 
-			placedBuildings.put(e.getId(), centroid);
+			placedBuildings.put(element.getId(), centroid);
 		}
 	}
 

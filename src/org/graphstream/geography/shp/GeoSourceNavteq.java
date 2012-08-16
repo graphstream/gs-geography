@@ -33,6 +33,7 @@ package org.graphstream.geography.shp;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Element;
+import org.graphstream.geography.index.SpatialIndex;
 
 /**
  * This geographical source implementation extracts the road network from a
@@ -43,14 +44,18 @@ import org.graphstream.geography.Element;
 public class GeoSourceNavteq extends GeoSourceSHP {
 
 	protected String roadsFileName;
-	
+
 	protected String zFileName;
-	
+
 	public GeoSourceNavteq(String roadsFileName, String zFileName) {
 
 		this.roadsFileName = roadsFileName;
 		this.zFileName = zFileName;
-		
+
+		// Instantiate the spatial index as we will need it for this
+		// implementation.
+		this.index = new SpatialIndex();
+
 		// We keep the Z-level attribute as it will be used to handle the false
 		// intersections. We also keep the Link ID that identify each road
 		// segment.

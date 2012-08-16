@@ -31,6 +31,11 @@
 
 package org.graphstream.geography;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.graphstream.geography.index.SpatialIndexPoint;
+
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
@@ -67,17 +72,22 @@ public class Point extends Element {
 		this.position.x = x;
 		this.position.y = y;
 	}
-	
-	@Override
-	public SpatialIndexPoint toSpatialIndexPoint() {
-		
-		return new SpatialIndexPoint(this, this.position.x, this.position.y);
-	}
 
 	@Override
 	public boolean at(double x, double y) {
 
 		return this.position.x == x && this.position.y == y;
+	}
+	
+	@Override
+	public List<SpatialIndexPoint> toSpatialIndexPoints() {
+		
+		List<SpatialIndexPoint> points = new ArrayList<SpatialIndexPoint>();
+		
+		SpatialIndexPoint point = new SpatialIndexPoint(this, this.position.x, this.position.y);
+		points.add(point);
+		
+		return points;
 	}
 
 }

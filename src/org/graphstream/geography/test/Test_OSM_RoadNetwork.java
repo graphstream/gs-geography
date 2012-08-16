@@ -41,12 +41,13 @@ public class Test_OSM_RoadNetwork {
 	public static void main(String args[]) {
 
 		Graph graph = new SingleGraph("road network");
-		graph.display(false);
 
 		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork("/home/merwan/map.osm");
 		src.addSink(graph);
 		
 		src.transform();
+		
+		graph.display(false);
 	}
 
 }

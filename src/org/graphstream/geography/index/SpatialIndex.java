@@ -29,11 +29,13 @@
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
 
-package org.graphstream.geography;
+package org.graphstream.geography.index;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import org.graphstream.geography.Element;
 import org.miv.pherd.Particle;
 import org.miv.pherd.ParticleBox;
 import org.miv.pherd.ntree.Anchor;
@@ -50,7 +52,7 @@ import org.miv.pherd.ntree.QuadtreeCellSpace;
  * @author Antoine Dutot
  * @author Merwan Achibet
  */
-public class SpatialIndex {
+public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 
 	protected ParticleBox box;
 
@@ -79,9 +81,12 @@ public class SpatialIndex {
 	 */
 	public void add(Element element) {
 
-		SpatialIndexPoint particle = element.toSpatialIndexPoint();
+		List<SpatialIndexPoint> points = element.toSpatialIndexPoints();
+		System.out.println(points);
+		System.out.println(element);
 
-		this.box.addParticle(particle);
+		for(SpatialIndexPoint point : points)
+			this.box.addParticle(point);
 
 		checkForReorganization();
 	}
@@ -187,6 +192,11 @@ public class SpatialIndex {
 		}
 
 		return null;
+	}
+
+	public Iterator<SpatialIndexPoint> iterator() {
+
+		return (Iterator<SpatialIndexPoint>)this.box.getNTree().getRootCell().getParticles();
 	}
 
 }

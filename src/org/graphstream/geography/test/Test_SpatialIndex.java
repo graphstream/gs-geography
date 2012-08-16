@@ -3,7 +3,7 @@ package org.graphstream.geography.test;
 import java.util.Random;
 
 import org.graphstream.geography.Point;
-import org.graphstream.geography.SpatialIndex;
+import org.graphstream.geography.index.SpatialIndex;
 
 public class Test_SpatialIndex {
 

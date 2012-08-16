@@ -1,5 +1,6 @@
-package org.graphstream.geography;
+package org.graphstream.geography.index;
 
+import org.graphstream.geography.Element;
 import org.miv.pherd.Particle;
 
 public class SpatialIndexPoint extends Particle {

@@ -85,9 +85,9 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 		this.addedNodeIds = new ArrayList<String>();
 
-		for(Element e : this.index) {
+		for(Element element : this.elements) {
 
-			Line line = (Line)e;
+			Line line = (Line)element;
 
 			// Add each point shaping the road to the graph, as nodes.
 
@@ -111,7 +111,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 				// Link it to the previous point.
 
-				sendEdgeAdded(this.sourceId, e.getId() + "_" + idFrom + " " + idTo, idFrom, idTo, false);
+				sendEdgeAdded(this.sourceId, line.getId() + "_" + idFrom + " " + idTo, idFrom, idTo, false);
 
 				idFrom = idTo;
 			}

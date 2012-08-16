@@ -41,12 +41,13 @@ public class Test_OSM_Neighborhood {
 	public static void main(String args[]) {
 
 		Graph graph = new SingleGraph("neighborhood");
-		graph.display(false);
 
 		GeoSource src = new GeoSourceOSM_Neighborhood("/home/merwan/map.osm", 0.0003);
 		src.addSink(graph);
 		
 		src.transform();
+		
+		graph.display(false);
 	}
 
 }

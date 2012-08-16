@@ -34,6 +34,7 @@ package org.graphstream.geography;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.graphstream.geography.index.SpatialIndex;
 import org.graphstream.stream.SourceBase;
 
 /**
@@ -65,6 +66,11 @@ public abstract class GeoSource extends SourceBase {
 	protected ArrayList<Descriptor> descriptors;
 
 	/**
+	 * 
+	 */
+	protected ArrayList<Element> elements;
+
+	/**
 	 * Spatial index storing geometric elements representing features.
 	 */
 	protected SpatialIndex index;
@@ -74,6 +80,8 @@ public abstract class GeoSource extends SourceBase {
 		this.sourceId = String.format("<GeoSource %x>", System.nanoTime());
 
 		this.descriptors = new ArrayList<Descriptor>();
+
+		this.elements = new ArrayList<Element>();
 	}
 
 	/**
@@ -97,7 +105,10 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public void keep(Element element, Descriptor descriptor) {
 
-		this.index.add(element);
+		this.elements.add(element);
+		
+		if(this.index != null)
+			this.index.add(element);
 	}
 
 	// Abstract

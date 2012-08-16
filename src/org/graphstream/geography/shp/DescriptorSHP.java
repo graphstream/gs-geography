@@ -168,7 +168,7 @@ public class DescriptorSHP extends Descriptor {
 		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
 
 		for(int i = 0; i < coords.length; ++i)
-			line.addPoint("TODO", coords[i].x, coords[i].y); // TODO what ID? Is it really necessary?
+			line.addPoint(coords[i].x, coords[i].y);
 
 		// Bind the attributes according to the filter.
 
@@ -197,7 +197,7 @@ public class DescriptorSHP extends Descriptor {
 		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
 
 		for(int i = 0; i < coords.length; ++i)
-			polygon.addPoint("TODO", coords[i].x, coords[i].y); // TODO what ID?
+			polygon.addPoint(coords[i].x, coords[i].y); // TODO what ID?
 
 		// Bind the attributes according to the filter.
 

@@ -88,7 +88,7 @@ x = source.getFeatures().size();
 		while(this.iterator != null && this.iterator.hasNext()) {
 			process(iterator.next());
 			++y;
-			if(y % 10000 == 0) System.out.println(y + "/" + x + "(" + this.elements.size() +")");
+			if(y % 10000 == 0) System.out.println(y + "/" + x + " (" + this.elements.size() +")");
 		}
 
 		this.iterator = null;

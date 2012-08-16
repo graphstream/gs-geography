@@ -56,9 +56,9 @@ public class Line extends Element {
 		this.points = new ArrayList<Point>();
 	}
 
-	public void addPoint(String id, double x, double y) {
+	public void addPoint(double x, double y) {
 
-		Point point = new Point(id, null);
+		Point point = new Point(this.id + "_" + this.points.size(), null);
 
 		point.setPosition(x, y);
 

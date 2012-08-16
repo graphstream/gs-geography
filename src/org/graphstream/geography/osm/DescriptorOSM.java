@@ -190,7 +190,7 @@ public class DescriptorOSM extends Descriptor {
 
 			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(lineNodeId);
 
-			line.addPoint(lineNodeId, coord.x, coord.y);
+			line.addPoint(coord.x, coord.y);
 		}
 
 		// Bind the attributes according to the filter.
@@ -227,7 +227,7 @@ public class DescriptorOSM extends Descriptor {
 
 			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(lineNodeId);
 
-			polygon.addPoint(lineNodeId, coord.x, coord.y);
+			polygon.addPoint(coord.x, coord.y);
 		}
 
 		// Bind the attributes according to the filter.

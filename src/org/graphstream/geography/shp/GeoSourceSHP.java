@@ -31,14 +31,12 @@
 
 package org.graphstream.geography.shp;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureIterator;
-import org.graphstream.geography.Descriptor;
-import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -62,20 +60,20 @@ public abstract class GeoSourceSHP extends GeoSource {
 	public GeoSourceSHP() {
 		
 	}
-
+public int x = 0;
 	public void begin(String fileName) throws IOException {
 
 		if(this.iterator == null) {
 
 			try {
 
-				URL url = this.getClass().getResource(fileName);
+				File file = new File(fileName);
 
-				ShapefileDataStore store = new ShapefileDataStore(url);
+				ShapefileDataStore store = new ShapefileDataStore(file.toURI().toURL());
 
 				String type = store.getTypeNames()[0];
 				FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource(type);
-
+x = source.getFeatures().size();
 				this.iterator = source.getFeatures().features();
 			}
 			catch (IOException e) {
@@ -86,35 +84,18 @@ public abstract class GeoSourceSHP extends GeoSource {
 	}
 
 	public void traverse() {
-
-		while(this.iterator != null && this.iterator.hasNext())
+		int y = 0;
+		while(this.iterator != null && this.iterator.hasNext()) {
 			process(iterator.next());
+			++y;
+			if(y % 1000 == 0) System.out.println(y + "/" + x);
+		}
 
 		this.iterator = null;
 	}
 
 	public void end() throws IOException {
 		// Nothing to do.
-	}
-
-	/**
-	 * Process a single feature coming from the data source and check if it
-	 * suits the user's needs. If it is the case, keep it for a later use,
-	 * ignore it otherwise.
-	 * 
-	 * @param feature
-	 *            The GeoTools feature to consider.
-	 * @throws IOException
-	 */
-	protected void process(SimpleFeature feature) {
-
-		for(Descriptor descriptor : this.descriptors) {
-
-			Element element = descriptor.newElement(feature);
-
-			if(element != null && descriptor.matches(element))
-				this.keep(element, descriptor);
-		}
 	}
 
 }

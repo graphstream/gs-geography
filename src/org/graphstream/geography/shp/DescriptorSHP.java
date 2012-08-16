@@ -61,6 +61,7 @@ public class DescriptorSHP extends Descriptor {
 	protected boolean isPoint(Object o) {
 
 		// TODO: A better way to do this?
+		
 		SimpleFeature feature = (SimpleFeature)o;
 
 		return feature.getType().getGeometryDescriptor().getType().getBinding() == com.vividsolutions.jts.geom.Point.class;
@@ -71,6 +72,7 @@ public class DescriptorSHP extends Descriptor {
 	protected boolean isLine(Object o) {
 
 		// TODO: A better way to do this?
+		
 		SimpleFeature feature = (SimpleFeature)o;
 
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
@@ -82,6 +84,7 @@ public class DescriptorSHP extends Descriptor {
 	protected boolean isPolygon(Object o) {
 
 		// TODO: A better way to do this?
+		
 		SimpleFeature feature = (SimpleFeature)o;
 
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
@@ -89,6 +92,34 @@ public class DescriptorSHP extends Descriptor {
 		return binding == com.vividsolutions.jts.geom.Polygon.class;
 	}
 
+	@Override
+	protected boolean hasKey(String key, Object o) {
+		
+		SimpleFeature feature = (SimpleFeature)o;
+		
+		Collection<Property> properties = feature.getProperties();
+
+		for(Property property : properties)
+			if(property.getName().equals(key))
+				return true;
+		
+		return false;
+	}
+	
+	@Override
+	protected boolean hasKeyValue(String key, Object value, Object o) {
+		
+		SimpleFeature feature = (SimpleFeature)o;
+		
+		Collection<Property> properties = feature.getProperties();
+
+		for(Property property : properties)
+			if(property.getName().equals(key) && property.getValue().equals(value))
+				return true;
+		
+		return false;
+	}
+	
 	@Override
 	protected Point newPoint(Object o) {
 

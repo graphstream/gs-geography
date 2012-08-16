@@ -43,8 +43,14 @@ import org.graphstream.geography.index.SpatialIndex;
  */
 public class GeoSourceNavteq extends GeoSourceSHP {
 
+	/**
+	 * The name of the file describing the road network.
+	 */
 	protected String roadsFileName;
 
+	/**
+	 * The name of the file containing the Z indexes of all nodes.
+	 */
 	protected String zFileName;
 
 	public GeoSourceNavteq(String roadsFileName, String zFileName) {
@@ -54,30 +60,41 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// Instantiate the spatial index as we will need it for this
 		// implementation.
+
 		this.index = new SpatialIndex();
 
-		// We keep the Z-level attribute as it will be used to handle the false
-		// intersections. We also keep the Link ID that identify each road
-		// segment.
+		// By default there is no attribute worth keeping.
 
-		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
+		AttributeFilter filterZ = new AttributeFilter(AttributeFilter.Mode.KEEP);
 
-		filterRoad.add("Z_LEVEL");
-		filterRoad.add("LINK_ID");
+		// We are only interested in intersection points.
 
-		//
+		DescriptorSHP descriptorZ = new DescriptorSHP(this, "Z", filterZ);
 
-		DescriptorSHP descriptorRoad = new DescriptorSHP(this, "ROAD", filterRoad);
-
-		descriptorRoad.mustBe(Element.Type.LINE);
-		descriptorRoad.mustHave("INTRSECT", "Y");
-
-		addDescriptor(descriptorRoad);
+		descriptorZ.mustBe(Element.Type.POINT);
+		descriptorZ.mustHave("INTRSECT", "Y");
+		
+		addDescriptor(descriptorZ);
+		
+		read(this.zFileName);
 	}
 
+	protected void read(String fileName) {
+		
+		try {
+			begin(fileName);
+			traverse();
+			end();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void transform() {
 
+		System.out.println(this.elements.size());
 	}
 
 }

@@ -57,13 +57,9 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	public GeoSourceOSM_RoadNetwork(String fileName) {
 		super(fileName);
 		
-		// The only attribute worth keeping is "highway". If present, it
-		// indicates that the current element is some kind of road (e.g.
-		// highway:primary or highway:residential).
+		// By default, there are no attribute worth keeping.
 
 		AttributeFilter filterRoad = new AttributeFilter();
-
-		filterRoad.add("highway");
 
 		// Roads are linear features that possess a "highway" key with whatever
 		// value.

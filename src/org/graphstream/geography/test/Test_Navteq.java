@@ -47,71 +47,15 @@ public class Test_Navteq {
 	public static void main(String[] args) {
 
 		Graph graph = new SingleGraph("road network");
-		graph.display(false);
 
 		GeoSourceNavteq src = new GeoSourceNavteq("/home/merwan/navteq/Streets.shp", "/home/merwan/navteq/Zlevels.shp");
 		src.addSink(graph);
-		
+
 		src.transform();
 		
-		/*
-		// Prepare the file import.
-
-		GeoSourceSHP src = new GeoSourceSHP() {
-
-			@Override
-			public void transform() {
-
-				// Add the roads to the graph as edges. The Z
-				// points of the spatial index are used to resolve the Z level
-				// conflicts.
-
-				ArrayList<String> addedIds = new ArrayList<String>();
-
-				for(Element e : this.index)
-					if(e.getCategory().equals("ROAD")) {
-
-						// TODO take care of the Z index issue.
-
-						Line line = (Line)e;
-
-						Point[] endPoints = line.getEndPoints();
-
-						Point from = endPoints[0];
-						String idFrom = null;
-						Coordinate positionFrom = from.getPosition();
-						ArrayList<Element> here = this.index.getElementsAt(positionFrom.x, positionFrom.y);
-						if(here.size() > 0)
-							idFrom = here.get(0).getId();
-
-						if(idFrom != null && !addedIds.contains(idFrom)) {
-							sendNodeAdded(this.sourceId, idFrom);
-							sendNodeAttributeAdded(this.sourceId, idFrom, "x", positionFrom.x);
-							sendNodeAttributeAdded(this.sourceId, idFrom, "y", positionFrom.y);
-							addedIds.add(idFrom);
-						}
-
-						Point to = endPoints[1];
-						String idTo = null;
-						Coordinate positionTo = to.getPosition();
-						here = this.index.getElementsAt(positionTo.x, positionTo.y);
-						if(here.size() > 0)
-							idTo = here.get(0).getId();
-
-						if(idTo != null && !addedIds.contains(idTo)) {
-							sendNodeAdded(this.sourceId, idTo);
-							sendNodeAttributeAdded(this.sourceId, idTo, "x", positionTo.x);
-							sendNodeAttributeAdded(this.sourceId, idTo, "y", positionTo.y);
-							addedIds.add(idTo);
-						}
-
-						if(idFrom != null && idTo != null)
-							sendEdgeAdded(this.sourceId, e.getId(), idFrom, idTo, false);
-					}
-			}
-
-		};
-	*/
+		//graph.display(false);
+		
+		System.out.println(graph.getNodeCount());
 	}
 	
 }

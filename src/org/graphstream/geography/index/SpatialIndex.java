@@ -82,8 +82,6 @@ public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 	public void add(Element element) {
 
 		List<SpatialIndexPoint> points = element.toSpatialIndexPoints();
-		System.out.println(points);
-		System.out.println(element);
 
 		for(SpatialIndexPoint point : points)
 			this.box.addParticle(point);

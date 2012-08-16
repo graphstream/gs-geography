@@ -140,25 +140,25 @@ public abstract class Descriptor {
 	 * @return True if the element should be categorized by the descriptor,
 	 *         false otherwise.
 	 */
-	public boolean matches(Element element) {
+	public boolean matches(Object o) {
 
 		// Check for an optional geometric type condition.
 
-		if(this.type != null && !element.isType(this.type))
+		if(this.type != null && !isOfType(this.type, o))
 			return false;
 
 		// Check for optional attribute presence conditions.
 
 		if(this.mustHaveKeys != null)
 			for(String key : this.mustHaveKeys)
-				if(!element.hasAttribute(key))
+				if(!hasKey(key, o))
 					return false;
 
 		// Check for optional attribute value conditions.
 
 		if(this.mustHaveValues != null)
 			for(String key : this.mustHaveValues.keySet())
-				if(!element.hasAttribute(key, this.mustHaveValues.get(key)))
+				if(!hasKeyValue(key, this.mustHaveValues.get(key), o))
 					return false;
 
 		return true;
@@ -193,6 +193,20 @@ public abstract class Descriptor {
 		return s;
 	}
 
+	public boolean isOfType(Element.Type type, Object o) {
+
+		if(type == Element.Type.POINT)
+			return isPoint(o);
+		
+		if(type == Element.Type.LINE)
+			return isLine(o);
+		
+		if(type == Element.Type.POLYGON)
+			return isPolygon(o);
+	
+		return false;
+	}
+	
 	/**
 	 * Give the considered feature in the GraphStream geometric format.
 	 * 
@@ -228,15 +242,6 @@ public abstract class Descriptor {
 	protected abstract boolean isPoint(Object o);
 
 	/**
-	 * Give a GraphStream geometric element based on the supplied feature.
-	 * 
-	 * @param o
-	 *            The object to convert.
-	 * @return A graphStream geometric element.
-	 */
-	protected abstract Point newPoint(Object o);
-
-	/**
 	 * Check if the supplied feature is a line according to the descriptor
 	 * rules.
 	 * 
@@ -246,16 +251,7 @@ public abstract class Descriptor {
 	 *         polygon).
 	 */
 	protected abstract boolean isLine(Object o);
-
-	/**
-	 * Give a GraphStream geometric element based on the supplied feature.
-	 * 
-	 * @param o
-	 *            The object to convert.
-	 * @return A graphStream geometric element.
-	 */
-	protected abstract Line newLine(Object o);
-
+	
 	/**
 	 * Check if the supplied feature is a polygon according to the descriptor
 	 * rules.
@@ -266,6 +262,28 @@ public abstract class Descriptor {
 	 *         polygon).
 	 */
 	protected abstract boolean isPolygon(Object o);
+
+	protected abstract boolean hasKey(String key, Object o);
+	
+	protected abstract boolean hasKeyValue(String key, Object value, Object o);
+	
+	/**
+	 * Give a GraphStream geometric element based on the supplied feature.
+	 * 
+	 * @param o
+	 *            The object to convert.
+	 * @return A graphStream geometric element.
+	 */
+	protected abstract Point newPoint(Object o);
+	
+	/**
+	 * Give a GraphStream geometric element based on the supplied feature.
+	 * 
+	 * @param o
+	 *            The object to convert.
+	 * @return A graphStream geometric element.
+	 */
+	protected abstract Line newLine(Object o);
 
 	/**
 	 * Give a GraphStream geometric element based on the supplied feature.

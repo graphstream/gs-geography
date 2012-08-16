@@ -61,12 +61,9 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		
 		this.radius = radius;
 
-		// The only attribute worth keeping is "building". If it equals "yes"
-		// then the element is a building.
+		// By default, there is no attribute worth keeping.
 
 		AttributeFilter filterBuilding = new AttributeFilter();
-
-		filterBuilding.add("building");
 
 		// We are only interested in buildings.
 

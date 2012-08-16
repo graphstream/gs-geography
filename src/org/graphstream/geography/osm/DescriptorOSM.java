@@ -100,6 +100,42 @@ public class DescriptorOSM extends Descriptor {
 	}
 
 	@Override
+	protected boolean hasKey(String key, Object o) {
+		
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+		
+		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
+		
+		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
+			
+			nu.xom.Element xmlTag = xmlTags.get(i);
+			
+			if(xmlTag.getAttribute("k").equals(key))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	protected boolean hasKeyValue(String key, Object value, Object o) {
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+		
+		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
+		
+		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
+			
+			nu.xom.Element xmlTag = xmlTags.get(i);
+			
+			if(xmlTag.getAttribute("k").equals(key) && xmlTag.getAttribute("v").equals(value))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
 	protected Point newPoint(Object o) {
 
 		// Cast the object to a XOM element.

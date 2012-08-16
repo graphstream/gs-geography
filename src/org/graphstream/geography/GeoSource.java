@@ -95,6 +95,22 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
+	 * Process a single feature coming from the data source and check if it
+	 * suits the user's needs. If it is the case, keep it for a later use,
+	 * ignore it otherwise.
+	 * 
+	 * @param feature
+	 *            The GeoTools feature to consider.
+	 * @throws IOException
+	 */
+	protected void process(Object o) {
+
+		for(Descriptor descriptor : this.descriptors)
+			if(o != null && descriptor.matches(o))
+				this.keep(descriptor.newElement(o), descriptor);
+	}
+	
+	/**
 	 * Add a feature from the data source to the internal geometric
 	 * representation of the studied space.
 	 * 

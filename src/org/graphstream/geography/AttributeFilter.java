@@ -34,9 +34,15 @@ package org.graphstream.geography;
 import java.util.HashSet;
 
 /**
- * Specify which attributes are kept or filtered when importing data.
+ * Specify which attributes must be kept/filtered when converting an geographic
+ * object from a library-dependent format to the simple geometric one.
+ * 
+ * A filter has a mode. If it is KEEP, only the matched attributes will be kept
+ * in the converted element. If is is FILTER, all attributes except the matched
+ * ones will be kept.
  * 
  * @author Antoine Dutot
+ * @author Merwan Achibet
  */
 public class AttributeFilter {
 
@@ -58,7 +64,7 @@ public class AttributeFilter {
 	protected HashSet<String> attributes = new HashSet<String>();
 
 	/**
-	 * New filter with the KEEP mode.
+	 * Instantiate a new filter with the KEEP mode.
 	 */
 	public AttributeFilter() {
 
@@ -66,10 +72,10 @@ public class AttributeFilter {
 	}
 
 	/**
-	 * New filter with the given mode.
+	 * instantiate a new filter with the given mode.
 	 * 
 	 * @param mode
-	 *            The mode (Mode.KEEP or Mode.FILTER).
+	 *            The filtering mode.
 	 */
 	public AttributeFilter(Mode mode) {
 
@@ -77,54 +83,33 @@ public class AttributeFilter {
 	}
 
 	/**
-	 * New filter with the given mode.
-	 * 
-	 * @param keep
-	 *            If true, the set contains attributes to preserve, else it
-	 *            contains attributes to ignore.
-	 */
-	public AttributeFilter(boolean keep) {
-
-		this.mode = keep ? Mode.KEEP : Mode.FILTER;
-	}
-
-	// Access
-
-	/**
-	 * True if the attribute must be ignored.
+	 * Check if an attribute must be kept.
 	 * 
 	 * @param attribute
-	 *            The attribute to test.
-	 * @return False if the attribute must be stored.
-	 */
-	public boolean isFiltered(String attribute) {
-
-		if(mode == Mode.KEEP)
-			return !attributes.contains(attribute);
-
-		return attributes.contains(attribute);
-	}
-
-	/**
-	 * True if the attribute must not be considered.
-	 * 
-	 * @param attribute
-	 *            The attribute to test.
-	 * @return False if the attribute must be stored.
+	 *            The name of the attribute to check.
+	 * @return True if the attribute must be kept, false if it must be ignored.
 	 */
 	public boolean isKept(String attribute) {
 
-		if(mode == Mode.KEEP)
-			return attributes.contains(attribute);
-
-		return !attributes.contains(attribute);
+		return mode == Mode.KEEP ? attributes.contains(attribute) : !attributes.contains(attribute);
 	}
 
 	/**
-	 * True if the set of attributes defines the attributes to conserve and
-	 * store.
+	 * Check if an attribute must be ignored.
 	 * 
-	 * @return False if the set of attributes define what must be ignored.
+	 * @param attribute
+	 *            The name of the attribute to check.
+	 * @return True if the attribute must be ignored, false if it must be kept.
+	 */
+	public boolean isFiltered(String attribute) {
+
+		return mode == Mode.KEEP ? !attributes.contains(attribute) : attributes.contains(attribute);
+	}
+
+	/**
+	 * Check if the filter defines the attributes to keep.
+	 * 
+	 * @return True if matching attributes are kept, false otherwise.
 	 */
 	public boolean isKeepMode() {
 
@@ -132,22 +117,20 @@ public class AttributeFilter {
 	}
 
 	/**
-	 * True if the set of attributes defines the attributes to filter.
+	 * Check if the filter defines the attributes to ignore.
 	 * 
-	 * @return False if the set of attributes define what must be kept.
+	 * @return True if matching attributes are ignored, false otherwise.
 	 */
-	public boolean isFilterMode() {
+	boolean isFilterMode() {
 
 		return mode == Mode.FILTER;
 	}
 
-	// Command
-
 	/**
-	 * Add an attribute in the set of kept or filtered attributes.
+	 * Add an attribute in the set of kept/filtered attributes.
 	 * 
 	 * @param attribute
-	 *            The attribute to add to the set.
+	 *            The attribute name.
 	 */
 	public void add(String attribute) {
 
@@ -155,31 +138,29 @@ public class AttributeFilter {
 	}
 
 	/**
-	 * Remove and attribute of the set of kept or filtered attributes.
+	 * Remove an attribute from the set of kept/filtered attributes.
 	 * 
 	 * @param attribute
-	 *            The attribute to remove from the set.
+	 *            The attribute name.
 	 */
 	public void remove(String attribute) {
 
 		attributes.remove(attribute);
 	}
 
+	@Override
 	public String toString() {
 
 		String s = new String();
 
-		s += super.toString() + " ";
+		s += "AttributeFilter";
 
-		if(this.attributes != null) {
+		s += " | mode: " + this.mode;
 
-			s += "will " + (this.mode == Mode.KEEP ? "keep" : "filter") + " { ";
-			
-			for(String key : this.attributes)
-				s += key + " ";
-			
-			s += "}";
-		}
+		s += " | attributes: {";
+		for(String key : this.attributes)
+			s += " " + key;
+		s += " }";
 
 		return s;
 	}

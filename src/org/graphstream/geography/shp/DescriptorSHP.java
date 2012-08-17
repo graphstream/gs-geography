@@ -169,12 +169,12 @@ public class DescriptorSHP extends Descriptor {
 
 		// TODO same for DescriptorOSM
 		if(this.onlyLineEndPointsConsidered) {
-			line.addPoint(coords[0].x, coords[0].y);
-			line.addPoint(coords[coords.length-1].x, coords[coords.length-1].y);
+			line.addPoint(null, coords[0].x, coords[0].y);
+			line.addPoint(null, coords[coords.length-1].x, coords[coords.length-1].y);
 		}
 		else
 			for(int i = 0; i < coords.length; ++i)
-				line.addPoint(coords[i].x, coords[i].y);
+				line.addPoint(null, coords[i].x, coords[i].y);
 
 		// Bind the attributes according to the filter.
 
@@ -203,7 +203,7 @@ public class DescriptorSHP extends Descriptor {
 		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
 
 		for(int i = 0; i < coords.length; ++i)
-			polygon.addPoint(coords[i].x, coords[i].y); // TODO what ID?
+			polygon.addPoint(null, coords[i].x, coords[i].y);
 
 		// Bind the attributes according to the filter.
 

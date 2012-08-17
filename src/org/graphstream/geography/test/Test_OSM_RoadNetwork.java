@@ -36,6 +36,11 @@ import org.graphstream.geography.osm.GeoSourceOSM_RoadNetwork;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 
+/**
+ * Test the import of a road network from an OpenStreetMap XML file.
+ * 
+ * @author Merwan Achibet
+ */
 public class Test_OSM_RoadNetwork {
 
 	public static void main(String args[]) {
@@ -44,9 +49,9 @@ public class Test_OSM_RoadNetwork {
 
 		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork("/home/merwan/map.osm");
 		src.addSink(graph);
-		
+
 		src.transform();
-		
+
 		graph.display(false);
 	}
 

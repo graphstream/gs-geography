@@ -73,7 +73,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		descriptorBuilding.mustHave("building", "yes");
 
 		addDescriptor(descriptorBuilding);
-		
+
 		//
 			
 		read();

@@ -36,12 +36,11 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 
 /**
- * Test the shapefile import.
+ * Test the import of a road network from a Navteq shapefile;
  * 
  * @author Antoine Dutot
  * @author Merwan Achibet
  */
-
 public class Test_Navteq {
 
 	public static void main(String[] args) {
@@ -52,10 +51,10 @@ public class Test_Navteq {
 		src.addSink(graph);
 
 		src.transform();
-		
-		//graph.display(false);
-		
+
+		// graph.display(false);
+
 		System.out.println(graph.getNodeCount());
 	}
-	
+
 }

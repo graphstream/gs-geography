@@ -36,20 +36,33 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Definition of some elements that the user wants to keep in/out of the output
- * graph.
+ * The descriptor is the main tool to select geographic objects, filter them and
+ * convert them from a library-dependent format to a more standard
+ * representation.
  * 
  * The heart of a descriptor is its matching method. If an object matches the
  * inner definition of a descriptor then it is kept for the next step of the
- * import. The attributes of the element are also filtered using the attribute
- * filter provided via the constructor.
+ * import. The user can specify the geometric type of the objects he wants to
+ * consider (points, lines or polygons) and the attributes they should possess.
  * 
- * Descriptors are in charge of converting input geographical features into
+ * Descriptors are also in charge of converting input geographical objects into
  * GraphStream geometric elements (simple Points, Lines and Polygons with
  * attributes). As such, the implementation of a descriptor needs to be capable
- * of determining the type of a feature (point, line or polygon) and to
- * instantiate new Points, Lines and Polygons from the input format of the
- * considered objects by means of the isXXX() and newXXX() methods.
+ * of determining the type of a feature and of instantiating a new Point, Line
+ * and Polygon from the input format of the considered object by means of the
+ * isXXX() and newXXX() methods.
+ * 
+ * Moreover, the library-specific object is only converted after it has been
+ * matched (for efficiency reasons). Thus, a descriptor must be capable of
+ * reading its attribute from its original format.
+ * 
+ * For all these reasons, each implementation of the Descriptor base class must
+ * focus on a single input format.
+ * 
+ * Note that the attributes of matched elements are reduced to the set of
+ * attributes specified by the user through a filtering process. This way, a lot
+ * of memory is saved (some geographic files are huge) and the output graph is
+ * not cluttered by meaningless data.
  * 
  * @author Merwan Achibet
  */
@@ -61,18 +74,18 @@ public abstract class Descriptor {
 	protected GeoSource source;
 
 	/**
-	 * The ID of the described class of elements.
+	 * The category name that will be attached to matched elements.
 	 */
 	protected String category;
 
 	/**
-	 * Filter for the attributes of the described element.
+	 * The filter for the attributes of matched elements.
 	 */
 	protected AttributeFilter filter;
 
 	/**
-	 * Optional element type (point, line, polygon) to filter down the features
-	 * matched by this descriptor.
+	 * Optional element type (point, line or polygon) used to filter down the
+	 * features matched by this descriptor.
 	 */
 	protected Element.Type type;
 
@@ -82,52 +95,87 @@ public abstract class Descriptor {
 	protected List<String> mustHaveKeys;
 
 	/**
-	 * Optional list of attribute keys/values that a matching feature must have.
+	 * Optional list of attribute keys/values pairs that a matching feature must
+	 * have.
 	 */
 	protected HashMap<String, Object> mustHaveValues;
 
 	/**
 	 * Should matching elements be stored in the spatial index?
+	 * 
+	 * In some cases, geographic elements should be referenced in a spatial
+	 * index to query them faster and ask questions like
+	 * "what point are at (x,y)?" (especially with huge data sets or
+	 * position-based relationships). In other cases, a spatial index is useless
+	 * and would only slow down the import process. It is the user choice to
+	 * decide if he needs to reference spatially the described elements and it
+	 * really depends on what he wants to achieve.
+	 * 
+	 * Note that this flag is descriptor-dependent because a category of
+	 * elements (like points representing crossroads) could benefit from being
+	 * spatially referenced whereas an other category of feature (like lines
+	 * representing roads) could not.
 	 */
 	protected boolean toSpatialIndex;
-	
+
 	/**
 	 * Should we consider the full line or only its end points?
+	 * 
+	 * When this flag is set to true, the intermediary points of lines are
+	 * ignored and only their extremities are considered. Ignoring these points
+	 * can be appropriate when intermediary points only serves to shape the line
+	 * and have no meaning other that this esthetic one.
 	 */
 	protected boolean onlyLineEndPointsConsidered;
-	
+
 	/**
-	 * Instantiate a descriptor.
+	 * Instantiate a new descriptor.
 	 * 
 	 * @param source
+	 *            The source using this descriptor.
 	 * @param category
+	 *            The category associated with matching elements.
 	 * @param filter
+	 *            The filter that will reduce the attributes of matching
+	 *            elements.
 	 */
 	public Descriptor(GeoSource source, String category, AttributeFilter filter) {
 
 		this.source = source;
 		this.category = category;
 		this.filter = filter;
-		
+
 		this.toSpatialIndex = false;
 		this.onlyLineEndPointsConsidered = false;
 	}
 
+	/**
+	 * Set the descriptor to reference matching elements in a spatial index.
+	 */
 	public void sendElementsToSpatialIndex() {
-		
+
 		this.toSpatialIndex = true;
 	}
-	
+
+	/**
+	 * Check if matching elements are referenced in a spatial index.
+	 * 
+	 * @return True if matching elements are spatially referenced, false
+	 *         otherwise.
+	 */
 	public boolean areElementsSentToSpatialIndex() {
-		
+
 		return this.toSpatialIndex;
 	}
-	
+
+	/**
+	 * Set the descriptor to ignore the middle points of lines.
+	 */
 	public void onlyConsiderLineEndPoints() {
-	
+
 		this.onlyLineEndPointsConsidered = true;
 	}
-	
+
 	/**
 	 * Give the name of the category of elements described by the descriptor.
 	 * 
@@ -138,11 +186,26 @@ public abstract class Descriptor {
 		return new String(this.category);
 	}
 
+	/**
+	 * Specify the geometric type of geographic objects described by this
+	 * descriptor.
+	 * 
+	 * @param type
+	 *            The geometric type of wanted objects.
+	 */
 	public void mustBe(Element.Type type) {
 
 		this.type = type;
 	}
 
+	/**
+	 * Specify an attribute key that geographic objects must possess to be kept.
+	 * 
+	 * These keys are accumulated with each call of this method.
+	 * 
+	 * @param attributeKey
+	 *            The key of the attribute.
+	 */
 	public void mustHave(String attributeKey) {
 
 		if(this.mustHaveKeys == null)
@@ -151,6 +214,17 @@ public abstract class Descriptor {
 		this.mustHaveKeys.add(attributeKey);
 	}
 
+	/**
+	 * Specify an attribute key/value pair that geographic objects must possess
+	 * to be kept.
+	 * 
+	 * These keys/values are accumulated with each call of this method.
+	 * 
+	 * @param attributeKey
+	 *            The key of the attribute.
+	 * @param attributeValue
+	 *            The value of the attribute.
+	 */
 	public void mustHave(String attributeKey, Object attributeValue) {
 
 		if(this.mustHaveValues == null)
@@ -163,10 +237,13 @@ public abstract class Descriptor {
 	 * Check if the supplied feature conforms to the inner definition of the
 	 * descriptor.
 	 * 
-	 * @param element
-	 *            The considered element.
-	 * @return True if the element should be categorized by the descriptor,
-	 *         false otherwise.
+	 * If yes, the feature will be kept in memory and converted to a filtered
+	 * standard geometric element.
+	 * 
+	 * @param o
+	 *            The considered feature.
+	 * @return True if the element conforms to the descriptor definition, false
+	 *         otherwise.
 	 */
 	public boolean matches(Object o) {
 
@@ -188,62 +265,42 @@ public abstract class Descriptor {
 			for(String key : this.mustHaveValues.keySet())
 				if(!hasKeyValue(key, this.mustHaveValues.get(key), o))
 					return false;
-		
+
 		return true;
 	}
 
-	public String toString() {
-
-		String s = new String();
-
-		s += super.toString() + " ";
-
-		if(this.mustHaveKeys != null) {
-
-			s += "must have keys { ";
-			
-			for(String key : this.mustHaveKeys)
-				s += key + " ";
-			
-			s += "} ";
-		}
-
-		if(this.mustHaveValues != null) {
-		
-			s += "must have key/value pairs { ";
-			
-			for(String key : this.mustHaveValues.keySet())
-				s += key + "/" + this.mustHaveValues.get(key) + " ";
-			
-			s += "}";
-		}
-
-		return s;
-	}
-
+	/**
+	 * Check if a geographic feature has a specific geometric type.
+	 * 
+	 * @param type
+	 *            The geometric type.
+	 * @param o
+	 *            The geographic object.
+	 * @return True is the object has the same type, false otherwise?
+	 */
 	public boolean isOfType(Element.Type type, Object o) {
 
 		if(type == Element.Type.POINT)
 			return isPoint(o);
-		
+
 		if(type == Element.Type.LINE)
 			return isLine(o);
-		
+
 		if(type == Element.Type.POLYGON)
 			return isPolygon(o);
-	
+
 		return false;
 	}
-	
+
 	/**
-	 * Give the considered feature in the GraphStream geometric format.
+	 * Give a geographic object in the standard geometric format.
 	 * 
 	 * @param o
-	 *            The feature to convert.
+	 *            The object to convert.
 	 * @return A simple geometric element.
 	 */
 	public Element newElement(Object o) {
-		
+
 		if(isPoint(o))
 			return newPoint(o);
 		else if(isLine(o))
@@ -256,69 +313,125 @@ public abstract class Descriptor {
 		return null;
 	}
 
+	@Override
+	public String toString() {
+
+		String s = new String();
+
+		s += "Descriptor";
+
+		if(this.type != null)
+			s += " | type: " + this.type.toString();
+
+		if(this.mustHaveKeys != null) {
+
+			s += " | keys: { ";
+
+			for(String key : this.mustHaveKeys)
+				s += key + " ";
+
+			s += "}";
+		}
+
+		if(this.mustHaveValues != null) {
+
+			s += " | key/value pairs: { ";
+
+			for(String key : this.mustHaveValues.keySet())
+				s += key + "/" + this.mustHaveValues.get(key) + " ";
+
+			s += "}";
+		}
+
+		return s;
+	}
+
 	// Abstract
 
 	/**
-	 * Check if the supplied feature is a point according to the descriptor
-	 * rules.
+	 * Check if a geographic object, in its library-dependent form, represents a
+	 * point.
 	 * 
 	 * @param o
-	 *            The considered feature.
-	 * @return True if the feature is a point, false otherwise (line or
-	 *         polygon).
+	 *            The geographic object.
+	 * @return True if the object is a point, false otherwise.
 	 */
 	protected abstract boolean isPoint(Object o);
 
 	/**
-	 * Check if the supplied feature is a line according to the descriptor
-	 * rules.
+	 * Check if a geographic object, in its library-dependent form, represents a
+	 * line.
 	 * 
 	 * @param o
-	 *            The considered feature.
-	 * @return True if the feature is a line, false otherwise (point or
-	 *         polygon).
+	 *            The geographic object.
+	 * @return True if the object is a line, false otherwise.
 	 */
 	protected abstract boolean isLine(Object o);
-	
+
 	/**
-	 * Check if the supplied feature is a polygon according to the descriptor
-	 * rules.
+	 * Check if a geographic object, in its library-dependent form, represents a
+	 * polygon.
 	 * 
 	 * @param o
-	 *            The considered feature.
-	 * @return True if the feature is a polygon, false otherwise (point or
-	 *         polygon).
+	 *            The geographic object.
+	 * @return True if the object is a polygon, false otherwise.
 	 */
 	protected abstract boolean isPolygon(Object o);
 
-	protected abstract boolean hasKey(String key, Object o);
-	
-	protected abstract boolean hasKeyValue(String key, Object value, Object o);
-	
 	/**
-	 * Give a GraphStream geometric element based on the supplied feature.
+	 * Check if a geographic object, in its library-dependent form, possess a
+	 * specific attribute key.
+	 * 
+	 * @param key
+	 *            The attribute key.
+	 * @param o
+	 *            The geographic object.
+	 * @return True if the object has the attribute key, false otherwise.
+	 */
+	protected abstract boolean hasKey(String key, Object o);
+
+	/**
+	 * Check if a geographic object, in its library-dependent form, possess a
+	 * specific attribute key and a matching value.
+	 * 
+	 * @param key
+	 *            The attribute key.
+	 * @param value
+	 *            The attribute value.
+	 * @param o
+	 *            The geographic object.
+	 * @return True if the object has the attribute key and the same value,
+	 *         false otherwise.
+	 */
+	protected abstract boolean hasKeyValue(String key, Object value, Object o);
+
+	/**
+	 * Give a simple point representation based on the supplied
+	 * library-dependent geographical object.
 	 * 
 	 * @param o
 	 *            The object to convert.
-	 * @return A graphStream geometric element.
+	 * @return A standard point.
 	 */
 	protected abstract Point newPoint(Object o);
-	
+
 	/**
-	 * Give a GraphStream geometric element based on the supplied feature.
+	 * Give a simple line representation based on the supplied
+	 * library-dependent geographical object.
 	 * 
 	 * @param o
 	 *            The object to convert.
-	 * @return A graphStream geometric element.
+	 * @return A standard line.
 	 */
 	protected abstract Line newLine(Object o);
 
 	/**
-	 * Give a GraphStream geometric element based on the supplied feature.
+	 * Give a simple polygon representation based on the supplied
+	 * library-dependent geographical object.
 	 * 
 	 * @param o
 	 *            The object to convert.
-	 * @return A graphStream geometric element.
+	 * @return A standard polygon.
 	 */
 	protected abstract Line newPolygon(Object o);
 

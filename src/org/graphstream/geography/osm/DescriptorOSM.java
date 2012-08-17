@@ -187,12 +187,12 @@ public class DescriptorOSM extends Descriptor {
 			nu.xom.Element firstNode = lineNodes.get(0);
 			String firstNodeId = firstNode.getAttributeValue("ref");
 			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(firstNodeId);
-			line.addPoint(coord.x, coord.y);
+			line.addPoint(firstNodeId, coord.x, coord.y);
 			
 			nu.xom.Element lastNode = lineNodes.get(lineNodes.size()-1);
 			String lastNodeId = lastNode.getAttributeValue("ref");
 			coord = ((GeoSourceOSM)this.source).getNodePosition(lastNodeId);
-			line.addPoint(coord.x, coord.y);
+			line.addPoint(lastNodeId, coord.x, coord.y);
 		}
 		else
 			for(int i = 0, l = lineNodes.size(); i < l; ++i) {
@@ -200,7 +200,7 @@ public class DescriptorOSM extends Descriptor {
 				nu.xom.Element lineNode = lineNodes.get(i);
 				String lineNodeId = lineNode.getAttributeValue("ref");
 				Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(lineNodeId);
-				line.addPoint(coord.x, coord.y);
+				line.addPoint(lineNodeId, coord.x, coord.y);
 			}
 
 		// Bind the attributes according to the filter.
@@ -233,11 +233,11 @@ public class DescriptorOSM extends Descriptor {
 
 			nu.xom.Element polygonNode = polygonNodes.get(i);
 
-			String lineNodeId = polygonNode.getAttributeValue("ref");
+			String polygonNodeId = polygonNode.getAttributeValue("ref");
 
-			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(lineNodeId);
+			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(polygonNodeId);
 
-			polygon.addPoint(coord.x, coord.y);
+			polygon.addPoint(polygonNodeId, coord.x, coord.y);
 		}
 
 		// Bind the attributes according to the filter.

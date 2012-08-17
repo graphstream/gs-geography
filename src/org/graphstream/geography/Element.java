@@ -46,8 +46,8 @@ import org.graphstream.geography.index.SpatialIndexPoint;
  * heterogeneous as the data they contain is library-dependent and we don't want
  * to force the user to learn GeoTools, XOM or whatever other library.
  * 
- * An Element consists of an identifier and a list of attributes copied from the
- * original format of the feature (potentially filtered).
+ * An Element consists of a unique identifier and a list of attributes copied
+ * from the original format of the feature (potentially filtered).
  * 
  * @author Merwan Achibet
  */
@@ -63,7 +63,7 @@ public abstract class Element {
 	protected String id;
 
 	/**
-	 * The category of the feature (attributed by the descriptor that
+	 * The category of the element (attributed by the descriptor that
 	 * instantiated the object from a matching feature).
 	 */
 	protected String category;
@@ -77,7 +77,9 @@ public abstract class Element {
 	 * Instantiate a new element.
 	 * 
 	 * @param id
-	 *            The identifier of the element.
+	 *            The element ID.
+	 * @param category
+	 *            The element category.
 	 */
 	public Element(String id, String category) {
 
@@ -108,7 +110,7 @@ public abstract class Element {
 	}
 
 	/**
-	 * Give the value of the attribute which name is supplied.
+	 * Give the value of a stored attribute.
 	 * 
 	 * @param key
 	 *            The key of the attribute.
@@ -120,9 +122,9 @@ public abstract class Element {
 	}
 
 	/**
-	 * Give all of the element attributes.
+	 * Give all of the stored attributes.
 	 * 
-	 * @return The attributes.
+	 * @return A list of key/value pairs.
 	 */
 	public HashMap<String, Object> getAttributes() {
 
@@ -130,11 +132,11 @@ public abstract class Element {
 	}
 
 	/**
-	 * Check if the element possesses the supplied attribute.
+	 * Check if the element possesses an attribute.
 	 * 
 	 * @param key
 	 *            The key of the attribute.
-	 * @return True if the attribute is contained within the element, false
+	 * @return True if the attribute is possessed by the element, false
 	 *         otherwise.
 	 */
 	public boolean hasAttribute(String key) {
@@ -150,7 +152,7 @@ public abstract class Element {
 	 *            The key of the attribute.
 	 * @param value
 	 *            The value that the attribute should have.
-	 * @return True if the attribute matches.
+	 * @return True if the attribute matches, false otherwise.
 	 */
 	public boolean hasAttribute(String key, Object value) {
 
@@ -158,7 +160,7 @@ public abstract class Element {
 	}
 
 	/**
-	 * Add an key/value pair to the element as an attribute.
+	 * Add an attribute to the element.
 	 * 
 	 * @param key
 	 *            The key of the attribute.
@@ -181,27 +183,13 @@ public abstract class Element {
 		this.attributes.remove(key);
 	}
 
-	public String toString() {
-
-		String s = new String();
-
-		if(isPoint())
-			s += "Point ";
-		else if(isLine())
-			s += "Line ";
-		else if(isPolygon())
-			s += "Polygon ";
-
-		s += "[" + this.id + "] ";
-
-		s += "{ ";
-		for(String key : this.attributes.keySet())
-			s += key + ":" + this.attributes.get(key) + " ";
-		s += "}";
-
-		return s;
-	}
-
+	/**
+	 * Check if the element has a specific geometric type.
+	 * 
+	 * @param type
+	 *            The geometric type.
+	 * @return True if the element has the same type, false otherwise.
+	 */
 	public boolean isType(Type type) {
 
 		if(type == Type.POINT)
@@ -235,7 +223,8 @@ public abstract class Element {
 
 		return this instanceof Line;
 	}
-
+	
+   // XXX what does "poly instanceOf Line" return? Does this really work?
 	/**
 	 * Check if the element is a polygon.
 	 * 
@@ -246,19 +235,36 @@ public abstract class Element {
 		return this instanceof Polygon;
 	}
 
+	@Override
+	public String toString() {
+
+		String s = new String();
+
+		if(isPoint())
+			s += "Point ";
+		else if(isLine())
+			s += "Line ";
+		else if(isPolygon())
+			s += "Polygon ";
+
+		s += "[" + this.id + "] ";
+
+		s += "{ ";
+		for(String key : this.attributes.keySet())
+			s += key + ":" + this.attributes.get(key) + " ";
+		s += "}";
+
+		return s;
+	}
+
 	// Abstract
 
-	public abstract List<SpatialIndexPoint> toSpatialIndexPoints();
-	
 	/**
-	 * Check if the element is placed at a given position.
+	 * Give special points that spatially represent the shape of the element and
+	 * will be stored in a spatial index.
 	 * 
-	 * @param x
-	 *            The x coordinate.
-	 * @param y
-	 *            The y coordinate.
-	 * @return True if the element is at position (x,y), false otherwise.
+	 * @return A list of spatial references to the shape of the element.
 	 */
-	public abstract boolean at(double x, double y);
+	public abstract List<SpatialIndexPoint> toSpatialIndexPoints();
 
 }

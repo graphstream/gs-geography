@@ -36,6 +36,12 @@ import org.graphstream.geography.osm.GeoSourceOSM_Neighborhood;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 
+/**
+ * Test the import of a radial neighborhood graph from an OpenStreetMap XML
+ * file.
+ * 
+ * @author Merwan Achibet
+ */
 public class Test_OSM_Neighborhood {
 
 	public static void main(String args[]) {
@@ -44,9 +50,9 @@ public class Test_OSM_Neighborhood {
 
 		GeoSource src = new GeoSourceOSM_Neighborhood("/home/merwan/map.osm", 0.0003);
 		src.addSink(graph);
-		
+
 		src.transform();
-		
+
 		graph.display(false);
 	}
 

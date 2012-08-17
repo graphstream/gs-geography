@@ -45,25 +45,49 @@ import org.miv.pherd.ntree.CellSpace;
 import org.miv.pherd.ntree.QuadtreeCellSpace;
 
 /**
- * A spatial index used to store geographical elements.
+ * A spatial index used to store point references to geometric elements.
  * 
- * TODO
+ * An instance of this class is optionally used to speed up spatial querying on
+ * huge sets of geographic objects.
  * 
  * @author Antoine Dutot
  * @author Merwan Achibet
  */
 public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 
+	/**
+	 * The
+	 */
 	protected ParticleBox box;
 
+	// TODO let the user parameterize these values?
+
+	/**
+	 * The number of points in a single cell of the quadtree.
+	 */
 	protected int pointsPerCell = 10;
 
+	/**
+	 * The maximum depth of the quadtree.
+	 */
 	protected int maxDepth = 20;
 
+	/**
+	 * The distance at which two points are considered on the same position.
+	 */
 	protected double distanceOffset = 0.1;
 
+	/**
+	 * The number of addition/removal before a reorganization of the quadtree is
+	 * needed.
+	 */
 	protected int stepsbetweenReorganizations = 10000;
 
+	protected int modificationsSinceReorganization = 0;
+
+	/**
+	 * Instantiate a new spatial index.
+	 */
 	public SpatialIndex() {
 
 		CellSpace space = new QuadtreeCellSpace(new Anchor(-1, -1, 0), new Anchor(1, 1, 0));
@@ -74,40 +98,50 @@ public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 	}
 
 	/**
-	 * Add an element to the spatial index.
+	 * Add point references to an element into the spatial index.
 	 * 
 	 * @param element
-	 *            The geographical element to add.
+	 *            The geographical element to reference.
 	 */
 	public void add(Element element) {
 
 		List<SpatialIndexPoint> points = element.toSpatialIndexPoints();
 
-		for(SpatialIndexPoint point : points)
+		for(SpatialIndexPoint point : points) {
+
 			this.box.addParticle(point);
+
+			++this.modificationsSinceReorganization;
+		}
 
 		checkForReorganization();
 	}
 
 	/**
-	 * Remove an element from the spatial index.
+	 * Remove a point reference from the spatial index.
 	 * 
 	 * @param element
-	 *            The geographical element to remove.
+	 *            The element to remove the reference of.
 	 */
 	public void remove(Element element) {
 
 		this.box.removeParticle(element.getId());
 
+		++this.modificationsSinceReorganization;
+
 		checkForReorganization();
 	}
 
 	/**
-	 * TODO
+	 * Recompute the quadtree structure if necessary.
+	 * 
+	 * If it is called often, the quadtree will be efficiently structured but if
+	 * it is called too often the import process will be slown down a lot so an
+	 * appropriate middle ground has to be found.
 	 */
 	protected void checkForReorganization() {
 
-		if(this.box.getParticleCount() % this.stepsbetweenReorganizations == 0)
+		if(this.modificationsSinceReorganization > this.stepsbetweenReorganizations)
 			this.box.step();
 	}
 
@@ -125,7 +159,7 @@ public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 	 * Check if an element is already stored in the spatial index.
 	 * 
 	 * @param element
-	 *            The queried element.
+	 *            The element.
 	 * @return True if the element is already in the index, false otherwise.
 	 */
 	public boolean contains(Element element) {
@@ -134,26 +168,39 @@ public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 	}
 
 	/**
-	 * TODO
+	 * Give the elements at a specific position.
+	 * 
+	 * The position criterion is based on a distance calculation which depends
+	 * on the distance offset of the spatial index. This value can be
+	 * parameterized and must be chosed appropriately with the scale of the
+	 * input data.
 	 * 
 	 * @param x
+	 *            The x-axis coordinate.
 	 * @param y
-	 * @return
+	 *            The y-axis coordinate.
+	 * @return A list of elements at this position.
 	 */
 	public ArrayList<Element> getElementsAt(double x, double y) {
 
+		// Start the descent from the root of the quadtree.
+		
 		Cell root = this.box.getNTree().getRootCell();
-
+		
 		return searchInCell(root, x, y);
 	}
 
 	/**
-	 * TODO
+	 * Recursively go down the quadtree until a leaf has been found and give the
+	 * list of points of that cell that are at a given position.
 	 * 
 	 * @param cell
+	 *            The current cell of the quadtree.
 	 * @param x
+	 *            The x-axis coordinate.
 	 * @param y
-	 * @return
+	 *            The y-axis coordinate.
+	 * @return A list of elements at this position.
 	 */
 	protected ArrayList<Element> searchInCell(Cell cell, double x, double y) {
 
@@ -192,6 +239,9 @@ public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 		return null;
 	}
 
+	/**
+	 * TODO
+	 */
 	public Iterator<SpatialIndexPoint> iterator() {
 
 		return (Iterator<SpatialIndexPoint>)this.box.getNTree().getRootCell().getParticles();

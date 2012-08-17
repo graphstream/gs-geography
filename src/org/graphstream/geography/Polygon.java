@@ -41,14 +41,43 @@ import com.vividsolutions.jts.geom.Coordinate;
  * its shape and a set of attributes copied from its original format
  * (potentially filtered).
  * 
+ * A polygon essentially is a line for which the starting point is the same as
+ * the ending point. In other words, a polygon is a closed line.
+ * 
  * @author Merwan Achibet
  */
 public class Polygon extends Line {
 
+	/**
+	 * Instantiate a new polygon.
+	 * 
+	 * @param id
+	 *            The polygon ID.
+	 */
+	public Polygon(String id) {
+		this(id, null);
+	}
+
+	/**
+	 * Instantiate a new polygon.
+	 * 
+	 * @param id
+	 *            The polygon ID.
+	 * @param category
+	 *            The polygon category.
+	 */
 	public Polygon(String id, String category) {
 		super(id, category);
 	}
 
+	/**
+	 * Give the centroid of the polygon.
+	 * 
+	 * It can be useful to retrieve this value when in need of an appropriate
+	 * position to place a graph node representing the polygon.
+	 * 
+	 * @return The coordinate of the polygon centroid.
+	 */
 	public Coordinate getCentroid() {
 
 		Coordinate sum = new Coordinate();

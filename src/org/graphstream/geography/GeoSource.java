@@ -38,18 +38,15 @@ import org.graphstream.geography.index.SpatialIndex;
 import org.graphstream.stream.SourceBase;
 
 /**
- * Abstract source for geographical data files.
+ * Abstract source for geographic files.
  * 
- * It contains a list of descriptors which goal is to filter and classify the
- * features coming from data sources. This process has dual advantages. First,
- * it obviously gives better control to the user over the data as he can bind
- * matching features to custom categories (e.g. "ROAD", "LAKE", "LAND LOT") for
- * a later use. Secondly, geographical data files are often huge in size and
- * reducing the memory usage at the first step of the import surely is a good
- * idea.
+ * This class and its implementations are the core of the import process. They
+ * possess a list of descriptors to select, filter and categorize interesting
+ * geographic objects from the input files.
  * 
- * All the geographical elements that pass the descriptors matching tests are
- * kept in memory in a spatial index whereas the others are simply ignored.
+ * All the geographical elements that pass descriptors matching tests are kept
+ * in memory and optionally referenced in a spatial index whereas the others are
+ * simply ignored.
  * 
  * @author Merwan Achibet
  */
@@ -61,27 +58,23 @@ public abstract class GeoSource extends SourceBase {
 	protected String sourceId;
 
 	/**
-	 * Descriptors for the features that we want to consider.
+	 * Descriptors for the geographic objects that the user want to consider.
 	 */
 	protected ArrayList<Descriptor> descriptors;
 
 	/**
-	 * 
+	 * The geometric elements that matched any of the descriptors definitions.
 	 */
 	protected ArrayList<Element> elements;
 
 	/**
-	 * Spatial index storing geometric elements representing features.
+	 * Index spatially referencing the spatial points shaping the kept elements.
 	 */
 	protected SpatialIndex index;
 
 	/**
-	 * Should the matching elements be stored in the spatial index? It can be
-	 * useful to switch this value when sequentially considering different
-	 * categories of features that must/must not be spatially queried.
+	 * Instantiate a new geographic source.
 	 */
-	protected boolean useSpatialIndex;
-
 	protected GeoSource() {
 
 		this.sourceId = String.format("<GeoSource %x>", System.nanoTime());
@@ -89,14 +82,13 @@ public abstract class GeoSource extends SourceBase {
 		this.descriptors = new ArrayList<Descriptor>();
 
 		this.elements = new ArrayList<Element>();
-
-		this.useSpatialIndex = false;
 	}
 
 	/**
-	 * Add a descriptor to filter geographical data.
+	 * Add a descriptor to select and categorize geographic objects.
 	 * 
 	 * @param descriptor
+	 *            The descriptor.
 	 */
 	public void addDescriptor(Descriptor descriptor) {
 
@@ -104,13 +96,12 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * Process a single feature coming from the data source and check if it
-	 * suits the user's needs. If it is the case, keep it for a later use,
+	 * Process a single geographic object coming from the data source and check
+	 * if it suits the user's needs. If it is the case, keep it for a later use,
 	 * ignore it otherwise.
 	 * 
-	 * @param feature
-	 *            The GeoTools feature to consider.
-	 * @throws IOException
+	 * @param o
+	 *            The geometric object to check.
 	 */
 	protected void process(Object o) {
 
@@ -120,19 +111,19 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * Add a feature from the data source to the internal geometric
-	 * representation of the studied space.
+	 * Add a geometric element to the list of kept elements and optionally
+	 * reference it in a spatial index.
 	 * 
 	 * @param element
 	 *            The element to add.
 	 * @param descriptor
-	 *            The descriptor that classified the element.
+	 *            The descriptor that classified the elements.
 	 */
-	public void keep(Element element, Descriptor descriptor) {
+	protected void keep(Element element, Descriptor descriptor) {
 
 		this.elements.add(element);
 
-		if(descriptor.areElementsSentToSpatialIndex())
+		if(this.index != null && descriptor.areElementsSentToSpatialIndex())
 			this.index.add(element);
 	}
 
@@ -149,20 +140,27 @@ public abstract class GeoSource extends SourceBase {
 	protected abstract void begin(String fileName) throws IOException;
 
 	/**
-	 * 
+	 * Go through all the data of the input file.
 	 */
 	protected abstract void traverse();
 
 	/**
-	 * Finalize the data import, generally by closing input data sources.
+	 * Finalize the data import, generally by closing input data sources and
+	 * freeing resources.
 	 * 
 	 * @throws IOException
 	 */
 	protected abstract void end() throws IOException;
 
 	/**
-	 * Convert the geographical elements accumulated during the reading step to
-	 * graph elements.
+	 * Populate the output graph from the geometric elements accumulated during
+	 * the selection phase.
+	 * 
+	 * This is were the magic happens. A programmer that wants to build a
+	 * specific implementation of GeoSource will do most of its work in this
+	 * method. A geographer that simply wants to import geographic data into a
+	 * graph will prefer to directly use an implemented use-case.
 	 */
 	public abstract void transform();
+
 }

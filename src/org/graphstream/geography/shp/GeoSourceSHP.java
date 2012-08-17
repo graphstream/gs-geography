@@ -58,9 +58,11 @@ public abstract class GeoSourceSHP extends GeoSource {
 	protected FeatureIterator<SimpleFeature> iterator;
 
 	public GeoSourceSHP() {
-		
+
 	}
-public int x = 0;
+
+	public int x = 0;
+
 	public void begin(String fileName) throws IOException {
 
 		if(this.iterator == null) {
@@ -73,7 +75,8 @@ public int x = 0;
 
 				String type = store.getTypeNames()[0];
 				FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource(type);
-x = source.getFeatures().size();
+				x = source.getFeatures().size();
+
 				this.iterator = source.getFeatures().features();
 			}
 			catch (IOException e) {
@@ -88,7 +91,8 @@ x = source.getFeatures().size();
 		while(this.iterator != null && this.iterator.hasNext()) {
 			process(iterator.next());
 			++y;
-			if(y % 10000 == 0) System.out.println(y + "/" + x + " (" + this.elements.size() +")");
+			if(y % 10000 == 0)
+				System.out.println(y + "/" + x + " (" + this.elements.size() + ")");
 		}
 
 		this.iterator = null;

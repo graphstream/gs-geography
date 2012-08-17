@@ -49,24 +49,53 @@ import com.vividsolutions.jts.geom.Coordinate;
  */
 public class Point extends Element {
 
+	/**
+	 * The Cartesian position of the point in the studied space.
+	 */
 	private Coordinate position;
 
+	/**
+	 * Instantiate a new point.
+	 * 
+	 * @param id
+	 *            The point ID.
+	 */
 	public Point(String id) {
-		
 		this(id, null);
 	}
-	
+
+	/**
+	 * Instantiate a new point and assign it to a specific category of elements.
+	 * 
+	 * @param id
+	 *            The point ID.
+	 * @param category
+	 *            The point category.
+	 */
 	public Point(String id, String category) {
 		super(id, category);
 
 		this.position = new Coordinate();
 	}
 
+	/**
+	 * Give the Cartesian position of the point.
+	 * 
+	 * @return The point position.
+	 */
 	public Coordinate getPosition() {
 
 		return new Coordinate(this.position);
 	}
 
+	/**
+	 * Change the Cartesian position of the point.
+	 * 
+	 * @param x
+	 *            The x-axis coordinate.
+	 * @param y
+	 *            The y-axis coordinate.
+	 */
 	public void setPosition(double x, double y) {
 
 		this.position.x = x;
@@ -74,18 +103,12 @@ public class Point extends Element {
 	}
 
 	@Override
-	public boolean at(double x, double y) {
-
-		return this.position.x == x && this.position.y == y;
-	}
-	
-	@Override
 	public List<SpatialIndexPoint> toSpatialIndexPoints() {
-		
+
 		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
-		
+
 		spatialIndexPoints.add(new SpatialIndexPoint(this, this.getId(), this.position.x, this.position.y));
-		
+
 		return spatialIndexPoints;
 	}
 

@@ -33,6 +33,7 @@ package org.graphstream.geography.shp;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Element;
+import org.graphstream.geography.index.SpatialIndex;
 
 /**
  * This geographical source implementation extracts the road network from a
@@ -57,6 +58,8 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		this.roadsFileName = roadsFileName;
 		this.zFileName = zFileName;
 
+		this.index = new SpatialIndex();
+		
 		// By default there is no attribute worth keeping.
 
 		AttributeFilter filterZ = new AttributeFilter(AttributeFilter.Mode.KEEP);

@@ -40,46 +40,86 @@ import org.graphstream.geography.index.SpatialIndexPoint;
  * A Line.
  * 
  * The goal of this class is to represent in the simpler manner possible a line
- * element. Its main features are an ID, a list of positions describing its
- * shape and a set of attributes copied from its original format (potentially
+ * element. Its main features are an ID, a list of points describing its shape
+ * and a set of attributes copied from its original format (potentially
  * filtered).
  * 
  * @author Merwan Achibet
  */
 public class Line extends Element {
 
+	/**
+	 * The list of points forming the line.
+	 */
 	protected ArrayList<Point> points;
 
+	/**
+	 * Instantiate a new line.
+	 * 
+	 * @param id
+	 *            The line ID.
+	 */
+	public Line(String id) {
+		this(id, null);
+	}
+
+	/**
+	 * Instantiate a new line.
+	 * 
+	 * @param id
+	 *            The line ID.
+	 * @param category
+	 *            The line category.
+	 */
 	public Line(String id, String category) {
 		super(id, category);
 
 		this.points = new ArrayList<Point>();
 	}
 
-	public void addPoint(double x, double y) {
+	/**
+	 * Add a point to the shape of the line.
+	 * 
+	 * @param id
+	 *            The ID of the new point.
+	 * @param x
+	 *            The x-axis coordinate of the new point.
+	 * @param y
+	 *            The y-axis coordinate of the new point.
+	 */
+	public void addPoint(String id, double x, double y) {
 
-		Point point = new Point(this.id + "_" + this.points.size(), null);
+		// If no ID is specified use the ID of the line followed by the index of
+		// the new point.
+		if(id == null)
+			id = this.id + "_" + this.points.size();
+
+		Point point = new Point(id);
 
 		point.setPosition(x, y);
 
 		this.points.add(point);
 	}
 
+	/**
+	 * Give the list of points forming the line.
+	 * 
+	 * @return The list of points.
+	 */
 	public ArrayList<Point> getPoints() {
 
 		return new ArrayList<Point>(this.points);
 	}
 
+	/**
+	 * Give the two end points of the line.
+	 * 
+	 * @return An array of point. The point at index 0 is the starting point,
+	 *         the point at index 1 is the ending point.
+	 */
 	public Point[] getEndPoints() {
 
 		return new Point[]{this.points.get(0), this.points.get(this.points.size() - 1)};
-	}
-
-	@Override
-	public boolean at(double x, double y) {
-
-		// TODO
-		return false;
 	}
 
 	@Override
@@ -88,9 +128,9 @@ public class Line extends Element {
 		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
 
 		for(Point point : this.points) {
-			
+
 			SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this, point.getId(), point.getPosition().x, point.getPosition().y);
-			
+
 			spatialIndexPoints.add(spatialIndexPoint);
 		}
 

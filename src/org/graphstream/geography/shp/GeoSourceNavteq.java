@@ -35,31 +35,42 @@ import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.index.SpatialIndex;
 
+// TODO
 /**
- * This geographical source implementation extracts the road network from a
- * Navteq shapefile and takes care of the Z-index conflicts.
+ * This geographical source implementation produces a road network from Navteq
+ * shapefiles and takes care of the Z-index conflicts.
  * 
  * @author Merwan Achibet
  */
 public class GeoSourceNavteq extends GeoSourceSHP {
 
 	/**
-	 * The name of the file describing the road network.
+	 * The path to the file describing the road network.
 	 */
 	protected String roadsFileName;
 
 	/**
-	 * The name of the file containing the Z indexes of all nodes.
+	 * The path to the file containing the Z-indexes of all nodes.
 	 */
 	protected String zFileName;
 
+	/**
+	 * Instantiate a new Navteq source producing a road network.
+	 * 
+	 * @param roadsFileName
+	 *            The path to the file containing road data.
+	 * @param zFileName
+	 *            The path to the file containing Z data.
+	 */
 	public GeoSourceNavteq(String roadsFileName, String zFileName) {
 
 		this.roadsFileName = roadsFileName;
 		this.zFileName = zFileName;
 
 		this.index = new SpatialIndex();
-		
+
+		// First: select and filter the Z-index points.
+
 		// By default there is no attribute worth keeping.
 
 		AttributeFilter filterZ = new AttributeFilter(AttributeFilter.Mode.KEEP);
@@ -71,17 +82,9 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		descriptorZ.sendElementsToSpatialIndex();
 		descriptorZ.mustHave("INTRSECT", "Y");
 
-		addDescriptor(descriptorZ);
+		// Second: select and filter the road points.
 
-		// Read the Z level file and store the data in the spatial index.
-
-		read(this.zFileName);
-
-		// Remove the descriptor.
-
-		this.descriptors.clear();
-
-		// By default there is no attribute worth keeping.
+		// By default, there is no attribute worth keeping.
 
 		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
 
@@ -89,14 +92,30 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		DescriptorSHP descriptorRoad = new DescriptorSHP(this, "Z", filterRoad);
 
-		descriptorRoad.onlyConsiderLineEndPoints();
+		//descriptorRoad.onlyConsiderLineEndPoints();
+		//descriptorRoad.sendElementsToSpatialIndex();
 		descriptorRoad.mustBe(Element.Type.LINE);
 
+		// Read the Z level file and store the data in the spatial index.
+
+		addDescriptor(descriptorZ);
+
+		read(this.zFileName);
+
+		// Read the road file.
+
+		this.descriptors.clear();
 		addDescriptor(descriptorRoad);
 
 		read(this.roadsFileName);
 	}
 
+	/**
+	 * Read a shapefile.
+	 * 
+	 * @param fileName
+	 *            The path to file.
+	 */
 	protected void read(String fileName) {
 
 		try {
@@ -112,6 +131,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	@Override
 	public void transform() {
 
+		System.out.println("Tadaaaa!");
 	}
 
 }

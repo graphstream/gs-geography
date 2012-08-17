@@ -42,12 +42,23 @@ import org.graphstream.geography.Polygon;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * A descriptor for features coming from OpenStreetMap files.
+ * Descriptor for OpenStreetMap XML files.
  * 
  * @author Merwan Achibet
  */
 public class DescriptorOSM extends Descriptor {
 
+	/**
+	 * instantiate a new OpenStreetMap descriptor.
+	 * 
+	 * @param source
+	 *            The source using this descriptor.
+	 * @param category
+	 *            The category associated with matching elements.
+	 * @param filter
+	 *            The filter that will reduce the attributes of matching
+	 *            elements.
+	 */
 	public DescriptorOSM(GeoSource source, String category, AttributeFilter filter) {
 		super(source, category, filter);
 	}
@@ -72,7 +83,7 @@ public class DescriptorOSM extends Descriptor {
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
 
 		// The name of XML entries representing lines is "way" and it must be
-		// open (otherwise it would be a polygon).
+		// open (or it would be a polygon).
 
 		return xmlElement.getLocalName().equals("way") && !isClosed(xmlElement);
 	}
@@ -84,14 +95,34 @@ public class DescriptorOSM extends Descriptor {
 
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
 
-		// A polygon is a closed way.
+		// The name of XML entries representing lines is "way" and it must be
+		// closed (or it would be a line).
 
 		return xmlElement.getLocalName().equals("way") && isClosed(xmlElement);
 	}
 
+	/**
+	 * Check if the geographic object shape is looped.
+	 * 
+	 * Line and polygons are similar in the OpenStreetMap format but polygons
+	 * have the same starting and ending point (they are closed).
+	 * 
+	 * @param xmlElement
+	 *            The XML element.
+	 * @return True ifthe element is closed, false otherwise.
+	 */
 	protected boolean isClosed(nu.xom.Element xmlElement) {
 
+		// Get all the nodes of the element.
+
 		nu.xom.Elements xmlNodes = xmlElement.getChildElements("nd");
+
+		// Check that there are child nodes.
+
+		if(xmlNodes.size() == 0)
+			return false;
+
+		// Check that the first node is the same as the last.
 
 		String idFirst = xmlNodes.get(0).getAttributeValue("ref");
 		String idLast = xmlNodes.get(xmlNodes.size() - 1).getAttributeValue("ref");
@@ -106,13 +137,9 @@ public class DescriptorOSM extends Descriptor {
 
 		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
 
-		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
-
-			nu.xom.Element xmlTag = xmlTags.get(i);
-
-			if(xmlTag.getAttribute("k").getValue().equals(key))
+		for(int i = 0, l = xmlTags.size(); i < l; ++i)
+			if(xmlTags.get(i).getAttribute("k").getValue().equals(key))
 				return true;
-		}
 
 		return false;
 	}
@@ -183,31 +210,45 @@ public class DescriptorOSM extends Descriptor {
 		nu.xom.Elements lineNodes = xmlElement.getChildElements("nd");
 
 		if(this.onlyLineEndPointsConsidered) {
-
-			nu.xom.Element firstNode = lineNodes.get(0);
-			String firstNodeId = firstNode.getAttributeValue("ref");
-			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(firstNodeId);
-			line.addPoint(firstNodeId, coord.x, coord.y);
-			
-			nu.xom.Element lastNode = lineNodes.get(lineNodes.size()-1);
-			String lastNodeId = lastNode.getAttributeValue("ref");
-			coord = ((GeoSourceOSM)this.source).getNodePosition(lastNodeId);
-			line.addPoint(lastNodeId, coord.x, coord.y);
+			addPointToLine(line, lineNodes, 0);
+			addPointToLine(line, lineNodes, lineNodes.size() - 1);
 		}
 		else
-			for(int i = 0, l = lineNodes.size(); i < l; ++i) {
-
-				nu.xom.Element lineNode = lineNodes.get(i);
-				String lineNodeId = lineNode.getAttributeValue("ref");
-				Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(lineNodeId);
-				line.addPoint(lineNodeId, coord.x, coord.y);
-			}
+			for(int i = 0, l = lineNodes.size(); i < l; ++i)
+				addPointToLine(line, lineNodes, i);
 
 		// Bind the attributes according to the filter.
 
 		bindAttributesToElement(xmlElement, line);
 
 		return line;
+	}
+
+	/**
+	 * Add a node from the OpenStreetMap XML format to the geometric
+	 * representation of the line.
+	 * 
+	 * @param line
+	 *            The line to complete.
+	 * @param xmlNodes
+	 *            The list of XML nodes shaping the line in the input format.
+	 * @param index
+	 *            The index of the input format node that must be added to the
+	 *            line.
+	 */
+	protected void addPointToLine(Line line, nu.xom.Elements xmlNodes, int index) {
+
+		// Select the appropriate sub-node.
+
+		nu.xom.Element xmlNode = xmlNodes.get(index);
+
+		// Retrieve its ID and then its position.
+
+		String nodeId = xmlNode.getAttributeValue("ref");
+		Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(nodeId);
+
+		// Complete the line shape.
+		line.addPoint(nodeId, coord.x, coord.y);
 	}
 
 	@Override
@@ -225,20 +266,14 @@ public class DescriptorOSM extends Descriptor {
 
 		Polygon polygon = new Polygon(id, getCategory());
 
-		// Shape the polygon.
+		// Shape the polygon. We can use addPointToLine(...) because a polygon
+		// extends a line. The last node is not added as a point as it is the
+		// same as the first node.
 
 		nu.xom.Elements polygonNodes = xmlElement.getChildElements("nd");
 
-		for(int i = 0, l = polygonNodes.size() - 1; i < l; ++i) {
-
-			nu.xom.Element polygonNode = polygonNodes.get(i);
-
-			String polygonNodeId = polygonNode.getAttributeValue("ref");
-
-			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(polygonNodeId);
-
-			polygon.addPoint(polygonNodeId, coord.x, coord.y);
-		}
+		for(int i = 0, l = polygonNodes.size() - 1; i < l; ++i)
+			addPointToLine(polygon, polygonNodes, i);
 
 		// Bind the attributes according to the filter.
 
@@ -249,18 +284,24 @@ public class DescriptorOSM extends Descriptor {
 
 	/**
 	 * Copy the attributes of an element from its input format to the simple
-	 * geometric format. This is where a potential attribute filter is applied.
+	 * geometric format.
+	 * 
+	 * This is where an optional attribute filter is applied.
 	 * 
 	 * @param xmlElement
-	 *            The XOM element where attributes are copied from.
+	 *            The XML element where attributes are copied from.
 	 * @param element
 	 *            The simple geometric element where filtered attributes are
 	 *            copied to.
 	 */
 	protected void bindAttributesToElement(nu.xom.Element xmlElement, Element element) {
 
+		// Retrieve all of the element attributes.
+		
 		nu.xom.Elements tags = xmlElement.getChildElements("tag");
 
+		// Only keep the ones that are explicitly asked for.
+		
 		for(int i = 0, l = tags.size(); i < l; ++i) {
 
 			nu.xom.Element tag = tags.get(i);

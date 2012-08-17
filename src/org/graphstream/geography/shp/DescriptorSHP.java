@@ -47,12 +47,23 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * A descriptor for features coming from shapefiles.
+ * Descriptor for generic shapefiles.
  * 
  * @author Merwan Achibet
  */
 public class DescriptorSHP extends Descriptor {
 
+	/**
+	 * Instantiate a new descriptor.
+	 * 
+	 * @param source
+	 *            The source using this descriptor.
+	 * @param category
+	 *            The category associated with matching elements.
+	 * @param filter
+	 *            The filter that will reduce the attributes of matching
+	 *            elements.
+	 */
 	public DescriptorSHP(GeoSource source, String category, AttributeFilter filter) {
 		super(source, category, filter);
 	}
@@ -60,9 +71,11 @@ public class DescriptorSHP extends Descriptor {
 	@Override
 	protected boolean isPoint(Object o) {
 
-		// TODO: A better way to do this?
+		// Cast the object to a GeoTools feature.
 
 		SimpleFeature feature = (SimpleFeature)o;
+
+		// TODO: A better way to do this?
 
 		return feature.getType().getGeometryDescriptor().getType().getBinding() == com.vividsolutions.jts.geom.Point.class;
 
@@ -71,9 +84,11 @@ public class DescriptorSHP extends Descriptor {
 	@Override
 	protected boolean isLine(Object o) {
 
-		// TODO: A better way to do this?
+		// Cast the object to a GeoTools feature.
 
 		SimpleFeature feature = (SimpleFeature)o;
+
+		// TODO: A better way to do this?
 
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
 
@@ -83,9 +98,11 @@ public class DescriptorSHP extends Descriptor {
 	@Override
 	protected boolean isPolygon(Object o) {
 
-		// TODO: A better way to do this?
+		// Cast the object to a GeoTools feature.
 
 		SimpleFeature feature = (SimpleFeature)o;
+
+		// TODO: A better way to do this?
 
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
 
@@ -170,7 +187,7 @@ public class DescriptorSHP extends Descriptor {
 		// TODO same for DescriptorOSM
 		if(this.onlyLineEndPointsConsidered) {
 			line.addPoint(null, coords[0].x, coords[0].y);
-			line.addPoint(null, coords[coords.length-1].x, coords[coords.length-1].y);
+			line.addPoint(null, coords[coords.length - 1].x, coords[coords.length - 1].y);
 		}
 		else
 			for(int i = 0; i < coords.length; ++i)
@@ -214,7 +231,9 @@ public class DescriptorSHP extends Descriptor {
 
 	/**
 	 * Copy the attributes of an element from its input format to the simple
-	 * geometric format. This is where a potential attribute filter is applied.
+	 * geometric format.
+	 * 
+	 * This is where an optional attribute filter is applied.
 	 * 
 	 * @param feature
 	 *            The GeoTools feature where attributes are copied from.

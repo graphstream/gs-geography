@@ -56,9 +56,18 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 */
 	private double radius;
 
+	/**
+	 * Instantiate a new OpenStreetMap source producing a neighborhood graph.
+	 * 
+	 * @param fileName
+	 *            The path to the input file.
+	 * @param radius
+	 *            The radius threshold under which two buildings are considered
+	 *            neighbors.
+	 */
 	public GeoSourceOSM_Neighborhood(String fileName, double radius) {
 		super(fileName);
-		
+
 		this.radius = radius;
 
 		// By default, there is no attribute worth keeping.
@@ -74,18 +83,21 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		addDescriptor(descriptorBuilding);
 
-		//
-			
+		// Go.
+
 		read();
 	}
 
 	@Override
 	public void transform() {
 
+		// Keep a record of the buildings that have already been inserted into
+		// the graph.
+
 		HashMap<String, Coordinate> placedBuildings = new HashMap<String, Coordinate>();
 
 		for(Element element : this.elements) {
-			
+
 			// Compute the center of the current building and add a new node at
 			// this position.
 
@@ -100,12 +112,11 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 			for(String key : element.getAttributes().keySet())
 				sendNodeAttributeAdded(this.sourceId, element.getId(), key, element.getAttribute(key));
-			
+
 			// Draw an edge between the new node and already placed ones if
 			// their distance is below the neighborhood radius.
+			// TODO there surely is a faster way to do that using the quadtree.
 
-			// TODO there surely is a faster way to do that using the quad tree.
-			
 			for(String id : placedBuildings.keySet())
 				if(centroid.distance(placedBuildings.get(id)) < this.radius)
 					sendEdgeAdded(this.sourceId, element.getId() + id, element.getId(), id, false);

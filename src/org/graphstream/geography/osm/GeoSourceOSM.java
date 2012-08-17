@@ -40,18 +40,21 @@ import org.graphstream.geography.GeoSource;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * An abstract OpenStreetMap source.
+ * Abstract OpenStreetMap source.
  * 
- * It has the capability to read OpenStreetMap XML files but the accumulated
- * data is not exploited. This work is reserved to more specific implementations
- * of this class.
+ * This class has the capability to read OpenStreetMap XML files but the
+ * accumulated data is not exploited. This work is reserved to more specific
+ * implementations.
  * 
  * @author Merwan Achibet
  */
 public abstract class GeoSourceOSM extends GeoSource {
 
+	/**
+	 * The path to the input file.
+	 */
 	protected String fileName;
-	
+
 	/**
 	 * The root of the XML document.
 	 */
@@ -63,18 +66,27 @@ public abstract class GeoSourceOSM extends GeoSource {
 	 * An OpenStreetMap XML file contains nodes which sole attributes are an ID
 	 * and a position. More complex elements such as lines and polygons contain
 	 * references (by ID) to these nodes. As a first step, each node position
-	 * must be recorded in this list for faster access to the positions of the
-	 * points forming complex features.
+	 * must thus be recorded in this list for faster access to the positions of
+	 * the points forming complex features.
 	 */
 	protected HashMap<String, Coordinate> nodePositions;
 
+	/**
+	 * Instantiate a new OpenStreetMap geographic source.
+	 * 
+	 * @param fileName
+	 *            The path to the input file.
+	 */
 	public GeoSourceOSM(String fileName) {
 
 		this.fileName = fileName;
-		
+
 		this.nodePositions = new HashMap<String, Coordinate>();
 	}
-	
+
+	/**
+	 * Read the input file.
+	 */
 	protected void read() {
 
 		try {
@@ -89,7 +101,8 @@ public abstract class GeoSourceOSM extends GeoSource {
 			e.printStackTrace();
 		}
 	}
-	
+
+	@Override
 	public void begin(String fileName) throws IOException {
 
 		try {
@@ -127,6 +140,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 		}
 	}
 
+	@Override
 	public void traverse() {
 
 		nu.xom.Elements xmlElements = this.xmlRoot.getChildElements();
@@ -135,10 +149,19 @@ public abstract class GeoSourceOSM extends GeoSource {
 			process(xmlElements.get(i));
 	}
 
+	@Override
 	public void end() throws IOException {
-		// Nothing to do.
+
+		this.xmlRoot = null;
 	}
 
+	/**
+	 * Return the position of a node with a given ID.
+	 * 
+	 * @param id
+	 *            The ID of the queried node.
+	 * @return The coordinates of the node.
+	 */
 	public Coordinate getNodePosition(String id) {
 
 		return new Coordinate(this.nodePositions.get(id));

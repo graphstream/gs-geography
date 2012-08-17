@@ -42,7 +42,7 @@ import org.graphstream.geography.Point;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * This geographical source implementation extracts the road network from an
+ * This geographical source implementation produces a road network from an
  * OpenStreetMap file.
  * 
  * @author Merwan Achibet
@@ -54,9 +54,15 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 */
 	protected List<String> addedNodeIds;
 
+	/**
+	 * Instantiate a new OpenStreetMap source producing a road network graph.
+	 * 
+	 * @param fileName
+	 *            The path to the input file.
+	 */
 	public GeoSourceOSM_RoadNetwork(String fileName) {
 		super(fileName);
-		
+
 		// By default, there are no attribute worth keeping.
 
 		AttributeFilter filterRoad = new AttributeFilter();
@@ -70,9 +76,9 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		descriptorRoad.mustHave("highway");
 
 		addDescriptor(descriptorRoad);
-		
-		//
-		
+
+		// Go.
+
 		read();
 	}
 
@@ -114,6 +120,12 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		}
 	}
 
+	/**
+	 * Add a node representing part of a road to the output graph.
+	 * 
+	 * @param point
+	 *            The point to transfer to the graph.
+	 */
 	protected void addNode(Point point) {
 
 		String nodeId = point.getId();

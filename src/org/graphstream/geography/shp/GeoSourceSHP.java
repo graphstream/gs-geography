@@ -42,27 +42,31 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
- * An abstract shapefile source.
+ * Abstract shapefile source.
  * 
- * It has the capability to read shapefiles but the accumulated data is not
- * exploited. This work is reserved to more specific implementations of this
- * class.
+ * This class has the capability to read shaefile binary files but the
+ * accumulated data is not exploited. This work is reserved to more specific
+ * implementations.
  * 
  * @author Merwan Achibet
  */
 public abstract class GeoSourceSHP extends GeoSource {
 
 	/**
-	 * Iterator on the shapefile features.
+	 * Iterator on the features from the shapefile.
 	 */
 	protected FeatureIterator<SimpleFeature> iterator;
 
+	/**
+	 * Instantiate a new shapefile source.
+	 */
 	public GeoSourceSHP() {
 
 	}
 
-	public int x = 0;
+	public int x = 0; // XXX temp
 
+	@Override
 	public void begin(String fileName) throws IOException {
 
 		if(this.iterator == null) {
@@ -86,8 +90,9 @@ public abstract class GeoSourceSHP extends GeoSource {
 		}
 	}
 
+	@Override
 	public void traverse() {
-		int y = 0;
+		int y = 0; // XXX temp
 		while(this.iterator != null && this.iterator.hasNext()) {
 			process(iterator.next());
 			++y;
@@ -98,8 +103,10 @@ public abstract class GeoSourceSHP extends GeoSource {
 		this.iterator = null;
 	}
 
+	@Override
 	public void end() throws IOException {
-		// Nothing to do.
+		
+		this.iterator = null;
 	}
 
 }

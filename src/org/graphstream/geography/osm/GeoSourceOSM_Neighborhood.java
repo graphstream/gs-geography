@@ -34,6 +34,7 @@ package org.graphstream.geography.osm;
 import java.util.HashMap;
 
 import org.graphstream.geography.AttributeFilter;
+import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.Polygon;
 
@@ -54,7 +55,13 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 * The neighborhood radius. If two buildings are separated by a distance
 	 * less than this threshold, then they are considered neighbors.
 	 */
-	private double radius;
+	protected double radius;
+
+	/**
+	 * The descriptor matching geographic objects with representations of
+	 * buildings.
+	 */
+	protected Descriptor buildingDescriptor;
 
 	/**
 	 * Instantiate a new OpenStreetMap source producing a neighborhood graph.
@@ -76,16 +83,27 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		// We are only interested in buildings.
 
-		DescriptorOSM descriptorBuilding = new DescriptorOSM(this, "BUILDINGS", filterBuilding);
+		this.buildingDescriptor = new DescriptorOSM(this, "BUILDINGS", filterBuilding);
 
-		descriptorBuilding.mustBe(Element.Type.POLYGON);
-		descriptorBuilding.mustHave("building", "yes");
+		this.buildingDescriptor.mustBe(Element.Type.POLYGON);
+		this.buildingDescriptor.mustHave("building", "yes");
 
-		addDescriptor(descriptorBuilding);
+		addDescriptor(this.buildingDescriptor);
 
 		// Go.
 
 		read();
+	}
+
+	/**
+	 * Give the descriptor matching geographic objects with representations of
+	 * buildings.
+	 * 
+	 * @return The building descriptor.
+	 */
+	public Descriptor getBuildingDescriptor() {
+
+		return this.buildingDescriptor;
 	}
 
 	@Override

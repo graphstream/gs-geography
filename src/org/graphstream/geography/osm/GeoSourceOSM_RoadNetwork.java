@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.graphstream.geography.AttributeFilter;
+import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
@@ -48,6 +49,11 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author Merwan Achibet
  */
 public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
+
+	/**
+	 * The descriptor matching geographic objects with representations of roads.
+	 */
+	protected Descriptor roadDescriptor;
 
 	/**
 	 * A record of nodes already added to the output graph.
@@ -70,16 +76,27 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		// Roads are linear features that possess a "highway" key with whatever
 		// value.
 
-		DescriptorOSM descriptorRoad = new DescriptorOSM(this, "ROAD", filterRoad);
+		this.roadDescriptor = new DescriptorOSM(this, "ROAD", filterRoad);
 
-		descriptorRoad.mustBe(Element.Type.LINE);
-		descriptorRoad.mustHave("highway");
+		this.roadDescriptor.mustBe(Element.Type.LINE);
+		this.roadDescriptor.mustHave("highway");
 
-		addDescriptor(descriptorRoad);
+		addDescriptor(this.roadDescriptor);
 
 		// Go.
 
 		read();
+	}
+
+	/**
+	 * Give the descriptor matching geographic objects with representations of
+	 * roads
+	 * 
+	 * @return The road descriptor.
+	 */
+	public Descriptor getRoadDescriptor() {
+
+		return this.roadDescriptor;
 	}
 
 	@Override

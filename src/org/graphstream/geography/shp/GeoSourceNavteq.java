@@ -32,6 +32,7 @@
 package org.graphstream.geography.shp;
 
 import org.graphstream.geography.AttributeFilter;
+import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.index.SpatialIndex;
 
@@ -53,6 +54,16 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	 * The path to the file containing the Z-indexes of all nodes.
 	 */
 	protected String zFileName;
+
+	/**
+	 * The descriptor matching geographic objects with Z-index points.
+	 */
+	protected Descriptor zDescriptor;
+
+	/**
+	 * The descriptor matching geographic objects with representations of roads.
+	 */
+	protected Descriptor roadDescriptor;
 
 	/**
 	 * Instantiate a new Navteq source producing a road network.
@@ -77,10 +88,10 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// We are only interested in intersection points.
 
-		DescriptorSHP descriptorZ = new DescriptorSHP(this, "Z", filterZ);
+		this.zDescriptor = new DescriptorSHP(this, "Z", filterZ);
 
-		descriptorZ.sendElementsToSpatialIndex();
-		descriptorZ.mustHave("INTRSECT", "Y");
+		this.zDescriptor.sendElementsToSpatialIndex();
+		this.zDescriptor.mustHave("INTRSECT", "Y");
 
 		// Second: select and filter the road points.
 
@@ -90,26 +101,47 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// We are only interested in line features..
 
-		DescriptorSHP descriptorRoad = new DescriptorSHP(this, "Z", filterRoad);
+		this.roadDescriptor = new DescriptorSHP(this, "Z", filterRoad);
 
-		//descriptorRoad.onlyConsiderLineEndPoints();
-		//descriptorRoad.sendElementsToSpatialIndex();
-		descriptorRoad.mustBe(Element.Type.LINE);
+		// descriptorRoad.onlyConsiderLineEndPoints();
+		// descriptorRoad.sendElementsToSpatialIndex();
+		this.roadDescriptor.mustBe(Element.Type.LINE);
 
 		// Read the Z level file and store the data in the spatial index.
 
-		addDescriptor(descriptorZ);
+		addDescriptor(this.zDescriptor);
 
 		read(this.zFileName);
 
 		// Read the road file.
 
 		this.descriptors.clear();
-		addDescriptor(descriptorRoad);
+		addDescriptor(this.roadDescriptor);
 
 		read(this.roadsFileName);
 	}
 
+	/**
+	 * Give the descriptor matching geographic objects with Z-index points.
+	 * 
+	 * @return The Z-index point descriptor.
+	 */
+	public Descriptor getZDescriptor() {
+
+		return this.zDescriptor;
+	}
+	
+	/**
+	 * Give the descriptor matching geographic objects with representations of
+	 * roads
+	 * 
+	 * @return The road descriptor.
+	 */
+	public Descriptor getRoadDescriptor() {
+
+		return this.roadDescriptor;
+	}
+	
 	/**
 	 * Read a shapefile.
 	 * 

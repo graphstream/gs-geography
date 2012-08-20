@@ -79,8 +79,6 @@ public abstract class GeoSource extends SourceBase {
 
 		this.sourceId = String.format("<GeoSource %x>", System.nanoTime());
 
-		this.descriptors = new ArrayList<Descriptor>();
-
 		this.elements = new ArrayList<Element>();
 	}
 
@@ -92,6 +90,9 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public void addDescriptor(Descriptor descriptor) {
 
+		if(this.descriptors == null)
+			this.descriptors = new ArrayList<Descriptor>();
+		
 		this.descriptors.add(descriptor);
 	}
 

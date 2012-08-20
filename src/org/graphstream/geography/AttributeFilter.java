@@ -31,7 +31,7 @@
 
 package org.graphstream.geography;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * Specify which attributes must be kept/filtered when converting an geographic
@@ -61,7 +61,7 @@ public class AttributeFilter {
 	/**
 	 * The set of attributes to keep or filter.
 	 */
-	protected HashSet<String> attributes = new HashSet<String>();
+	protected ArrayList<String> attributes;
 
 	/**
 	 * Instantiate a new filter with the KEEP mode.
@@ -91,6 +91,9 @@ public class AttributeFilter {
 	 */
 	public boolean isKept(String attribute) {
 
+		if(this.attributes == null)
+			return false;
+		
 		return mode == Mode.KEEP ? attributes.contains(attribute) : !attributes.contains(attribute);
 	}
 
@@ -103,6 +106,9 @@ public class AttributeFilter {
 	 */
 	public boolean isFiltered(String attribute) {
 
+		if(this.attributes == null)
+			return false;
+		
 		return mode == Mode.KEEP ? !attributes.contains(attribute) : attributes.contains(attribute);
 	}
 
@@ -134,7 +140,10 @@ public class AttributeFilter {
 	 */
 	public void add(String attribute) {
 
-		attributes.add(attribute);
+		if(this.attributes == null)
+			this.attributes = new ArrayList<String>();
+		
+		this.attributes.add(attribute);
 	}
 
 	/**
@@ -145,7 +154,7 @@ public class AttributeFilter {
 	 */
 	public void remove(String attribute) {
 
-		attributes.remove(attribute);
+		this.attributes.remove(attribute);
 	}
 
 	@Override

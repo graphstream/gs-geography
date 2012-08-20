@@ -105,7 +105,7 @@ public abstract class Descriptor {
 	 * 
 	 * In some cases, geographic elements should be referenced in a spatial
 	 * index to query them faster and ask questions like
-	 * "what point are at (x,y)?" (especially with huge data sets or
+	 * "what point are at (x,y)?" (especially with huge data sets with
 	 * position-based relationships). In other cases, a spatial index is useless
 	 * and would only slow down the import process. It is the user choice to
 	 * decide if he needs to reference spatially the described elements and it
@@ -113,8 +113,8 @@ public abstract class Descriptor {
 	 * 
 	 * Note that this flag is descriptor-dependent because a category of
 	 * elements (like points representing crossroads) could benefit from being
-	 * spatially referenced whereas an other category of feature (like lines
-	 * representing roads) could not.
+	 * spatially referenced where an other category of feature (like lines
+	 * representing roads) would not.
 	 */
 	protected boolean toSpatialIndex;
 
@@ -155,6 +155,8 @@ public abstract class Descriptor {
 	public void sendElementsToSpatialIndex() {
 
 		this.toSpatialIndex = true;
+		
+		this.source.prepareSpatialIndex();
 	}
 
 	/**
@@ -416,8 +418,8 @@ public abstract class Descriptor {
 	protected abstract Point newPoint(Object o);
 
 	/**
-	 * Give a simple line representation based on the supplied
-	 * library-dependent geographical object.
+	 * Give a simple line representation based on the supplied library-dependent
+	 * geographical object.
 	 * 
 	 * @param o
 	 *            The object to convert.

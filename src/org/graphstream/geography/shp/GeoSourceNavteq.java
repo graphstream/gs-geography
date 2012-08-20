@@ -78,8 +78,6 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		this.roadsFileName = roadsFileName;
 		this.zFileName = zFileName;
 
-		this.index = new SpatialIndex();
-
 		// First: select and filter the Z-index points.
 
 		// By default there is no attribute worth keeping.

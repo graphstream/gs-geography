@@ -96,6 +96,12 @@ public abstract class GeoSource extends SourceBase {
 		this.descriptors.add(descriptor);
 	}
 
+	public void prepareSpatialIndex() {
+		
+		if(this.index == null)
+			this.index = new SpatialIndex();
+	}
+	
 	/**
 	 * Process a single geographic object coming from the data source and check
 	 * if it suits the user's needs. If it is the case, keep it for a later use,

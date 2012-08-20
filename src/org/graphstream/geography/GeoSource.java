@@ -92,7 +92,7 @@ public abstract class GeoSource extends SourceBase {
 
 		if(this.descriptors == null)
 			this.descriptors = new ArrayList<Descriptor>();
-		
+
 		this.descriptors.add(descriptor);
 	}
 
@@ -105,6 +105,9 @@ public abstract class GeoSource extends SourceBase {
 	 *            The geometric object to check.
 	 */
 	protected void process(Object o) {
+
+		if(this.descriptors == null)
+			return;
 
 		for(Descriptor descriptor : this.descriptors)
 			if(o != null && descriptor.matches(o))

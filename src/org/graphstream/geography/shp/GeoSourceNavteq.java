@@ -31,11 +31,16 @@
 
 package org.graphstream.geography.shp;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
+import org.graphstream.geography.Line;
+import org.graphstream.geography.Point;
 
-// TODO
 /**
  * This geographical source implementation produces a road network from Navteq
  * shapefiles and takes care of the Z-index conflicts.
@@ -65,6 +70,11 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	protected Descriptor roadDescriptor;
 
 	/**
+	 * A record of nodes already added to the output graph.
+	 */
+	protected ArrayList<String> addedNodeIds;
+
+	/**
 	 * Instantiate a new Navteq source producing a road network.
 	 * 
 	 * @param roadsFileName
@@ -79,9 +89,13 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// First: select and filter the Z-index points.
 
-		// By default there is no attribute worth keeping.
+		// We need to keep the link ID to join the data from the two files and
+		// the Z level to handle overpasses/underpasses/tunnels/bridges...
 
 		AttributeFilter filterZ = new AttributeFilter(AttributeFilter.Mode.KEEP);
+
+		filterZ.add("LINK_ID");
+		filterZ.add("Z_LEVEL");
 
 		// We are only interested in intersection points.
 
@@ -92,16 +106,18 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// Second: select and filter the road points.
 
-		// By default, there is no attribute worth keeping.
+		// We need the link ID to join the two files.
 
 		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
+
+		filterRoad.add("LINK_ID");
 
 		// We are only interested in line features..
 
 		this.roadDescriptor = new DescriptorSHP(this, "Z", filterRoad);
 
-		// descriptorRoad.onlyConsiderLineEndPoints();
-		// descriptorRoad.sendElementsToSpatialIndex();
+		this.roadDescriptor.onlyConsiderLineEndPoints();
+
 		this.roadDescriptor.mustBe(Element.Type.LINE);
 
 		// Read the Z level file and store the data in the spatial index.
@@ -127,7 +143,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		return this.zDescriptor;
 	}
-	
+
 	/**
 	 * Give the descriptor matching geographic objects with representations of
 	 * roads
@@ -138,7 +154,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		return this.roadDescriptor;
 	}
-	
+
 	/**
 	 * Read a shapefile.
 	 * 
@@ -160,7 +176,104 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	@Override
 	public void transform() {
 
-		System.out.println("Tadaaaa!");
+		this.addedNodeIds = new ArrayList<String>();
+
+		ArrayList<Element> allElements = this.elements.getElementsAtEnd();
+
+		for(Element element : allElements) {
+
+			if(!element.isLine())
+				continue;
+
+			Line line = (Line)element;
+
+			// Add the two end points to the graph if necessary.
+
+			Point[] ends = line.getEndPoints();
+
+			String idNode1 = addNode(ends[0], line);
+			String idNode2 = addNode(ends[1], line);
+
+			// Draw an edge between the two points.
+
+			if(idNode1 != null && idNode2 != null)
+				sendEdgeAdded(this.sourceId, line.getId(), idNode1, idNode2, false);
+
+			// Bind the attributes
+		}
+	}
+
+	/**
+	 * Add a node that represents an intersection to the output graph.
+	 * 
+	 * This is where the Z-level conflicts are resolved. We search for all the
+	 * Z-level points at the same position as the road point to add. One of
+	 * these points shares its link ID with the road and contains its relative
+	 * elevation.
+	 * 
+	 * @param point
+	 *            The intersection point to add.
+	 * @param line
+	 *            The line containing the intersection.
+	 * @return The ID of the point used as a graph node.
+	 */
+	protected String addNode(Point point, Line line) {
+
+		// Retrieve the Z-level points at the same position as the road point.
+
+		ArrayList<Element> zPoints = this.index.getElementsAt(point.getPosition().x, point.getPosition().y);
+
+		// Among them, find the Z-level point with the same link ID as the road.
+
+		Point lineZPoint = null;
+
+		for(Element zPoint : zPoints)
+			if(zPoint.getAttribute("LINK_ID").equals(line.getAttribute("LINK_ID")))
+				lineZPoint = (Point)zPoint;
+
+		if(lineZPoint == null)
+			return null;
+
+		// Get the Z level of the Z-level point.
+
+		Object zLevel = lineZPoint.getAttribute("Z_LEVEL");
+
+		// Check if a point at the same position and with the same Z level is
+		// already in the output graph.
+
+		Point alreadyHerePoint = null;
+
+		for(Element zPoint : zPoints)
+			if(zPoint.getAttribute("Z_LEVEL").equals(zLevel) && this.addedNodeIds.contains(zPoint.getId())) {
+				alreadyHerePoint = (Point)zPoint;
+				break;
+			}
+
+		// If no valid node is already in the graph, add one.
+
+		if(alreadyHerePoint == null) {
+
+			alreadyHerePoint = lineZPoint;
+			
+			sendNodeAdded(this.sourceId, alreadyHerePoint.getId());
+
+			this.addedNodeIds.add(alreadyHerePoint.getId());
+
+			// Place the new node at an appropriate position.
+
+			sendNodeAttributeAdded(this.sourceId, alreadyHerePoint.getId(), "x", alreadyHerePoint.getPosition().x);
+			sendNodeAttributeAdded(this.sourceId, alreadyHerePoint.getId(), "y", alreadyHerePoint.getPosition().y);
+
+			// Bind the attributes.
+
+			HashMap<String, Object> attributes = alreadyHerePoint.getAttributes();
+
+			if(attributes != null)
+				for(Entry<String, Object> entry : attributes.entrySet())
+					sendNodeAttributeAdded(this.sourceId, alreadyHerePoint.getId(), entry.getKey(), entry.getValue());
+		}
+
+		return alreadyHerePoint.getId();
 	}
 
 }

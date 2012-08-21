@@ -125,6 +125,18 @@ public abstract class Element {
 	}
 
 	/**
+	 * Check if the element is of a given category.
+	 * 
+	 * @param category
+	 *            The category.
+	 * @return True if the element has the same category, false otherwise.
+	 */
+	public boolean isCategory(String category) {
+
+		return this.category != null && this.category.equals(category);
+	}
+
+	/**
 	 * Add an attribute to the element.
 	 * 
 	 * @param key
@@ -295,8 +307,9 @@ public abstract class Element {
 		s += "[" + this.id + "] ";
 
 		s += "{ ";
-		for(String key : this.attributes.keySet())
-			s += key + ":" + this.attributes.get(key) + " ";
+		if(this.attributes != null)
+			for(String key : this.attributes.keySet())
+				s += key + ":" + this.attributes.get(key) + " ";
 		s += "}";
 
 		return s;

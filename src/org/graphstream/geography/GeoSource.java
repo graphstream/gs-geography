@@ -156,6 +156,9 @@ public abstract class GeoSource extends SourceBase {
 	protected void keep(Element element, Descriptor descriptor, Integer date) {
 
 		this.elements.add(element, date);
+		
+		if(descriptor.areElementsSentToSpatialIndex())
+			this.index.add(element);
 	}
 
 	// Abstract

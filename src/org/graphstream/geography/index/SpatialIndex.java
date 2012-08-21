@@ -65,12 +65,12 @@ public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 	/**
 	 * The number of points in a single cell of the quadtree.
 	 */
-	protected int pointsPerCell = 10;
+	protected int pointsPerCell = 100;
 
 	/**
 	 * The maximum depth of the quadtree.
 	 */
-	protected int maxDepth = 20;
+	protected int maxDepth = 50;
 
 	/**
 	 * The distance at which two points are considered on the same position.
@@ -81,7 +81,7 @@ public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 	 * The number of addition/removal before a reorganization of the quadtree is
 	 * needed.
 	 */
-	protected int stepsbetweenReorganizations = 10000;
+	protected int stepsbetweenReorganizations = 1000;
 
 	protected int modificationsSinceReorganization = 0;
 

@@ -33,7 +33,7 @@ package org.graphstream.geography.test;
 
 import org.graphstream.geography.shp.GeoSourceNavteq;
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.graph.implementations.MultiGraph;
 
 /**
  * Test the import of a road network from a Navteq shapefile;
@@ -45,16 +45,21 @@ public class Test_Navteq {
 
 	public static void main(String[] args) {
 
-		Graph graph = new SingleGraph("road network");
-
-		GeoSourceNavteq src = new GeoSourceNavteq("/home/merwan/navteq/Streets.shp", "/home/merwan/navteq/Zlevels.shp");
+		Graph graph = new MultiGraph("road network"); // XXX Exception raised when using a SingleGraph
+		graph.addAttribute("stylesheet", Test_Navteq.style);
+		
+		GeoSourceNavteq src = new GeoSourceNavteq("/home/merwan/navteq/Streets_mini.shp", "/home/merwan/navteq/Zlevels_mini.shp");
 		src.addSink(graph);
 
 		src.transform();
 
-		// graph.display(false);
+		graph.display(false);
 
 		System.out.println(graph.getNodeCount());
 	}
+
+	private static final String style = 
+			"node { size: 3px; text-visibility-mode: hidden; }" +
+			"edge { shape:polyline; fill-color: #808080; arrow-size: 3px, 3px; }";
 
 }

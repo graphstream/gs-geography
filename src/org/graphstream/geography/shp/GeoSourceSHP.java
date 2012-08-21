@@ -64,8 +64,6 @@ public abstract class GeoSourceSHP extends GeoSource {
 
 	}
 
-	public int x = 0; // XXX temp
-
 	@Override
 	public void begin(String fileName) throws IOException {
 
@@ -79,7 +77,7 @@ public abstract class GeoSourceSHP extends GeoSource {
 
 				String type = store.getTypeNames()[0];
 				FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource(type);
-				x = source.getFeatures().size();
+				System.out.println(source.getFeatures().size());
 
 				this.iterator = source.getFeatures().features();
 			}
@@ -89,7 +87,7 @@ public abstract class GeoSourceSHP extends GeoSource {
 			}
 		}
 	}
-
+	
 	@Override
 	public void traverse() {
 

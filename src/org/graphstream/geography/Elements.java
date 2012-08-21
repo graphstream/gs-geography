@@ -131,7 +131,7 @@ public class Elements {
 				
 				else {
 
-					// Retrieve last version
+					// Retrieve the last version of the element.
 					
 					Element previousElementDiff = accumulatedElements.get(elementDiff.getId());
 
@@ -140,12 +140,7 @@ public class Elements {
 					for(String key : elementDiff.getRemovedAttributes())
 						previousElementDiff.removeAttribute(key);
 
-					// Update attributes which values have been changed.
-
-					for(Entry<String, Object> entry2 : elementDiff.getChangedAttributes().entrySet())
-						previousElementDiff.setAttribute(entry2.getKey(), entry2.getValue());
-
-					// Add new attributes.
+					// Update attributes which values have been changed and add new attributes.
 
 					for(Entry<String, Object> entry2 : elementDiff.getAttributes().entrySet())
 						previousElementDiff.setAttribute(entry2.getKey(), entry2.getValue());

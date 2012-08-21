@@ -83,11 +83,6 @@ public abstract class Element {
 	/**
 	 * A key/value mapping of attributes.
 	 */
-	protected HashMap<String, Object> changedAttributes;
-
-	/**
-	 * A key/value mapping of attributes.
-	 */
 	protected ArrayList<String> removedAttributes;
 
 	/**
@@ -221,16 +216,6 @@ public abstract class Element {
 	public ArrayList<String> getRemovedAttributes() {
 
 		return this.removedAttributes;
-	}
-
-	/**
-	 * Give all of the stored attributes.
-	 * 
-	 * @return A list of key/value pairs.
-	 */
-	public HashMap<String, Object> getChangedAttributes() {
-
-		return this.changedAttributes;
 	}
 
 	/**

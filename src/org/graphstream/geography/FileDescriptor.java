@@ -34,12 +34,12 @@ package org.graphstream.geography;
 import java.util.ArrayList;
 
 /**
- * A FileDescriptors describes what geographic data will be extracted from a
+ * A FileDescriptor describes what geographic data will be extracted from a
  * single file.
  * 
  * @author Merwan Achibet
  */
-public class FileDescriptors {
+public class FileDescriptor {
 
 	/**
 	 * The path to the input file.
@@ -49,19 +49,19 @@ public class FileDescriptors {
 	/**
 	 * A list of descriptors to categorize the objects from the file.
 	 */
-	protected ArrayList<Descriptor> descriptors;
+	protected ArrayList<ElementDescriptor> descriptors;
 
 	/**
-	 * Instantiate a new FileDescriptors.
+	 * Instantiate a new FileDescriptor.
 	 * 
 	 * @param fileName
 	 *            The path to the file.
 	 */
-	public FileDescriptors(String fileName) {
+	public FileDescriptor(String fileName) {
 
 		this.fileName = fileName;
 		
-		this.descriptors = new ArrayList<Descriptor>();
+		this.descriptors = new ArrayList<ElementDescriptor>();
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class FileDescriptors {
 	 * @param descriptor
 	 *            The descriptor to add.
 	 */
-	public void addDescriptor(Descriptor descriptor) {
+	public void addDescriptor(ElementDescriptor descriptor) {
 
 		this.descriptors.add(descriptor);
 	}
@@ -90,7 +90,7 @@ public class FileDescriptors {
 	 * 
 	 * @return A list of descriptors.
 	 */
-	public ArrayList<Descriptor> getDescriptors() {
+	public ArrayList<ElementDescriptor> getDescriptors() {
 
 		return this.descriptors;
 	}

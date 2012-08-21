@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.Element;
-import org.graphstream.geography.FileDescriptors;
+import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
 
@@ -56,7 +56,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	/**
 	 * The descriptor matching geographic objects with representations of roads.
 	 */
-	protected Descriptor roadDescriptor;
+	protected ElementDescriptor roadDescriptor;
 
 	/**
 	 * A record of nodes already added to the output graph.
@@ -72,7 +72,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	public GeoSourceOSM_RoadNetwork(String fileName) {
 		super();
 		
-		FileDescriptors fileDescriptor = new FileDescriptors(fileName);
+		FileDescriptor fileDescriptor = new FileDescriptor(fileName);
 
 		// By default, there are no attribute worth keeping.
 
@@ -81,14 +81,14 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		// Roads are linear features that possess a "highway" key with whatever
 		// value.
 
-		this.roadDescriptor = new DescriptorOSM(this, "ROAD", filterRoad);
+		this.roadDescriptor = new ElementDescriptorOSM(this, "ROAD", filterRoad);
 
 		this.roadDescriptor.mustBe(Element.Type.LINE);
 		this.roadDescriptor.mustHave("highway");
 
 		fileDescriptor.addDescriptor(this.roadDescriptor);
 
-		this.addFileDescriptors(fileDescriptor);
+		this.addFileDescriptor(fileDescriptor);
 		
 		// Go.
 
@@ -101,7 +101,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 * 
 	 * @return The road descriptor.
 	 */
-	public Descriptor getRoadDescriptor() {
+	public ElementDescriptor getRoadDescriptor() {
 
 		return this.roadDescriptor;
 	}

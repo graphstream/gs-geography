@@ -32,7 +32,7 @@
 package org.graphstream.geography.osm;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
 import org.graphstream.geography.Line;
@@ -46,7 +46,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * 
  * @author Merwan Achibet
  */
-public class DescriptorOSM extends Descriptor {
+public class ElementDescriptorOSM extends ElementDescriptor {
 
 	/**
 	 * instantiate a new OpenStreetMap descriptor.
@@ -59,7 +59,7 @@ public class DescriptorOSM extends Descriptor {
 	 *            The filter that will reduce the attributes of matching
 	 *            elements.
 	 */
-	public DescriptorOSM(GeoSource source, String category, AttributeFilter filter) {
+	public ElementDescriptorOSM(GeoSource source, String category, AttributeFilter filter) {
 		super(source, category, filter);
 	}
 

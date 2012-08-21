@@ -36,9 +36,9 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.Element;
-import org.graphstream.geography.FileDescriptors;
+import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
 
@@ -53,12 +53,12 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	/**
 	 * The descriptor matching geographic objects with Z-index points.
 	 */
-	protected Descriptor zDescriptor;
+	protected ElementDescriptor zDescriptor;
 
 	/**
 	 * The descriptor matching geographic objects with representations of roads.
 	 */
-	protected Descriptor roadDescriptor;
+	protected ElementDescriptor roadDescriptor;
 
 	/**
 	 * A record of nodes already added to the output graph.
@@ -75,8 +75,8 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	 */
 	public GeoSourceNavteq(String roadFileName, String zFileName) {
 
-		FileDescriptors zFileDescriptor = new FileDescriptors(zFileName);
-		FileDescriptors roadFileDescriptor = new FileDescriptors(roadFileName);
+		FileDescriptor zFileDescriptor = new FileDescriptor(zFileName);
+		FileDescriptor roadFileDescriptor = new FileDescriptor(roadFileName);
 
 		// First: select and filter the Z-index points.
 
@@ -90,14 +90,14 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// We are only interested in intersection points.
 
-		this.zDescriptor = new DescriptorSHP(this, "Z", filterZ);
+		this.zDescriptor = new ElementDescriptorSHP(this, "Z", filterZ);
 
 		this.zDescriptor.sendElementsToSpatialIndex();
 		this.zDescriptor.mustHave("INTRSECT", "Y");
 		
 		zFileDescriptor.addDescriptor(this.zDescriptor);
 		
-		this.addFileDescriptors(zFileDescriptor);
+		this.addFileDescriptor(zFileDescriptor);
 
 		// Second: select and filter the road points.
 
@@ -109,7 +109,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// We are only interested in line features..
 
-		this.roadDescriptor = new DescriptorSHP(this, "Z", filterRoad);
+		this.roadDescriptor = new ElementDescriptorSHP(this, "Z", filterRoad);
 
 		this.roadDescriptor.onlyConsiderLineEndPoints();
 
@@ -117,7 +117,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		
 		roadFileDescriptor.addDescriptor(roadDescriptor);
 		
-		addFileDescriptors(roadFileDescriptor);
+		addFileDescriptor(roadFileDescriptor);
 		
 		read();
 	}
@@ -127,7 +127,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	 * 
 	 * @return The Z-index point descriptor.
 	 */
-	public Descriptor getZDescriptor() {
+	public ElementDescriptor getZDescriptor() {
 
 		return this.zDescriptor;
 	}
@@ -138,7 +138,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	 * 
 	 * @return The road descriptor.
 	 */
-	public Descriptor getRoadDescriptor() {
+	public ElementDescriptor getRoadDescriptor() {
 
 		return this.roadDescriptor;
 	}

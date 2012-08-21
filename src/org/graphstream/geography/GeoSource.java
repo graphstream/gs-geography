@@ -60,7 +60,7 @@ public abstract class GeoSource extends SourceBase {
 	/**
 	 * Descriptors for the geographic objects that the user want to consider.
 	 */
-	protected ArrayList<FileDescriptors> fileDescriptors;
+	protected ArrayList<FileDescriptor> fileDescriptors;
 
 	/**
 	 * The geometric elements that matched any of the descriptors definitions,
@@ -83,7 +83,7 @@ public abstract class GeoSource extends SourceBase {
 
 		this.sourceId = String.format("<GeoSource %x>", System.nanoTime());
 
-		this.fileDescriptors = new ArrayList<FileDescriptors>();
+		this.fileDescriptors = new ArrayList<FileDescriptor>();
 
 		this.elements = new Elements();
 	}
@@ -94,9 +94,9 @@ public abstract class GeoSource extends SourceBase {
 	 * @param descriptor
 	 *            The descriptor.
 	 */
-	public void addFileDescriptors(FileDescriptors fileDescriptors) {
+	public void addFileDescriptor(FileDescriptor fileDescriptor) {
 
-		this.fileDescriptors.add(fileDescriptors);
+		this.fileDescriptors.add(fileDescriptor);
 	}
 
 	/**
@@ -122,8 +122,8 @@ public abstract class GeoSource extends SourceBase {
 		if(o == null)
 			return;
 
-		for(FileDescriptors fileDescriptors : this.fileDescriptors)
-			for(Descriptor descriptor : fileDescriptors.getDescriptors())
+		for(FileDescriptor fileDescriptor : this.fileDescriptors)
+			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors())
 				if(descriptor.matches(o))
 					this.keep(descriptor.newElement(o), descriptor);
 	}
@@ -138,7 +138,7 @@ public abstract class GeoSource extends SourceBase {
 	 * @param descriptor
 	 *            The descriptor that classified the elements.
 	 */
-	protected void keep(Element element, Descriptor descriptor) {
+	protected void keep(Element element, ElementDescriptor descriptor) {
 
 		keep(element, descriptor, 0);
 	}
@@ -154,7 +154,7 @@ public abstract class GeoSource extends SourceBase {
 	 * @param date
 	 *            The date.
 	 */
-	protected void keep(Element element, Descriptor descriptor, Integer date) {
+	protected void keep(Element element, ElementDescriptor descriptor, Integer date) {
 
 		this.elements.add(element, date);
 
@@ -167,10 +167,10 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	protected void read() {
 
-		for(FileDescriptors fileDescriptors : this.fileDescriptors)
+		for(FileDescriptor fileDescriptor : this.fileDescriptors)
 			try {
 
-				begin(fileDescriptors.getFileName());
+				begin(fileDescriptor.getFileName());
 
 				traverse();
 

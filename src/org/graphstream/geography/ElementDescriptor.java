@@ -66,7 +66,7 @@ import java.util.List;
  * 
  * @author Merwan Achibet
  */
-public abstract class Descriptor {
+public abstract class ElementDescriptor {
 
 	/**
 	 * The source using this descriptor.
@@ -139,7 +139,7 @@ public abstract class Descriptor {
 	 *            The filter that will reduce the attributes of matching
 	 *            elements.
 	 */
-	public Descriptor(GeoSource source, String category, AttributeFilter filter) {
+	public ElementDescriptor(GeoSource source, String category, AttributeFilter filter) {
 
 		this.source = source;
 		this.category = category;

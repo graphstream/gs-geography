@@ -34,7 +34,7 @@ package org.graphstream.geography.shp;
 import java.util.Collection;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.GeoSource;
 import org.graphstream.geography.Line;
@@ -51,7 +51,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * 
  * @author Merwan Achibet
  */
-public class DescriptorSHP extends Descriptor {
+public class ElementDescriptorSHP extends ElementDescriptor {
 
 	/**
 	 * Instantiate a new descriptor.
@@ -64,7 +64,7 @@ public class DescriptorSHP extends Descriptor {
 	 *            The filter that will reduce the attributes of matching
 	 *            elements.
 	 */
-	public DescriptorSHP(GeoSource source, String category, AttributeFilter filter) {
+	public ElementDescriptorSHP(GeoSource source, String category, AttributeFilter filter) {
 		super(source, category, filter);
 	}
 

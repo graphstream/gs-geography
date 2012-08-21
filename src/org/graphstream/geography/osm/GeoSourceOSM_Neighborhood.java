@@ -36,9 +36,9 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.Descriptor;
+import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.Element;
-import org.graphstream.geography.FileDescriptors;
+import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Polygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -64,7 +64,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 * The descriptor matching geographic objects with representations of
 	 * buildings.
 	 */
-	protected Descriptor buildingDescriptor;
+	protected ElementDescriptor buildingDescriptor;
 
 	/**
 	 * Instantiate a new OpenStreetMap source producing a neighborhood graph.
@@ -80,7 +80,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		
 		this.radius = radius;
 		
-		FileDescriptors fileDescriptor = new FileDescriptors(fileName);
+		FileDescriptor fileDescriptor = new FileDescriptor(fileName);
 
 		// By default, there is no attribute worth keeping.
 
@@ -88,14 +88,14 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		// We are only interested in buildings.
 
-		this.buildingDescriptor = new DescriptorOSM(this, "BUILDINGS", filterBuilding);
+		this.buildingDescriptor = new ElementDescriptorOSM(this, "BUILDINGS", filterBuilding);
 
 		this.buildingDescriptor.mustBe(Element.Type.POLYGON);
 		this.buildingDescriptor.mustHave("building", "yes");
 
 		fileDescriptor.addDescriptor(this.buildingDescriptor);
 		
-		addFileDescriptors(fileDescriptor);
+		addFileDescriptor(fileDescriptor);
 
 		// Go.
 
@@ -108,7 +108,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 * 
 	 * @return The building descriptor.
 	 */
-	public Descriptor getBuildingDescriptor() {
+	public ElementDescriptor getBuildingDescriptor() {
 
 		return this.buildingDescriptor;
 	}

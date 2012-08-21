@@ -31,9 +31,9 @@
 
 package org.graphstream.geography;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.graphstream.geography.index.SpatialIndexPoint;
 
@@ -46,8 +46,15 @@ import org.graphstream.geography.index.SpatialIndexPoint;
  * heterogeneous as the data they contain is library-dependent and we don't want
  * to force the user to learn GeoTools, XOM or whatever other library.
  * 
- * An Element consists of a unique identifier and a list of attributes copied
- * from the original format of the feature (potentially filtered).
+ * An Element basically consists of a unique identifier and a list of attributes
+ * copied from the original format of the feature (potentially filtered).
+ * 
+ * An element can exist in two flavors. The "base" version is a complete element
+ * with some attributes. The "diff" version is a partial element that is based
+ * on a "base" element and only contains the differences between these two
+ * versions. This duality becomes useful when dealing with several time steps.
+ * The change of an element with respect to time is represented by a chain
+ * starting with a "base" element and followed by zero or more "diff" elements.
  * 
  * @author Merwan Achibet
  */
@@ -71,7 +78,22 @@ public abstract class Element {
 	/**
 	 * A key/value mapping of attributes.
 	 */
-	protected Map<String, Object> attributes;
+	protected HashMap<String, Object> attributes;
+
+	/**
+	 * A key/value mapping of attributes.
+	 */
+	protected HashMap<String, Object> changedAttributes;
+
+	/**
+	 * A key/value mapping of attributes.
+	 */
+	protected ArrayList<String> removedAttributes;
+
+	/**
+	 * 
+	 */
+	protected boolean diff;
 
 	/**
 	 * Instantiate a new element.
@@ -85,8 +107,6 @@ public abstract class Element {
 
 		this.id = id;
 		this.category = category;
-
-		this.attributes = new HashMap<String, Object>();
 	}
 
 	/**
@@ -110,6 +130,34 @@ public abstract class Element {
 	}
 
 	/**
+	 * Add an attribute to the element.
+	 * 
+	 * @param key
+	 *            The key of the attribute.
+	 * @param value
+	 *            The value of the attribute.
+	 */
+	public void setAttribute(String key, Object value) {
+
+		if(this.attributes == null)
+			this.attributes = new HashMap<String, Object>();
+
+		this.attributes.put(key, value);
+	}
+
+	/**
+	 * Remove an attribute from the element.
+	 * 
+	 * @param key
+	 *            The key of the attribute to remove.
+	 */
+	public void removeAttribute(String key) {
+
+		if(this.attributes != null)
+			this.attributes.remove(key);
+	}
+
+	/**
 	 * Give the value of a stored attribute.
 	 * 
 	 * @param key
@@ -117,6 +165,9 @@ public abstract class Element {
 	 * @return The value of the attribute or null if it does not exist.
 	 */
 	public Object getAttribute(String key) {
+
+		if(this.attributes == null)
+			return null;
 
 		return this.attributes.get(key);
 	}
@@ -127,6 +178,9 @@ public abstract class Element {
 	 * @return A list of key/value pairs.
 	 */
 	public HashMap<String, Object> getAttributes() {
+
+		if(this.attributes == null)
+			return null;
 
 		return new HashMap<String, Object>(this.attributes);
 	}
@@ -141,7 +195,7 @@ public abstract class Element {
 	 */
 	public boolean hasAttribute(String key) {
 
-		return this.attributes.containsKey(key);
+		return this.attributes != null && this.attributes.containsKey(key);
 	}
 
 	/**
@@ -156,31 +210,37 @@ public abstract class Element {
 	 */
 	public boolean hasAttribute(String key, Object value) {
 
-		return this.attributes.containsKey(key) && this.attributes.get(key).equals(value);
+		return this.attributes != null && this.attributes.containsKey(key) && this.attributes.get(key).equals(value);
 	}
 
 	/**
-	 * Add an attribute to the element.
+	 * Give all of the stored attributes.
 	 * 
-	 * @param key
-	 *            The key of the attribute.
-	 * @param value
-	 *            The value of the attribute.
+	 * @return A list of key/value pairs.
 	 */
-	public void addAttribute(String key, Object value) {
+	public ArrayList<String> getRemovedAttributes() {
 
-		this.attributes.put(key, value);
+		return this.removedAttributes;
 	}
 
 	/**
-	 * Remove an attribute from the element.
+	 * Give all of the stored attributes.
 	 * 
-	 * @param key
-	 *            The key of the attribute to remove.
+	 * @return A list of key/value pairs.
 	 */
-	public void removeAttribute(String key) {
+	public HashMap<String, Object> getChangedAttributes() {
 
-		this.attributes.remove(key);
+		return this.changedAttributes;
+	}
+
+	/**
+	 * Check if the element is its base version of it is based on another one.
+	 * 
+	 * @return True if the element is its own base version, false otherwise.
+	 */
+	public boolean isBase() {
+
+		return !this.diff;
 	}
 
 	/**
@@ -223,8 +283,8 @@ public abstract class Element {
 
 		return this instanceof Line;
 	}
-	
-   // XXX what does "poly instanceOf Line" return? Does this really work?
+
+	// XXX what does "poly instanceOf Line" return? Does this really work?
 	/**
 	 * Check if the element is a polygon.
 	 * 

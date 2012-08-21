@@ -92,20 +92,16 @@ public abstract class GeoSourceSHP extends GeoSource {
 
 	@Override
 	public void traverse() {
-		int y = 0; // XXX temp
-		while(this.iterator != null && this.iterator.hasNext()) {
+
+		while(this.iterator != null && this.iterator.hasNext())
 			process(iterator.next());
-			++y;
-			if(y % 10000 == 0)
-				System.out.println(y + "/" + x + " (" + this.elements.size() + ")");
-		}
 
 		this.iterator = null;
 	}
 
 	@Override
 	public void end() throws IOException {
-		
+
 		this.iterator = null;
 	}
 

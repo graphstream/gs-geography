@@ -310,7 +310,7 @@ public class DescriptorOSM extends Descriptor {
 			String value = tag.getAttributeValue("v");
 
 			if(this.filter == null || this.filter.isKept(key))
-				element.addAttribute(key, value);
+				element.setAttribute(key, value);
 		}
 	}
 

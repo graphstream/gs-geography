@@ -34,7 +34,6 @@ package org.graphstream.geography.shp;
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
-import org.graphstream.geography.index.SpatialIndex;
 
 // TODO
 /**

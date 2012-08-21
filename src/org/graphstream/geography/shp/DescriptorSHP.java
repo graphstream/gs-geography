@@ -247,7 +247,7 @@ public class DescriptorSHP extends Descriptor {
 
 		for(Property property : properties)
 			if(this.filter == null || this.filter.isKept(property.getName().toString()))
-				element.addAttribute(property.getName().toString(), property.getValue());
+				element.setAttribute(property.getName().toString(), property.getValue());
 	}
 
 }

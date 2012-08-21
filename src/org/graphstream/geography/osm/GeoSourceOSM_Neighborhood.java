@@ -31,7 +31,9 @@
 
 package org.graphstream.geography.osm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Descriptor;
@@ -114,7 +116,9 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		HashMap<String, Coordinate> placedBuildings = new HashMap<String, Coordinate>();
 
-		for(Element element : this.elements) {
+		ArrayList<Element> allElements = this.elements.getElementsAtEnd();
+
+		for(Element element : allElements) {
 
 			// Compute the center of the current building and add a new node at
 			// this position.
@@ -128,8 +132,11 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 			// Bind the attributes.
 
-			for(String key : element.getAttributes().keySet())
-				sendNodeAttributeAdded(this.sourceId, element.getId(), key, element.getAttribute(key));
+			HashMap<String, Object> attributes = element.getAttributes();
+
+			if(attributes != null)
+				for(Entry<String, Object> entry : attributes.entrySet())
+					sendNodeAttributeAdded(this.sourceId, element.getId(), entry.getKey(), entry.getValue());
 
 			// Draw an edge between the new node and already placed ones if
 			// their distance is below the neighborhood radius.

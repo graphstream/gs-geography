@@ -63,9 +63,13 @@ public abstract class GeoSource extends SourceBase {
 	protected ArrayList<Descriptor> descriptors;
 
 	/**
-	 * The geometric elements that matched any of the descriptors definitions.
+	 * The geometric elements that matched any of the descriptors definitions,
+	 * grouped by date.
+	 * 
+	 * When the temporal component is not considered, all elements are stored in
+	 * the "null" slot of the tree map.
 	 */
-	protected ArrayList<Element> elements;
+	protected Elements elements;
 
 	/**
 	 * Index spatially referencing the spatial points shaping the kept elements.
@@ -79,7 +83,7 @@ public abstract class GeoSource extends SourceBase {
 
 		this.sourceId = String.format("<GeoSource %x>", System.nanoTime());
 
-		this.elements = new ArrayList<Element>();
+		this.elements = new Elements();
 	}
 
 	/**
@@ -96,12 +100,15 @@ public abstract class GeoSource extends SourceBase {
 		this.descriptors.add(descriptor);
 	}
 
+	/**
+	 * Prepare the spatial index.
+	 */
 	public void prepareSpatialIndex() {
-		
+
 		if(this.index == null)
 			this.index = new SpatialIndex();
 	}
-	
+
 	/**
 	 * Process a single geographic object coming from the data source and check
 	 * if it suits the user's needs. If it is the case, keep it for a later use,
@@ -120,6 +127,7 @@ public abstract class GeoSource extends SourceBase {
 				this.keep(descriptor.newElement(o), descriptor);
 	}
 
+	// TODO
 	/**
 	 * Add a geometric element to the list of kept elements and optionally
 	 * reference it in a spatial index.
@@ -131,10 +139,23 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	protected void keep(Element element, Descriptor descriptor) {
 
-		this.elements.add(element);
+		keep(element, descriptor, 0);
+	}
 
-		if(this.index != null && descriptor.areElementsSentToSpatialIndex())
-			this.index.add(element);
+	/**
+	 * Add a geometric element to the list of kept elements and optionally
+	 * reference it in a spatial index.
+	 * 
+	 * @param element
+	 *            The element to add.
+	 * @param descriptor
+	 *            The descriptor that classified the elements.
+	 * @param date
+	 *            The date.
+	 */
+	protected void keep(Element element, Descriptor descriptor, Integer date) {
+
+		this.elements.add(element, date);
 	}
 
 	// Abstract

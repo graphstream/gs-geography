@@ -32,7 +32,9 @@
 package org.graphstream.geography.osm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Descriptor;
@@ -104,7 +106,9 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 		this.addedNodeIds = new ArrayList<String>();
 
-		for(Element element : this.elements) {
+		ArrayList<Element> allElements = this.elements.getElementsAtEnd();
+		
+		for(Element element : allElements) {
 
 			Line line = (Line)element;
 
@@ -164,8 +168,11 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 			// Bind the attributes.
 
-			for(String key : point.getAttributes().keySet())
-				sendNodeAttributeAdded(this.sourceId, nodeId, key, point.getAttribute(key));
+			HashMap<String, Object> attributes = point.getAttributes();
+
+			if(attributes != null)
+				for(Entry<String, Object> entry : attributes.entrySet())
+					sendNodeAttributeAdded(this.sourceId, nodeId, entry.getKey(), entry.getValue());
 		}
 	}
 

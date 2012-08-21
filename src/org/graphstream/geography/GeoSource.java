@@ -60,7 +60,7 @@ public abstract class GeoSource extends SourceBase {
 	/**
 	 * Descriptors for the geographic objects that the user want to consider.
 	 */
-	protected ArrayList<Descriptor> descriptors;
+	protected ArrayList<FileDescriptors> fileDescriptors;
 
 	/**
 	 * The geometric elements that matched any of the descriptors definitions,
@@ -83,6 +83,8 @@ public abstract class GeoSource extends SourceBase {
 
 		this.sourceId = String.format("<GeoSource %x>", System.nanoTime());
 
+		this.fileDescriptors = new ArrayList<FileDescriptors>();
+
 		this.elements = new Elements();
 	}
 
@@ -92,12 +94,9 @@ public abstract class GeoSource extends SourceBase {
 	 * @param descriptor
 	 *            The descriptor.
 	 */
-	public void addDescriptor(Descriptor descriptor) {
+	public void addFileDescriptors(FileDescriptors fileDescriptors) {
 
-		if(this.descriptors == null)
-			this.descriptors = new ArrayList<Descriptor>();
-
-		this.descriptors.add(descriptor);
+		this.fileDescriptors.add(fileDescriptors);
 	}
 
 	/**
@@ -119,12 +118,14 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	protected void process(Object o) {
 
-		if(this.descriptors == null)
+		// XXX really necessary?
+		if(o == null)
 			return;
 
-		for(Descriptor descriptor : this.descriptors)
-			if(o != null && descriptor.matches(o))
-				this.keep(descriptor.newElement(o), descriptor);
+		for(FileDescriptors fileDescriptors : this.fileDescriptors)
+			for(Descriptor descriptor : fileDescriptors.getDescriptors())
+				if(descriptor.matches(o))
+					this.keep(descriptor.newElement(o), descriptor);
 	}
 
 	// TODO
@@ -156,10 +157,29 @@ public abstract class GeoSource extends SourceBase {
 	protected void keep(Element element, Descriptor descriptor, Integer date) {
 
 		this.elements.add(element, date);
-		
+
 		if(descriptor.areElementsSentToSpatialIndex())
 			this.index.add(element);
 	}
+
+	/**
+	 * Go through each file and read their data.
+	 */
+	protected void read() {
+
+		for(FileDescriptors fileDescriptors : this.fileDescriptors)
+			try {
+
+				begin(fileDescriptors.getFileName());
+
+				traverse();
+
+				end();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+	};
 
 	// Abstract
 

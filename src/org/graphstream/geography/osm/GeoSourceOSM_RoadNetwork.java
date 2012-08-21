@@ -39,6 +39,7 @@ import java.util.Map.Entry;
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
+import org.graphstream.geography.FileDescriptors;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
 
@@ -51,7 +52,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author Merwan Achibet
  */
 public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
-
+	
 	/**
 	 * The descriptor matching geographic objects with representations of roads.
 	 */
@@ -69,7 +70,9 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 *            The path to the input file.
 	 */
 	public GeoSourceOSM_RoadNetwork(String fileName) {
-		super(fileName);
+		super();
+		
+		FileDescriptors fileDescriptor = new FileDescriptors(fileName);
 
 		// By default, there are no attribute worth keeping.
 
@@ -83,8 +86,10 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		this.roadDescriptor.mustBe(Element.Type.LINE);
 		this.roadDescriptor.mustHave("highway");
 
-		addDescriptor(this.roadDescriptor);
+		fileDescriptor.addDescriptor(this.roadDescriptor);
 
+		this.addFileDescriptors(fileDescriptor);
+		
 		// Go.
 
 		read();

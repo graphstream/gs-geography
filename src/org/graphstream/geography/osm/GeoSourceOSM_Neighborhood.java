@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
+import org.graphstream.geography.FileDescriptors;
 import org.graphstream.geography.Polygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -75,9 +76,11 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 *            neighbors.
 	 */
 	public GeoSourceOSM_Neighborhood(String fileName, double radius) {
-		super(fileName);
-
+		super();
+		
 		this.radius = radius;
+		
+		FileDescriptors fileDescriptor = new FileDescriptors(fileName);
 
 		// By default, there is no attribute worth keeping.
 
@@ -90,7 +93,9 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		this.buildingDescriptor.mustBe(Element.Type.POLYGON);
 		this.buildingDescriptor.mustHave("building", "yes");
 
-		addDescriptor(this.buildingDescriptor);
+		fileDescriptor.addDescriptor(this.buildingDescriptor);
+		
+		addFileDescriptors(fileDescriptor);
 
 		// Go.
 

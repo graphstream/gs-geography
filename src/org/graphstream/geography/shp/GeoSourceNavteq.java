@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Descriptor;
 import org.graphstream.geography.Element;
+import org.graphstream.geography.FileDescriptors;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
 
@@ -48,16 +49,6 @@ import org.graphstream.geography.Point;
  * @author Merwan Achibet
  */
 public class GeoSourceNavteq extends GeoSourceSHP {
-
-	/**
-	 * The path to the file describing the road network.
-	 */
-	protected String roadsFileName;
-
-	/**
-	 * The path to the file containing the Z-indexes of all nodes.
-	 */
-	protected String zFileName;
 
 	/**
 	 * The descriptor matching geographic objects with Z-index points.
@@ -82,10 +73,10 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	 * @param zFileName
 	 *            The path to the file containing Z data.
 	 */
-	public GeoSourceNavteq(String roadsFileName, String zFileName) {
+	public GeoSourceNavteq(String roadFileName, String zFileName) {
 
-		this.roadsFileName = roadsFileName;
-		this.zFileName = zFileName;
+		FileDescriptors zFileDescriptor = new FileDescriptors(zFileName);
+		FileDescriptors roadFileDescriptor = new FileDescriptors(roadFileName);
 
 		// First: select and filter the Z-index points.
 
@@ -103,6 +94,10 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		this.zDescriptor.sendElementsToSpatialIndex();
 		this.zDescriptor.mustHave("INTRSECT", "Y");
+		
+		zFileDescriptor.addDescriptor(this.zDescriptor);
+		
+		this.addFileDescriptors(zFileDescriptor);
 
 		// Second: select and filter the road points.
 
@@ -119,19 +114,12 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		this.roadDescriptor.onlyConsiderLineEndPoints();
 
 		this.roadDescriptor.mustBe(Element.Type.LINE);
-
-		// Read the Z level file and store the data in the spatial index.
-
-		addDescriptor(this.zDescriptor);
-
-		read(this.zFileName);
-
-		// Read the road file.
-
-		this.descriptors.clear();
-		addDescriptor(this.roadDescriptor);
-
-		read(this.roadsFileName);
+		
+		roadFileDescriptor.addDescriptor(roadDescriptor);
+		
+		addFileDescriptors(roadFileDescriptor);
+		
+		read();
 	}
 
 	/**
@@ -153,24 +141,6 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	public Descriptor getRoadDescriptor() {
 
 		return this.roadDescriptor;
-	}
-
-	/**
-	 * Read a shapefile.
-	 * 
-	 * @param fileName
-	 *            The path to file.
-	 */
-	protected void read(String fileName) {
-
-		try {
-			begin(fileName);
-			traverse();
-			end();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override

@@ -29,77 +29,70 @@
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
 
-package org.graphstream.geography.shp;
+package org.graphstream.geography;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.geotools.data.FeatureSource;
-import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.feature.FeatureIterator;
-import org.graphstream.geography.GeoSource;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
+import java.util.ArrayList;
 
 /**
- * Abstract shapefile source.
- * 
- * This class has the capability to read shaefile binary files but the
- * accumulated data is not exploited. This work is reserved to more specific
- * implementations.
+ * A FileDescriptors describes what geographic data will be extracted from a
+ * single file.
  * 
  * @author Merwan Achibet
  */
-public abstract class GeoSourceSHP extends GeoSource {
+public class FileDescriptors {
 
 	/**
-	 * Iterator on the features from the shapefile.
+	 * The path to the input file.
 	 */
-	protected FeatureIterator<SimpleFeature> iterator;
+	protected String fileName;
 
 	/**
-	 * Instantiate a new shapefile source.
+	 * A list of descriptors to categorize the objects from the file.
 	 */
-	public GeoSourceSHP() {
+	protected ArrayList<Descriptor> descriptors;
 
+	/**
+	 * Instantiate a new FileDescriptors.
+	 * 
+	 * @param fileName
+	 *            The path to the file.
+	 */
+	public FileDescriptors(String fileName) {
+
+		this.fileName = fileName;
+		
+		this.descriptors = new ArrayList<Descriptor>();
 	}
 
-	@Override
-	public void begin(String fileName) throws IOException {
+	/**
+	 * Give the path to the file.
+	 * 
+	 * @return The path.
+	 */
+	public String getFileName() {
 
-		if(this.iterator == null) {
-
-			try {
-
-				File file = new File(fileName);
-
-				ShapefileDataStore store = new ShapefileDataStore(file.toURI().toURL());
-
-				String type = store.getTypeNames()[0];
-				FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource(type);
-
-				this.iterator = source.getFeatures().features();
-			}
-			catch (IOException e) {
-
-				throw new RuntimeException("I/O error : " + e.getMessage());
-			}
-		}
-	}
-	
-	@Override
-	public void traverse() {
-
-		while(this.iterator != null && this.iterator.hasNext())
-			process(iterator.next());
-
-		this.iterator = null;
+		return new String(this.fileName);
 	}
 
-	@Override
-	public void end() throws IOException {
+	/**
+	 * Add a descriptor.
+	 * 
+	 * @param descriptor
+	 *            The descriptor to add.
+	 */
+	public void addDescriptor(Descriptor descriptor) {
 
-		this.iterator = null;
+		this.descriptors.add(descriptor);
+	}
+
+	/**
+	 * Give the descriptors associated with this file.
+	 * 
+	 * @return A list of descriptors.
+	 */
+	public ArrayList<Descriptor> getDescriptors() {
+
+		return this.descriptors;
 	}
 
 }

@@ -47,7 +47,7 @@ import java.util.TreeMap;
  * It the progress of time is not considered, all elements are stored at time 0
  * as "base" versions.
  * 
- * @author merwan
+ * @author Merwan Achibet
  */
 public class Elements {
 

@@ -89,10 +89,6 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		fileDescriptor.addDescriptor(this.roadDescriptor);
 
 		this.addFileDescriptor(fileDescriptor);
-		
-		// Go.
-
-		read();
 	}
 
 	/**
@@ -154,6 +150,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 */
 	protected void addNode(Point point) {
 
+		read();
+		
 		String nodeId = point.getId();
 
 		// Add the node if it has not already been done in the process of

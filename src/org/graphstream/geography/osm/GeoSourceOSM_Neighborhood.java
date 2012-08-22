@@ -96,10 +96,6 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		fileDescriptor.addDescriptor(this.buildingDescriptor);
 		
 		addFileDescriptor(fileDescriptor);
-
-		// Go.
-
-		read();
 	}
 
 	/**
@@ -115,6 +111,8 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 	@Override
 	public void transform() {
+
+		read();
 
 		// Keep a record of the buildings that have already been inserted into
 		// the graph.

@@ -54,8 +54,6 @@ public class Test_Navteq {
 		src.transform();
 
 		graph.display(false);
-
-		System.out.println(graph.getNodeCount());
 	}
 
 	private static final String style = 

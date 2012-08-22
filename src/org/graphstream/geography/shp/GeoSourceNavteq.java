@@ -118,8 +118,6 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		roadFileDescriptor.addDescriptor(roadDescriptor);
 		
 		addFileDescriptor(roadFileDescriptor);
-		
-		read();
 	}
 
 	/**
@@ -146,6 +144,8 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	@Override
 	public void transform() {
 
+		read();
+		
 		this.addedNodeIds = new ArrayList<String>();
 
 		ArrayList<Element> allElements = this.elements.getElementsAtEnd();

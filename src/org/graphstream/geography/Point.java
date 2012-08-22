@@ -61,7 +61,7 @@ public class Point extends Element {
 	 *            The point ID.
 	 */
 	public Point(String id) {
-		this(id, null);
+		this(id, null, false);
 	}
 
 	/**
@@ -73,7 +73,12 @@ public class Point extends Element {
 	 *            The point category.
 	 */
 	public Point(String id, String category) {
-		super(id, category);
+		
+		this(id, category, false);
+	}
+	
+	public Point(String id, String category, boolean diff) {
+		super(id, category, diff);
 
 		this.position = new Coordinate();
 	}

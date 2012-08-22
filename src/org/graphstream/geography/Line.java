@@ -60,7 +60,7 @@ public class Line extends Element {
 	 *            The line ID.
 	 */
 	public Line(String id) {
-		this(id, null);
+		this(id, null, false);
 	}
 
 	/**
@@ -72,8 +72,13 @@ public class Line extends Element {
 	 *            The line category.
 	 */
 	public Line(String id, String category) {
-		super(id, category);
-
+		
+		this(id, category, false);
+	}
+	
+	public Line(String id, String category, boolean diff) {
+		super(id, category, diff);
+		
 		this.points = new ArrayList<Point>();
 	}
 

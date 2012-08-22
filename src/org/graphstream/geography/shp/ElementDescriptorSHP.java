@@ -138,6 +138,18 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 	}
 
 	@Override
+	public String getElementId(Object o) {
+
+		// Cast the object to a GeoTools SimpleFeature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Return its ID.
+		
+		return feature.getID();
+	}
+
+	@Override
 	protected Point newPoint(Object o) {
 
 		// Cast the object to a GeoTools SimpleFeature.
@@ -201,7 +213,7 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 	}
 
 	@Override
-	protected Line newPolygon(Object o) {
+	protected Polygon newPolygon(Object o) {
 
 		// Cast the object to a GeoTools SimpleFeature.
 

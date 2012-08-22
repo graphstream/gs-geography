@@ -55,7 +55,8 @@ public class Polygon extends Line {
 	 *            The polygon ID.
 	 */
 	public Polygon(String id) {
-		this(id, null);
+		
+		this(id, null, false);
 	}
 
 	/**
@@ -67,7 +68,12 @@ public class Polygon extends Line {
 	 *            The polygon category.
 	 */
 	public Polygon(String id, String category) {
-		super(id, category);
+		
+		this(id, category, false);
+	}
+	
+	public Polygon(String id, String category, boolean diff) {
+		super(id, category, diff);
 	}
 
 	/**

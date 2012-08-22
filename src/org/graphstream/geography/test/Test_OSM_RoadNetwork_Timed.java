@@ -31,7 +31,6 @@
 
 package org.graphstream.geography.test;
 
-import org.graphstream.geography.osm.GeoSourceOSM;
 import org.graphstream.geography.osm.GeoSourceOSM_TimedRoadNetwork;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -47,7 +46,7 @@ public class Test_OSM_RoadNetwork_Timed {
 
 		Graph graph = new SingleGraph("road network");
 
-		GeoSourceOSM_TimedRoadNetwork src = new GeoSourceOSM_TimedRoadNetwork("/home/merwan/map_t0.osm", "/home/merwan/map_t1.osm");
+		GeoSourceOSM_TimedRoadNetwork src = new GeoSourceOSM_TimedRoadNetwork("/home/merwan/map_t0.osm", "/home/merwan/map_t1.osm", "/home/merwan/map_t2.osm");
 		src.addSink(graph);
 
 		src.getRoadAttributeFilter().addAttribute("highway");

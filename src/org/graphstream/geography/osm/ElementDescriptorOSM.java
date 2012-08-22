@@ -32,8 +32,8 @@
 package org.graphstream.geography.osm;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.Element;
+import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.GeoSource;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
@@ -163,6 +163,18 @@ public class ElementDescriptorOSM extends ElementDescriptor {
 	}
 
 	@Override
+	public String getElementId(Object o) {
+
+		// Cast the object to a XOM element.
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// Return its ID.
+
+		return xmlElement.getAttributeValue("id");
+	}
+
+	@Override
 	protected Point newPoint(Object o) {
 
 		// Cast the object to a XOM element.
@@ -186,6 +198,30 @@ public class ElementDescriptorOSM extends ElementDescriptor {
 		// Bind the attributes according to the filter.
 
 		bindAttributesToElement(xmlElement, point);
+
+		return point;
+	}
+
+	@Override
+	protected Point newPointDiff(Element previousVersion, Object o) {
+
+		// Cast the object to a XOM element.
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// Retrieve its ID.
+
+		String id = xmlElement.getAttributeValue("id");
+
+		// Instantiate a new point.
+
+		Point point = new Point(id, getCategory(), true);
+
+		// TODO position? Shape?
+
+		// Bind the attributes according to the filter.
+
+		bindAttributesToElementDiff(previousVersion, xmlElement, point);
 
 		return point;
 	}
@@ -220,6 +256,28 @@ public class ElementDescriptorOSM extends ElementDescriptor {
 		// Bind the attributes according to the filter.
 
 		bindAttributesToElement(xmlElement, line);
+
+		return line;
+	}
+
+	@Override
+	protected Line newLineDiff(Element previousVersion, Object o) {
+
+		// Cast the object to a XOM element.
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// Retrieve its ID.
+
+		String id = xmlElement.getAttributeValue("id");
+
+		// Instantiate a new line.
+
+		Line line = new Line(id, getCategory(), true);
+
+		// Bind the attributes according to the filter.
+
+		bindAttributesToElementDiff(previousVersion, xmlElement, line);
 
 		return line;
 	}
@@ -282,6 +340,28 @@ public class ElementDescriptorOSM extends ElementDescriptor {
 		return polygon;
 	}
 
+	@Override
+	protected Polygon newPolygonDiff(Element previousVersion, Object o) {
+
+		// Cast the object to a XOM element.
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// Retrieve its ID.
+
+		String id = xmlElement.getAttributeValue("id");
+
+		// Instantiate a new polygon.
+
+		Polygon polygon = new Polygon(id, getCategory(), true);
+
+		// Bind the attributes according to the filter.
+
+		bindAttributesToElementDiff(previousVersion, xmlElement, polygon);
+
+		return polygon;
+	}
+
 	/**
 	 * Copy the attributes of an element from its input format to the simple
 	 * geometric format.
@@ -297,11 +377,11 @@ public class ElementDescriptorOSM extends ElementDescriptor {
 	protected void bindAttributesToElement(nu.xom.Element xmlElement, Element element) {
 
 		// Retrieve all of the element attributes.
-		
+
 		nu.xom.Elements tags = xmlElement.getChildElements("tag");
 
 		// Only keep the ones that are explicitly asked for.
-		
+
 		for(int i = 0, l = tags.size(); i < l; ++i) {
 
 			nu.xom.Element tag = tags.get(i);
@@ -314,4 +394,36 @@ public class ElementDescriptorOSM extends ElementDescriptor {
 		}
 	}
 
+	protected void bindAttributesToElementDiff(Element previousVersion, nu.xom.Element xmlElement, Element element) {
+
+		// Retrieve all of the element attributes.
+
+		nu.xom.Elements tags = xmlElement.getChildElements("tag");
+
+		// Add attributes that have been removed to the dedicated list.
+		
+		for(int i = 0, l = tags.size(); i < l; ++i) {
+			
+			nu.xom.Element tag = tags.get(i);
+			
+			String key = tag.getAttributeValue("k");
+			
+			if(previousVersion.hasAttribute(key))
+				element.addRemovedAttribute(key);
+		}
+		
+		// Only new or changed attributes.
+
+		for(int i = 0, l = tags.size(); i < l; ++i) {
+
+			nu.xom.Element tag = tags.get(i);
+
+			String key = tag.getAttributeValue("k");
+			String value = tag.getAttributeValue("v");
+
+			if(this.filter == null || this.filter.isKept(key))
+				if(!previousVersion.hasAttribute(key, value))
+					element.setAttribute(key, value);
+		}
+	}
 }

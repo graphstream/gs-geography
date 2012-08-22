@@ -372,7 +372,21 @@ public abstract class ElementDescriptor {
 
 		return null;
 	}
+	
+	public Element newElementDiff(Element previousVersion, Object o) {
 
+		if(isPoint(o))
+			return newPointDiff(previousVersion, o);
+		else if(isLine(o))
+			return newLineDiff(previousVersion, o);
+		else if(isPolygon(o))
+			return newPolygonDiff(previousVersion, o);
+
+		// XXX What happens in other cases?
+
+		return null;
+	}
+	
 	@Override
 	public String toString() {
 
@@ -408,6 +422,8 @@ public abstract class ElementDescriptor {
 
 	// Abstract
 
+	public abstract String getElementId(Object o);
+	
 	/**
 	 * Check if a geographic object, in its library-dependent form, represents a
 	 * point.
@@ -474,6 +490,8 @@ public abstract class ElementDescriptor {
 	 * @return A standard point.
 	 */
 	protected abstract Point newPoint(Object o);
+	
+	protected abstract Point newPointDiff(Element previousVersion, Object o);
 
 	/**
 	 * Give a simple line representation based on the supplied library-dependent
@@ -485,6 +503,8 @@ public abstract class ElementDescriptor {
 	 */
 	protected abstract Line newLine(Object o);
 
+	protected abstract Line newLineDiff(Element previousVersion, Object o);
+
 	/**
 	 * Give a simple polygon representation based on the supplied
 	 * library-dependent geographical object.
@@ -493,6 +513,8 @@ public abstract class ElementDescriptor {
 	 *            The object to convert.
 	 * @return A standard polygon.
 	 */
-	protected abstract Line newPolygon(Object o);
+	protected abstract Polygon newPolygon(Object o);
+
+	protected abstract Polygon newPolygonDiff(Element previousVersion, Object o);
 
 }

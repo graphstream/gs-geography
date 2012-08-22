@@ -48,7 +48,7 @@ public class Test_Navteq {
 		Graph graph = new MultiGraph("road network"); // XXX Exception raised when using a SingleGraph
 		graph.addAttribute("stylesheet", Test_Navteq.style);
 		
-		GeoSourceNavteq src = new GeoSourceNavteq("/home/merwan/navteq/Streets_mini.shp", "/home/merwan/navteq/Zlevels_mini.shp");
+		GeoSourceNavteq src = new GeoSourceNavteq("/home/merwan/navteq/Streets_lehavre.shp", "/home/merwan/navteq/Zlevels_lehavre.shp");
 		src.addSink(graph);
 
 		src.transform();

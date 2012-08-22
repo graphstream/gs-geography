@@ -80,7 +80,7 @@ public class Elements {
 			elementsAtDate = new ArrayList<Element>();
 			this.elementsByDate.put(date, elementsAtDate);
 		}
-System.out.println(element + " " + date);
+		// System.out.println(element + " " + date);
 		elementsAtDate.add(element);
 	}
 
@@ -93,7 +93,7 @@ System.out.println(element + " " + date);
 	 */
 	public ArrayList<Element> getElementsAtDate(Integer date) {
 
-		return accumulate(date);
+		return accumulateElements(date);
 	}
 
 	/**
@@ -102,11 +102,69 @@ System.out.println(element + " " + date);
 	 * @return A list of elements in their final form.
 	 */
 	public ArrayList<Element> getElementsAtEnd() {
-		
+
 		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet())
 			System.out.println(entry.getKey() + " " + entry.getValue());
-		
-		return accumulate(this.elementsByDate.lastEntry().getKey());
+
+		return accumulateElements(this.elementsByDate.lastEntry().getKey());
+	}
+
+	public Element getElementFirstVersion(String id) {
+
+		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet())
+			for(Element e : entry.getValue())
+				if(e.getId().equals(id))
+					return e;
+
+		return null;
+	}
+
+	public Element getElementLastVersion(String id) {
+
+		if(this.elementsByDate.size() == 0)
+			return null;
+
+		return accumulateElement(id, this.elementsByDate.lastEntry().getKey());
+	}
+
+	protected Element accumulateElement(String id, Integer date) {
+
+		Element accumulatedElement = null;
+
+		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet()) {
+
+			for(Element elementDiff : entry.getValue()) {
+
+				if(accumulatedElement == null && elementDiff.getId().equals(id))
+					accumulatedElement = elementDiff; // XXX copy?
+				else if(elementDiff.getId().equals(id)) {
+
+					// Delete attributes that have been removed.
+
+					ArrayList<String> removedAttributes = elementDiff.getRemovedAttributes();
+
+					if(removedAttributes != null)
+						for(String key : removedAttributes)
+							accumulatedElement.removeAttribute(key);
+
+					// Update attributes which values have been changed and add
+					// new attributes.
+
+					HashMap<String, Object> attributes = elementDiff.getAttributes();
+
+					if(attributes != null)
+						for(Entry<String, Object> entry2 : attributes.entrySet())
+							accumulatedElement.setAttribute(entry2.getKey(), entry2.getValue());
+
+					// TODO shape? position?
+				}
+			}
+
+			if(entry.getKey() >= date)
+				return accumulatedElement;
+		}
+
+		return accumulatedElement;
 	}
 
 	/**
@@ -114,7 +172,7 @@ System.out.println(element + " " + date);
 	 * @param date
 	 * @return
 	 */
-	protected ArrayList<Element> accumulate(Integer date) {
+	protected ArrayList<Element> accumulateElements(Integer date) {
 
 		// This list will hold the progressive state of each element and will be
 		// updated with diffs through each time step.
@@ -141,14 +199,20 @@ System.out.println(element + " " + date);
 
 					// Delete attributes that have been removed.
 
-					for(String key : elementDiff.getRemovedAttributes())
-						previousElementDiff.removeAttribute(key);
+					ArrayList<String> removedAttributes = elementDiff.getRemovedAttributes();
+
+					if(removedAttributes != null)
+						for(String key : removedAttributes)
+							previousElementDiff.removeAttribute(key);
 
 					// Update attributes which values have been changed and add
 					// new attributes.
 
-					for(Entry<String, Object> entry2 : elementDiff.getAttributes().entrySet())
-						previousElementDiff.setAttribute(entry2.getKey(), entry2.getValue());
+					HashMap<String, Object> attributes = elementDiff.getAttributes();
+
+					if(attributes != null)
+						for(Entry<String, Object> entry2 : attributes.entrySet())
+							previousElementDiff.setAttribute(entry2.getKey(), entry2.getValue());
 
 					// TODO shape? position?
 				}

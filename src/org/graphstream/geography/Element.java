@@ -100,10 +100,16 @@ public abstract class Element {
 	 */
 	public Element(String id, String category) {
 
-		this.id = id;
-		this.category = category;
+		this(id, category, false);
 	}
 
+	public Element(String id, String category, boolean diff) {
+	
+		this.id = id;
+		this.category = category;
+		this.diff = diff;
+	}
+	
 	/**
 	 * Give the ID of the element.
 	 * 
@@ -220,6 +226,14 @@ public abstract class Element {
 		return this.attributes != null && this.attributes.containsKey(key) && this.attributes.get(key).equals(value);
 	}
 
+	public void addRemovedAttribute(String key) {
+		
+		if(this.removedAttributes == null)
+			this.removedAttributes = new ArrayList<String>();
+		
+		this.removedAttributes.add(key);
+	}
+	
 	/**
 	 * Give all of the stored attributes.
 	 * 

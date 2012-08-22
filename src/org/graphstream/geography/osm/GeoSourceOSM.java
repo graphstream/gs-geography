@@ -79,7 +79,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 	}
 
 	@Override
-	public void begin(String fileName) throws IOException {
+	public void open(String fileName) throws IOException {
 
 		try {
 
@@ -126,7 +126,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 	}
 
 	@Override
-	public void end() throws IOException {
+	public void close() throws IOException {
 
 		this.xmlRoot = null;
 	}

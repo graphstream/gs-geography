@@ -62,7 +62,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 * 
 	 */
 	protected AttributeFilter roadAttributeFilter;
-	
+
 	/**
 	 * A record of nodes already added to the output graph.
 	 */
@@ -76,6 +76,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 */
 	public GeoSourceOSM_RoadNetwork(String... fileNames) {
 		super(fileNames);
+
+		this.addedNodeIds = new ArrayList<String>();
 		
 		// By default, there are no attribute worth keeping.
 
@@ -90,12 +92,12 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		this.roadDescriptor.mustHave("highway");
 
 		// Attach this descriptor to every file.
-		
+
 		for(String fileName : fileNames) {
-			
+
 			FileDescriptor fileDescriptor = new FileDescriptor(fileName);
 			fileDescriptor.addDescriptor(this.roadDescriptor);
-			
+
 			this.addFileDescriptor(fileDescriptor);
 		}
 	}
@@ -110,20 +112,17 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 		return this.roadDescriptor;
 	}
-	
+
 	public AttributeFilter getRoadAttributeFilter() {
-		
+
 		return this.roadAttributeFilter;
 	}
 
 	@Override
-	public void transform() {
-
-		read();
+	public boolean next() {
 		
-		this.addedNodeIds = new ArrayList<String>();
-
-		ArrayList<Element> allElements = this.elements.getElementsAtEnd();
+		System.out.println(this.currentTimeStep);
+		ArrayList<Element> allElements = this.elements.getElementsAtStep(this.currentTimeStep);
 
 		for(Element element : allElements) {
 
@@ -151,11 +150,18 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 				// Link it to the previous point.
 
-				sendEdgeAdded(this.sourceId, line.getId() + "_" + idFrom + " " + idTo, idFrom, idTo, false);
+				if(line.isBase())
+					sendEdgeAdded(this.sourceId, line.getId() + "_" + idFrom + "_" + idTo, idFrom, idTo, false);
 
 				idFrom = idTo;
 			}
 		}
+
+		//
+
+		++this.currentTimeStep;
+
+		return this.currentTimeStep < this.timeSteps;
 	}
 
 	/**

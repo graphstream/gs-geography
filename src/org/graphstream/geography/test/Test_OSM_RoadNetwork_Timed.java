@@ -50,10 +50,23 @@ public class Test_OSM_RoadNetwork_Timed {
 		src.addSink(graph);
 
 		src.getRoadAttributeFilter().addAttribute("highway");
-		
-		src.transform();
 
+		src.read();
+		
 		graph.display(false);
+		
+		boolean running = true;
+		do {
+			
+			try {
+			Thread.sleep(1000);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			running = src.next();
+		} while(running);
 	}
 
 }

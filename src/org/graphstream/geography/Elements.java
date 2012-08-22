@@ -84,6 +84,20 @@ public class Elements {
 		elementsAtDate.add(element);
 	}
 
+	public ArrayList<Element> getElementsAtStep(int step) {
+		
+		int s = 0;
+		for(Integer d : this.elementsByDate.keySet()) {
+
+			if(s == step)
+				return getElementsAtDate(d);
+			
+			++s;
+		}
+		
+		return null;
+	}
+
 	/**
 	 * Give the states of all the elements at a specific time.
 	 * 

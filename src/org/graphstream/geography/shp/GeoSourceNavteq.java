@@ -156,10 +156,8 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	}
 	
 	@Override
-	public void transform() {
+	public boolean next() {
 
-		read();
-		
 		this.addedNodeIds = new ArrayList<String>();
 
 		ArrayList<Element> allElements = this.elements.getElementsAtEnd();
@@ -184,7 +182,14 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 				sendEdgeAdded(this.sourceId, line.getId(), idNode1, idNode2, false);
 
 			// Bind the attributes
+			
 		}
+		
+		//
+		
+		++this.currentTimeStep;
+		
+		return this.currentTimeStep < this.timeSteps;
 	}
 
 	/**

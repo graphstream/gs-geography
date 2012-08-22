@@ -65,7 +65,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 * buildings.
 	 */
 	protected ElementDescriptor buildingDescriptor;
-	
+
 	protected AttributeFilter buildingAttributeFilter;
 
 	/**
@@ -79,7 +79,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 */
 	public GeoSourceOSM_Neighborhood(double radius, String... fileNames) {
 		super(fileNames);
-		
+
 		this.radius = radius;
 
 		// By default, there is no attribute worth keeping.
@@ -94,12 +94,12 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		this.buildingDescriptor.mustHave("building", "yes");
 
 		// Attach this descriptor to every file.
-		
+
 		for(String fileName : fileNames) {
-			
+
 			FileDescriptor fileDescriptor = new FileDescriptor(fileName);
 			fileDescriptor.addDescriptor(this.buildingDescriptor);
-			
+
 			this.addFileDescriptor(fileDescriptor);
 		}
 	}
@@ -116,22 +116,20 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	}
 
 	public AttributeFilter getBuildingAttributeFilter() {
-		
+
 		return this.buildingAttributeFilter;
 	}
-	
-	@Override
-	public void transform() {
 
-		read();
+	@Override
+	public boolean next() {
 
 		// Keep a record of the buildings that have already been inserted into
 		// the graph.
 
 		HashMap<String, Coordinate> placedBuildings = new HashMap<String, Coordinate>();
-
-		ArrayList<Element> allElements = this.elements.getElementsAtEnd();
-
+		
+		ArrayList<Element> allElements = this.elements.getElementsAtStep(this.currentTimeStep);
+		
 		for(Element element : allElements) {
 
 			// Compute the center of the current building and add a new node at
@@ -162,6 +160,12 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 			placedBuildings.put(element.getId(), centroid);
 		}
+		
+		//
+
+		++this.currentTimeStep;
+
+		return this.currentTimeStep < this.timeSteps;
 	}
 
 }

@@ -65,7 +65,7 @@ public abstract class GeoSourceSHP extends GeoSource {
 	}
 
 	@Override
-	public void begin(String fileName) throws IOException {
+	public void open(String fileName) throws IOException {
 
 		if(this.iterator == null) {
 
@@ -97,7 +97,7 @@ public abstract class GeoSourceSHP extends GeoSource {
 	}
 
 	@Override
-	public void end() throws IOException {
+	public void close() throws IOException {
 
 		this.iterator = null;
 	}

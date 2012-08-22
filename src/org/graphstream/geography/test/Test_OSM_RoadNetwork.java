@@ -50,7 +50,9 @@ public class Test_OSM_RoadNetwork {
 		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork("/home/merwan/map.osm");
 		src.addSink(graph);
 
-		src.transform();
+		src.read();
+		
+		src.end();
 
 		graph.display(false);
 	}

@@ -51,7 +51,9 @@ public class Test_OSM_Neighborhood {
 		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, "/home/merwan/map.osm");
 		src.addSink(graph);
 
-		src.transform();
+		src.read();
+		
+		src.end();
 
 		graph.display(false);
 	}

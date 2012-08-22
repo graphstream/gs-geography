@@ -51,13 +51,14 @@ public class Test_Navteq {
 		GeoSourceNavteq src = new GeoSourceNavteq("/home/merwan/navteq/Streets_lehavre.shp", "/home/merwan/navteq/Zlevels_lehavre.shp");
 		src.addSink(graph);
 
-		src.transform();
+		src.read();
+		
+		src.end();
 
 		graph.display(false);
 	}
 
 	private static final String style = 
-			"node { size: 3px; text-visibility-mode: hidden; }" +
-			"edge { shape:polyline; fill-color: #808080; arrow-size: 3px, 3px; }";
+			"node { size: 3px; text-visibility-mode: hidden; }";
 
 }

@@ -71,6 +71,10 @@ public abstract class GeoSource extends SourceBase {
 	 * 
 	 */
 	protected int currentFileIndex;
+	
+	protected int timeSteps;
+	
+	protected int currentTimeStep;
 
 	/**
 	 * The geometric elements that matched any of the descriptors definitions,
@@ -146,10 +150,8 @@ public abstract class GeoSource extends SourceBase {
 		FileDescriptor currentFileDescriptor = this.fileDescriptors.get(this.currentFileIndex);
 
 		for(ElementDescriptor descriptor : currentFileDescriptor.getDescriptors())
-			if(descriptor.matches(o)) {
+			if(descriptor.matches(o))
 				this.keep(o, descriptor);
-				System.out.println(this.currentFileIndex + " " + descriptor.getElementId(o));
-			}
 	}
 
 	/**
@@ -189,17 +191,17 @@ public abstract class GeoSource extends SourceBase {
 	/**
 	 * Go through each file and read their data.
 	 */
-	protected void read() {
+	public void read() {
 
 		for(FileDescriptor fileDescriptor : this.fileDescriptors) {
 
 			try {
 
-				begin(fileDescriptor.getFileName());
+				open(fileDescriptor.getFileName());
 
 				traverse();
 
-				end();
+				close();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -207,7 +209,18 @@ public abstract class GeoSource extends SourceBase {
 
 			++this.currentFileIndex;
 		}
+		
+		this.timeSteps = this.currentFileIndex;
 	};
+	
+	public void end() {
+		
+		boolean remainingSteps = true;
+		
+		do {
+			remainingSteps = next();
+		} while(remainingSteps);
+	}
 
 	// Abstract
 
@@ -219,7 +232,7 @@ public abstract class GeoSource extends SourceBase {
 	 *            The name of the file to import data from.
 	 * @throws IOException
 	 */
-	protected abstract void begin(String fileName) throws IOException;
+	protected abstract void open(String fileName) throws IOException;
 
 	/**
 	 * Go through all the data of the input file.
@@ -232,7 +245,7 @@ public abstract class GeoSource extends SourceBase {
 	 * 
 	 * @throws IOException
 	 */
-	protected abstract void end() throws IOException;
+	protected abstract void close() throws IOException;
 
 	/**
 	 * Populate the output graph from the geometric elements accumulated during
@@ -243,6 +256,6 @@ public abstract class GeoSource extends SourceBase {
 	 * method. A geographer that simply wants to import geographic data into a
 	 * graph will prefer to directly use an implemented use-case.
 	 */
-	public abstract void transform();
+	public abstract boolean next();
 
 }

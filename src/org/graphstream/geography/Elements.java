@@ -80,7 +80,7 @@ public class Elements {
 			elementsAtDate = new ArrayList<Element>();
 			this.elementsByDate.put(date, elementsAtDate);
 		}
-
+System.out.println(element + " " + date);
 		elementsAtDate.add(element);
 	}
 
@@ -102,7 +102,10 @@ public class Elements {
 	 * @return A list of elements in their final form.
 	 */
 	public ArrayList<Element> getElementsAtEnd() {
-
+		
+		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet())
+			System.out.println(entry.getKey() + " " + entry.getValue());
+		
 		return accumulate(this.elementsByDate.lastEntry().getKey());
 	}
 

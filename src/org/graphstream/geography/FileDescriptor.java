@@ -95,4 +95,16 @@ public class FileDescriptor {
 		return this.descriptors;
 	}
 
+	public String toString() {
+	
+		String s = new String();
+		
+		s += "FileDescriptor\n";
+		
+		for(ElementDescriptor descriptor : this.descriptors)
+			s += "\t" + descriptor.toString();
+		
+		return s;
+	}
+	
 }

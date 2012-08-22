@@ -93,7 +93,6 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 			
 			this.addFileDescriptor(fileDescriptor);
 		}
-
 	}
 
 	/**
@@ -156,8 +155,6 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 *            The point to transfer to the graph.
 	 */
 	protected void addNode(Point point) {
-
-		read();
 
 		String nodeId = point.getId();
 

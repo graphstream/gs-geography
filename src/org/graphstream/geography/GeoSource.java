@@ -148,8 +148,6 @@ public abstract class GeoSource extends SourceBase {
 			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors())
 				if(descriptor.matches(o))
 					this.keep(descriptor.newElement(o), descriptor);
-			
-			++this.currentFileIndex;
 		}
 	}
 
@@ -179,7 +177,8 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	protected void read() {
 
-		for(FileDescriptor fileDescriptor : this.fileDescriptors)
+		for(FileDescriptor fileDescriptor : this.fileDescriptors) {
+			
 			try {
 
 				begin(fileDescriptor.getFileName());
@@ -191,6 +190,9 @@ public abstract class GeoSource extends SourceBase {
 			catch (IOException e) {
 				e.printStackTrace();
 			}
+			
+			++this.currentFileIndex;
+		}
 	};
 
 	// Abstract

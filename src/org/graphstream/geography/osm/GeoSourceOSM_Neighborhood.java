@@ -65,6 +65,8 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 * buildings.
 	 */
 	protected ElementDescriptor buildingDescriptor;
+	
+	protected AttributeFilter buildingAttributeFilter;
 
 	/**
 	 * Instantiate a new OpenStreetMap source producing a neighborhood graph.
@@ -82,11 +84,11 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		// By default, there is no attribute worth keeping.
 
-		AttributeFilter filterBuilding = new AttributeFilter();
+		this.buildingAttributeFilter = new AttributeFilter();
 
 		// We are only interested in buildings.
 
-		this.buildingDescriptor = new ElementDescriptorOSM(this, "BUILDINGS", filterBuilding);
+		this.buildingDescriptor = new ElementDescriptorOSM(this, "BUILDINGS", this.buildingAttributeFilter);
 
 		this.buildingDescriptor.mustBe(Element.Type.POLYGON);
 		this.buildingDescriptor.mustHave("building", "yes");
@@ -113,6 +115,11 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		return this.buildingDescriptor;
 	}
 
+	public AttributeFilter getBuildingAttributeFilter() {
+		
+		return this.buildingAttributeFilter;
+	}
+	
 	@Override
 	public void transform() {
 

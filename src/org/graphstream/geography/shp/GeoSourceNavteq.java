@@ -55,11 +55,15 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	 */
 	protected ElementDescriptor zDescriptor;
 
+	protected AttributeFilter zAttributeFilter;
+	
 	/**
 	 * The descriptor matching geographic objects with representations of roads.
 	 */
 	protected ElementDescriptor roadDescriptor;
 
+	protected AttributeFilter roadAttributeFilter;
+	
 	/**
 	 * A record of nodes already added to the output graph.
 	 */
@@ -83,14 +87,14 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		// We need to keep the link ID to join the data from the two files and
 		// the Z level to handle overpasses/underpasses/tunnels/bridges...
 
-		AttributeFilter filterZ = new AttributeFilter(AttributeFilter.Mode.KEEP);
+		this.zAttributeFilter = new AttributeFilter(AttributeFilter.Mode.KEEP);
 
-		filterZ.addAttribute("LINK_ID");
-		filterZ.addAttribute("Z_LEVEL");
+		this.zAttributeFilter.addAttribute("LINK_ID");
+		this.zAttributeFilter.addAttribute("Z_LEVEL");
 
 		// We are only interested in intersection points.
 
-		this.zDescriptor = new ElementDescriptorSHP(this, "Z", filterZ);
+		this.zDescriptor = new ElementDescriptorSHP(this, "Z", this.zAttributeFilter);
 
 		this.zDescriptor.sendElementsToSpatialIndex();
 		this.zDescriptor.mustHave("INTRSECT", "Y");
@@ -103,13 +107,13 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// We need the link ID to join the two files.
 
-		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
+		this.roadAttributeFilter = new AttributeFilter(AttributeFilter.Mode.KEEP);
 
-		filterRoad.addAttribute("LINK_ID");
+		this.roadAttributeFilter.addAttribute("LINK_ID");
 
 		// We are only interested in line features..
 
-		this.roadDescriptor = new ElementDescriptorSHP(this, "Z", filterRoad);
+		this.roadDescriptor = new ElementDescriptorSHP(this, "Z", this.roadAttributeFilter);
 
 		this.roadDescriptor.onlyConsiderLineEndPoints();
 
@@ -129,6 +133,11 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		return this.zDescriptor;
 	}
+	
+	public AttributeFilter getZAttributeFilter() {
+		
+		return this.zAttributeFilter;
+	}
 
 	/**
 	 * Give the descriptor matching geographic objects with representations of
@@ -141,6 +150,11 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		return this.roadDescriptor;
 	}
 
+	public AttributeFilter getRoadAttributeFilter() {
+		
+		return this.roadAttributeFilter;
+	}
+	
 	@Override
 	public void transform() {
 

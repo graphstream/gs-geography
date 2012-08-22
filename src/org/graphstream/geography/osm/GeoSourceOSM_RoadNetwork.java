@@ -59,6 +59,11 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	protected ElementDescriptor roadDescriptor;
 
 	/**
+	 * 
+	 */
+	protected AttributeFilter roadAttributeFilter;
+	
+	/**
 	 * A record of nodes already added to the output graph.
 	 */
 	protected List<String> addedNodeIds;
@@ -74,12 +79,12 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		
 		// By default, there are no attribute worth keeping.
 
-		AttributeFilter filterRoad = new AttributeFilter();
+		this.roadAttributeFilter = new AttributeFilter();
 
 		// Roads are linear features that possess a "highway" key with whatever
 		// value.
 
-		this.roadDescriptor = new ElementDescriptorOSM(this, "ROAD", filterRoad);
+		this.roadDescriptor = new ElementDescriptorOSM(this, "ROAD", this.roadAttributeFilter);
 
 		this.roadDescriptor.mustBe(Element.Type.LINE);
 		this.roadDescriptor.mustHave("highway");
@@ -104,6 +109,11 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	public ElementDescriptor getRoadDescriptor() {
 
 		return this.roadDescriptor;
+	}
+	
+	public AttributeFilter getRoadAttributeFilter() {
+		
+		return this.roadAttributeFilter;
 	}
 
 	@Override

@@ -138,7 +138,7 @@ public class AttributeFilter {
 	 * @param attribute
 	 *            The attribute name.
 	 */
-	public void add(String attribute) {
+	public void addAttribute(String attribute) {
 
 		if(this.attributes == null)
 			this.attributes = new ArrayList<String>();

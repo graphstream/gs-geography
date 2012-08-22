@@ -166,7 +166,7 @@ public abstract class GeoSource extends SourceBase {
 
 		Integer date = descriptor.getTime(element);
 		
-		this.elements.add(element, date);
+		this.elements.addElement(element, date);
 
 		if(descriptor.areElementsSentToSpatialIndex())
 			this.index.add(element);

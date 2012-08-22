@@ -72,7 +72,7 @@ public class Elements {
 	 * @param date
 	 *            The date at which the element appears/changes.
 	 */
-	public void add(Element element, Integer date) {
+	public void addElement(Element element, Integer date) {
 
 		ArrayList<Element> elementsAtDate = this.elementsByDate.get(date);
 

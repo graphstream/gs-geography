@@ -85,8 +85,8 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		AttributeFilter filterZ = new AttributeFilter(AttributeFilter.Mode.KEEP);
 
-		filterZ.add("LINK_ID");
-		filterZ.add("Z_LEVEL");
+		filterZ.addAttribute("LINK_ID");
+		filterZ.addAttribute("Z_LEVEL");
 
 		// We are only interested in intersection points.
 
@@ -105,7 +105,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		AttributeFilter filterRoad = new AttributeFilter(AttributeFilter.Mode.KEEP);
 
-		filterRoad.add("LINK_ID");
+		filterRoad.addAttribute("LINK_ID");
 
 		// We are only interested in line features..
 

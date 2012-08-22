@@ -31,24 +31,23 @@
 
 package org.graphstream.geography.test;
 
-import org.graphstream.geography.GeoSource;
-import org.graphstream.geography.osm.GeoSourceOSM_Neighborhood;
+import org.graphstream.geography.osm.GeoSourceOSM;
+import org.graphstream.geography.osm.GeoSourceOSM_TimedRoadNetwork;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 
 /**
- * Test the import of a radial neighborhood graph from an OpenStreetMap XML
- * file.
+ * Test the import of a road network from an OpenStreetMap XML file.
  * 
  * @author Merwan Achibet
  */
-public class Test_OSM_Neighborhood {
+public class Test_OSM_RoadNetwork_Timed {
 
 	public static void main(String args[]) {
 
-		Graph graph = new SingleGraph("neighborhood");
+		Graph graph = new SingleGraph("road network");
 
-		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, "/home/merwan/map.osm");
+		GeoSourceOSM src = new GeoSourceOSM_TimedRoadNetwork("/home/merwan/map_t0.osm", "/home/merwan/map_t1.osm");
 		src.addSink(graph);
 
 		src.transform();

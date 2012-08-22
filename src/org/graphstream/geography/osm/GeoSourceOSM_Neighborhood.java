@@ -75,12 +75,10 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 *            The radius threshold under which two buildings are considered
 	 *            neighbors.
 	 */
-	public GeoSourceOSM_Neighborhood(String fileName, double radius) {
-		super();
+	public GeoSourceOSM_Neighborhood(double radius, String... fileNames) {
+		super(fileNames);
 		
 		this.radius = radius;
-		
-		FileDescriptor fileDescriptor = new FileDescriptor(fileName);
 
 		// By default, there is no attribute worth keeping.
 
@@ -93,9 +91,15 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		this.buildingDescriptor.mustBe(Element.Type.POLYGON);
 		this.buildingDescriptor.mustHave("building", "yes");
 
-		fileDescriptor.addDescriptor(this.buildingDescriptor);
+		// Attach this descriptor to every file.
 		
-		addFileDescriptor(fileDescriptor);
+		for(String fileName : fileNames) {
+			
+			FileDescriptor fileDescriptor = new FileDescriptor(fileName);
+			fileDescriptor.addDescriptor(this.buildingDescriptor);
+			
+			this.addFileDescriptor(fileDescriptor);
+		}
 	}
 
 	/**

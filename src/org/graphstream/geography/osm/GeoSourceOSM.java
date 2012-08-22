@@ -72,8 +72,9 @@ public abstract class GeoSourceOSM extends GeoSource {
 	 * @param fileName
 	 *            The path to the input file.
 	 */
-	public GeoSourceOSM() {
-
+	public GeoSourceOSM(String... fileNames) {
+		super(fileNames);
+		
 		this.nodePositions = new HashMap<String, Coordinate>();
 	}
 

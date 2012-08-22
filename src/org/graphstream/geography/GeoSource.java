@@ -58,10 +58,20 @@ public abstract class GeoSource extends SourceBase {
 	protected String sourceId;
 
 	/**
+	 * The paths to the input files.
+	 */
+	protected ArrayList<String> fileNames;
+	
+	/**
 	 * Descriptors for the geographic objects that the user want to consider.
 	 */
 	protected ArrayList<FileDescriptor> fileDescriptors;
 
+	/**
+	 * 
+	 */
+	protected int currentFileIndex;
+	
 	/**
 	 * The geometric elements that matched any of the descriptors definitions,
 	 * grouped by date.
@@ -79,12 +89,18 @@ public abstract class GeoSource extends SourceBase {
 	/**
 	 * Instantiate a new geographic source.
 	 */
-	protected GeoSource() {
+	protected GeoSource(String... fileNames) {
 
 		this.sourceId = String.format("<GeoSource %x>", System.nanoTime());
 
+		this.fileNames = new ArrayList<String>();
+		for(int i = 0; i < fileNames.length; ++i)
+			this.fileNames.add(fileNames[i]);
+		
 		this.fileDescriptors = new ArrayList<FileDescriptor>();
 
+		this.currentFileIndex = 0;
+		
 		this.elements = new Elements();
 	}
 
@@ -99,6 +115,11 @@ public abstract class GeoSource extends SourceBase {
 		this.fileDescriptors.add(fileDescriptor);
 	}
 
+	public int getCurrentFileIndex() {
+		
+		return this.currentFileIndex;
+	}
+	
 	/**
 	 * Prepare the spatial index.
 	 */
@@ -122,25 +143,14 @@ public abstract class GeoSource extends SourceBase {
 		if(o == null)
 			return;
 
-		for(FileDescriptor fileDescriptor : this.fileDescriptors)
+		for(FileDescriptor fileDescriptor : this.fileDescriptors) {
+
 			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors())
 				if(descriptor.matches(o))
 					this.keep(descriptor.newElement(o), descriptor);
-	}
-
-	// TODO
-	/**
-	 * Add a geometric element to the list of kept elements and optionally
-	 * reference it in a spatial index.
-	 * 
-	 * @param element
-	 *            The element to add.
-	 * @param descriptor
-	 *            The descriptor that classified the elements.
-	 */
-	protected void keep(Element element, ElementDescriptor descriptor) {
-
-		keep(element, descriptor, 0);
+			
+			++this.currentFileIndex;
+		}
 	}
 
 	/**
@@ -154,8 +164,10 @@ public abstract class GeoSource extends SourceBase {
 	 * @param date
 	 *            The date.
 	 */
-	protected void keep(Element element, ElementDescriptor descriptor, Integer date) {
+	protected void keep(Element element, ElementDescriptor descriptor) {
 
+		Integer date = descriptor.getTime(element);
+		
 		this.elements.add(element, date);
 
 		if(descriptor.areElementsSentToSpatialIndex())

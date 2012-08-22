@@ -54,14 +54,14 @@ public class Elements {
 	/**
 	 * The ordered map of element blocks.
 	 */
-	protected TreeMap<Integer, ArrayList<Element>> elements;
+	protected TreeMap<Integer, ArrayList<Element>> elementsByDate;
 
 	/**
 	 * Instantiate a new element container.
 	 */
 	public Elements() {
 
-		this.elements = new TreeMap<Integer, ArrayList<Element>>();
+		this.elementsByDate = new TreeMap<Integer, ArrayList<Element>>();
 	}
 
 	/**
@@ -74,11 +74,11 @@ public class Elements {
 	 */
 	public void add(Element element, Integer date) {
 
-		ArrayList<Element> elementsAtDate = this.elements.get(date);
+		ArrayList<Element> elementsAtDate = this.elementsByDate.get(date);
 
 		if(elementsAtDate == null) {
 			elementsAtDate = new ArrayList<Element>();
-			this.elements.put(date, elementsAtDate);
+			this.elementsByDate.put(date, elementsAtDate);
 		}
 
 		elementsAtDate.add(element);
@@ -103,7 +103,7 @@ public class Elements {
 	 */
 	public ArrayList<Element> getElementsAtEnd() {
 
-		return accumulate(this.elements.lastEntry().getKey());
+		return accumulate(this.elementsByDate.lastEntry().getKey());
 	}
 
 	/**
@@ -115,24 +115,25 @@ public class Elements {
 
 		// This list will hold the progressive state of each element and will be
 		// updated with diffs through each time step.
-		
+
 		HashMap<String, Element> accumulatedElements = new HashMap<String, Element>();
 
-		for(Entry<Integer, ArrayList<Element>> entry : this.elements.entrySet()) {
+		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet()) {
 
 			for(Element elementDiff : entry.getValue()) {
 
-				// If the element is a "base", just add it to the accumulated elements.
-				
+				// If the element is a "base", just add it to the accumulated
+				// elements.
+
 				if(elementDiff.isBase())
 					accumulatedElements.put(elementDiff.getId(), elementDiff);
-				
+
 				// If the element is a "diff", update its accumulated version.
-				
+
 				else {
 
 					// Retrieve the last version of the element.
-					
+
 					Element previousElementDiff = accumulatedElements.get(elementDiff.getId());
 
 					// Delete attributes that have been removed.
@@ -140,7 +141,8 @@ public class Elements {
 					for(String key : elementDiff.getRemovedAttributes())
 						previousElementDiff.removeAttribute(key);
 
-					// Update attributes which values have been changed and add new attributes.
+					// Update attributes which values have been changed and add
+					// new attributes.
 
 					for(Entry<String, Object> entry2 : elementDiff.getAttributes().entrySet())
 						previousElementDiff.setAttribute(entry2.getKey(), entry2.getValue());
@@ -148,7 +150,7 @@ public class Elements {
 					// TODO shape? position?
 				}
 			}
-			
+
 			if(entry.getKey() >= date)
 				return new ArrayList<Element>(accumulatedElements.values());
 		}

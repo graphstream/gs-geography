@@ -29,31 +29,30 @@
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
 
-package org.graphstream.geography.test;
+package org.graphstream.geography.osm;
 
-import org.graphstream.geography.GeoSource;
-import org.graphstream.geography.osm.GeoSourceOSM_Neighborhood;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.geography.ElementDescriptor.TimeConsideration;
 
 /**
- * Test the import of a radial neighborhood graph from an OpenStreetMap XML
- * file.
+ * This geographical source implementation produces a road network from an
+ * OpenStreetMap file.
  * 
  * @author Merwan Achibet
  */
-public class Test_OSM_Neighborhood {
+public class GeoSourceOSM_TimedRoadNetwork extends GeoSourceOSM_RoadNetwork {
 
-	public static void main(String args[]) {
-
-		Graph graph = new SingleGraph("neighborhood");
-
-		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, "/home/merwan/map.osm");
-		src.addSink(graph);
-
-		src.transform();
-
-		graph.display(false);
+	/**
+	 * Instantiate a new OpenStreetMap source producing a road network graph.
+	 * 
+	 * @param fileName
+	 *            The path to the input file.
+	 */
+	public GeoSourceOSM_TimedRoadNetwork(String... fileNames) {
+		super(fileNames);
+		
+		//
+		
+		getRoadDescriptor().setTimeConsideration(TimeConsideration.TIME_FILE);
 	}
 
 }

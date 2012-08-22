@@ -69,6 +69,21 @@ import java.util.List;
 public abstract class ElementDescriptor {
 
 	/**
+	 * How is time considered?
+	 * 
+	 * NO_TIME: the temporal dimension is ignored.
+	 * 
+	 * TIME_FILE: each supplied file matches with a time step.
+	 * 
+	 * TIME_ATTRIBUTE: a specific attribute indicates the time step.
+	 * 
+	 * @author Merwan Achibet
+	 */
+	public static enum TimeConsideration {
+		NO_TIME, TIME_FILE, TIME_ATTRIBUTE
+	};
+
+	/**
 	 * The source using this descriptor.
 	 */
 	protected GeoSource source;
@@ -99,6 +114,11 @@ public abstract class ElementDescriptor {
 	 * have.
 	 */
 	protected HashMap<String, Object> mustHaveValues;
+
+	/**
+	 * The way that this descriptor takes time into account.
+	 */
+	protected TimeConsideration timeConsideration;
 
 	/**
 	 * Should matching elements be stored in the spatial index?
@@ -145,8 +165,56 @@ public abstract class ElementDescriptor {
 		this.category = category;
 		this.filter = filter;
 
+		this.timeConsideration = TimeConsideration.NO_TIME;
+
 		this.toSpatialIndex = false;
 		this.onlyLineEndPointsConsidered = false;
+	}
+
+	/**
+	 * Give the name of the category of elements described by the descriptor.
+	 * 
+	 * @return The name of the element category.
+	 */
+	public String getCategory() {
+
+		return new String(this.category);
+	}
+
+	/**
+	 * Set the way that the temporal component is handled.
+	 * 
+	 * @param timeConsideration
+	 *            The time consideration mode.
+	 */
+	public void setTimeConsideration(TimeConsideration timeConsideration) {
+
+		this.timeConsideration = timeConsideration;
+	}
+
+	/**
+	 * 
+	 * @param element
+	 * @return
+	 */
+	public Integer getTime(Element element) {
+
+		// If time is not even considered, all events happen at the same time.
+
+		if(this.timeConsideration == TimeConsideration.NO_TIME)
+			return 0;
+
+		// If time is file-based, the events happen in the order of the files.
+
+		if(this.timeConsideration == TimeConsideration.TIME_FILE)
+			return this.source.getCurrentFileIndex();
+		
+		// If time is attribute-based, read the corresponding attribute.
+		
+		if(this.timeConsideration == TimeConsideration.TIME_ATTRIBUTE)
+			return 0; // TODO
+		
+		return 0;
 	}
 
 	/**
@@ -155,7 +223,7 @@ public abstract class ElementDescriptor {
 	public void sendElementsToSpatialIndex() {
 
 		this.toSpatialIndex = true;
-		
+
 		this.source.prepareSpatialIndex();
 	}
 
@@ -176,16 +244,6 @@ public abstract class ElementDescriptor {
 	public void onlyConsiderLineEndPoints() {
 
 		this.onlyLineEndPointsConsidered = true;
-	}
-
-	/**
-	 * Give the name of the category of elements described by the descriptor.
-	 * 
-	 * @return The name of the element category.
-	 */
-	public String getCategory() {
-
-		return new String(this.category);
 	}
 
 	/**

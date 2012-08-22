@@ -61,7 +61,7 @@ public abstract class GeoSourceSHP extends GeoSource {
 	 * Instantiate a new shapefile source.
 	 */
 	public GeoSourceSHP() {
-
+		
 	}
 
 	@Override

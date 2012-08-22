@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author Merwan Achibet
  */
 public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
-	
+
 	/**
 	 * The descriptor matching geographic objects with representations of roads.
 	 */
@@ -69,11 +69,9 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 * @param fileName
 	 *            The path to the input file.
 	 */
-	public GeoSourceOSM_RoadNetwork(String fileName) {
-		super();
+	public GeoSourceOSM_RoadNetwork(String... fileNames) {
+		super(fileNames);
 		
-		FileDescriptor fileDescriptor = new FileDescriptor(fileName);
-
 		// By default, there are no attribute worth keeping.
 
 		AttributeFilter filterRoad = new AttributeFilter();
@@ -86,9 +84,16 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		this.roadDescriptor.mustBe(Element.Type.LINE);
 		this.roadDescriptor.mustHave("highway");
 
-		fileDescriptor.addDescriptor(this.roadDescriptor);
+		// Attach this descriptor to every file.
+		
+		for(String fileName : fileNames) {
+			
+			FileDescriptor fileDescriptor = new FileDescriptor(fileName);
+			fileDescriptor.addDescriptor(this.roadDescriptor);
+			
+			this.addFileDescriptor(fileDescriptor);
+		}
 
-		this.addFileDescriptor(fileDescriptor);
 	}
 
 	/**
@@ -105,10 +110,12 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	@Override
 	public void transform() {
 
+		read();
+		
 		this.addedNodeIds = new ArrayList<String>();
 
 		ArrayList<Element> allElements = this.elements.getElementsAtEnd();
-		
+
 		for(Element element : allElements) {
 
 			Line line = (Line)element;
@@ -151,7 +158,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	protected void addNode(Point point) {
 
 		read();
-		
+
 		String nodeId = point.getId();
 
 		// Add the node if it has not already been done in the process of

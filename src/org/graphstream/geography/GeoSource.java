@@ -61,7 +61,7 @@ public abstract class GeoSource extends SourceBase {
 	 * The paths to the input files.
 	 */
 	protected ArrayList<String> fileNames;
-	
+
 	/**
 	 * Descriptors for the geographic objects that the user want to consider.
 	 */
@@ -71,7 +71,7 @@ public abstract class GeoSource extends SourceBase {
 	 * 
 	 */
 	protected int currentFileIndex;
-	
+
 	/**
 	 * The geometric elements that matched any of the descriptors definitions,
 	 * grouped by date.
@@ -96,11 +96,11 @@ public abstract class GeoSource extends SourceBase {
 		this.fileNames = new ArrayList<String>();
 		for(int i = 0; i < fileNames.length; ++i)
 			this.fileNames.add(fileNames[i]);
-		
+
 		this.fileDescriptors = new ArrayList<FileDescriptor>();
 
 		this.currentFileIndex = 0;
-		
+
 		this.elements = new Elements();
 	}
 
@@ -116,10 +116,10 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	public int getCurrentFileIndex() {
-		
+
 		return this.currentFileIndex;
 	}
-	
+
 	/**
 	 * Prepare the spatial index.
 	 */
@@ -143,12 +143,13 @@ public abstract class GeoSource extends SourceBase {
 		if(o == null)
 			return;
 
-		for(FileDescriptor fileDescriptor : this.fileDescriptors) {
+		FileDescriptor currentFileDescriptor = this.fileDescriptors.get(this.currentFileIndex);
 
-			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors())
-				if(descriptor.matches(o))
-					this.keep(o, descriptor);
-		}
+		for(ElementDescriptor descriptor : currentFileDescriptor.getDescriptors())
+			if(descriptor.matches(o)) {
+				this.keep(o, descriptor);
+				System.out.println(this.currentFileIndex + " " + descriptor.getElementId(o));
+			}
 	}
 
 	/**
@@ -163,24 +164,24 @@ public abstract class GeoSource extends SourceBase {
 	protected void keep(Object o, ElementDescriptor descriptor) {
 
 		Element element = null;
-		
+
 		Element previousVersionOfElement = this.elements.getElementLastVersion(descriptor.getElementId(o));
-		
+
 		if(previousVersionOfElement == null)
 			element = descriptor.newElement(o);
 		else
 			element = descriptor.newElementDiff(previousVersionOfElement, o);
-		
+
 		// Get the date of the element that we are keeping.
-		
+
 		Integer date = descriptor.getTime(element);
-		
+
 		// Add it at the appropriate time slot.
-		
+
 		this.elements.addElement(element, date);
 
 		// Reference it in the spatial index if necessary.
-		
+
 		if(descriptor.areElementsSentToSpatialIndex())
 			this.index.add(element);
 	}
@@ -191,7 +192,7 @@ public abstract class GeoSource extends SourceBase {
 	protected void read() {
 
 		for(FileDescriptor fileDescriptor : this.fileDescriptors) {
-			
+
 			try {
 
 				begin(fileDescriptor.getFileName());
@@ -203,7 +204,7 @@ public abstract class GeoSource extends SourceBase {
 			catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			++this.currentFileIndex;
 		}
 	};

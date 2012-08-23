@@ -54,14 +54,14 @@ public class Elements {
 	/**
 	 * The map of element blocks, ordered by time.
 	 */
-	protected TreeMap<Integer, ArrayList<Element>> elementsByDate;
+	protected TreeMap<Integer, HashMap<String, Element>> elementsByDate;
 
 	/**
 	 * Instantiate a new element container.
 	 */
 	public Elements() {
 
-		this.elementsByDate = new TreeMap<Integer, ArrayList<Element>>();
+		this.elementsByDate = new TreeMap<Integer, HashMap<String, Element>>();
 	}
 
 	/**
@@ -77,20 +77,20 @@ public class Elements {
 		// Retrieve the block of elements representing the current
 		// configuration.
 
-		ArrayList<Element> elementsAtDate = this.elementsByDate.get(date);
+		HashMap<String, Element> elementsAtDate = this.elementsByDate.get(date);
 
 		// Instantiate the block if has not been done yet.
 
 		if(elementsAtDate == null) {
 
-			elementsAtDate = new ArrayList<Element>();
+			elementsAtDate = new HashMap<String, Element>();
 
 			this.elementsByDate.put(date, elementsAtDate);
 		}
 
 		// Add the element to the list.
 
-		elementsAtDate.add(element);
+		elementsAtDate.put(element.getId(), element);
 	}
 
 	/**
@@ -166,10 +166,10 @@ public class Elements {
 		// Go though each time block until the element appears for the first
 		// time.
 
-		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet())
-			for(Element e : entry.getValue())
-				if(e.getId().equals(id))
-					return e;
+		for(Entry<Integer, HashMap<String, Element>> dateElements : this.elementsByDate.entrySet())
+			for(Entry<String, Element> idElement : dateElements.getValue().entrySet())
+				if(idElement.getKey().equals(id))
+					return idElement.getValue();
 
 		return null;
 	}
@@ -196,7 +196,6 @@ public class Elements {
 		return rebuildElement(id, this.elementsByDate.lastEntry().getKey());
 	}
 
-	// TODO hashmap <- arraylist
 	/**
 	 * Rebuild an element from its diff versions.
 	 * 
@@ -214,24 +213,28 @@ public class Elements {
 		// Go though each date block in the ascending order until the date is
 		// reached.
 
-		for(Entry<Integer, ArrayList<Element>> dateElements : this.elementsByDate.entrySet()) {
+		for(Entry<Integer, HashMap<String, Element>> dateElements : this.elementsByDate.entrySet()) {
 
-			for(Element nextDiff : dateElements.getValue()) {
+			// Retrieve the diff of this element at this date.
 
-				// If the element to rebuild has not been found yet, look for
-				// its base version.
+			Element nextDiff = dateElements.getValue().get("id");
 
-				if(rebuiltElement == null && nextDiff.getId().equals(id))
-					rebuiltElement = nextDiff; // COPY? XXX
+			if(nextDiff != null) {
 
-				// Otherwise, update it with its diff version.
+				// If the element to rebuild has not been found yet, use the
+				// diff as its base version.
 
-				else if(nextDiff.getId().equals(id)) {
+				if(rebuiltElement == null)
+					rebuiltElement = nextDiff; // XXX COPY?
+
+				// Otherwise, update it with this diff version.
+
+				else {
 
 					// Remove the attributes that disappeared with this diff.
 
 					ArrayList<String> removedAttributes = nextDiff.getRemovedAttributes();
-					
+
 					if(removedAttributes != null)
 						for(String key : removedAttributes)
 							rebuiltElement.removeAttribute(key);
@@ -240,7 +243,7 @@ public class Elements {
 					// entirely new.
 
 					HashMap<String, Object> attributes = nextDiff.getAttributes();
-					
+
 					if(attributes != null)
 						for(Entry<String, Object> keyValue : attributes.entrySet())
 							rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
@@ -258,7 +261,7 @@ public class Elements {
 	}
 
 	// XXX what if an element disappears and then reappears?
-	
+
 	/**
 	 * Rebuild all elements from their diff versions.
 	 * 
@@ -274,9 +277,11 @@ public class Elements {
 		// Go though each date block in the ascending order until the date is
 		// reached.
 
-		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet()) {
+		for(Entry<Integer, HashMap<String, Element>> dateElements : this.elementsByDate.entrySet()) {
 
-			for(Element nextDiff : entry.getValue()) {
+			for(Entry<String, Element> idElement : dateElements.getValue().entrySet()) {
+			
+				Element nextDiff = idElement.getValue();
 
 				// If the element to rebuild has not been found yet, look for
 				// its base version.
@@ -312,14 +317,14 @@ public class Elements {
 					// TODO shape? position?
 				}
 			}
-			
+
 			// Return the rebuilt element if the appropriate date is reached.
 
-			if(entry.getKey() >= date)
+			if(dateElements.getKey() >= date)
 				return new ArrayList<Element>(rebuiltElements.values());
 		}
 
 		return null;
 	}
-	
+
 }

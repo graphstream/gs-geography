@@ -32,6 +32,8 @@
 package org.graphstream.geography.shp;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.ElementDescriptor;
@@ -176,7 +178,29 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 
 		return point;
 	}
+	
+	@Override
+	protected Point newPointDiff(Element previousVersion, Object o) {
 
+		// Cast the object to a GeoTools SimpleFeature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Retrieve its ID.
+
+		String id = feature.getID();
+
+		// Instantiate a new point.
+
+		Point point = new Point(id, getCategory());
+
+		// Bind the other attributes according to the filter.
+
+		bindAttributesToElementDiff(previousVersion, feature, point);
+
+		return point;
+	}
+	
 	@Override
 	protected Line newLine(Object o) {
 
@@ -211,6 +235,28 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 
 		return line;
 	}
+	
+	@Override
+	protected Line newLineDiff(Element previousVersion, Object o) {
+
+		// Cast the object to a GeoTools SimpleFeature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Retrieve its ID.
+
+		String id = feature.getID();
+
+		// Instantiate a new line.
+
+		Line line = new Line(id, getCategory());
+
+		// Bind the attributes according to the filter.
+
+		bindAttributesToElementDiff(previousVersion, feature, line);
+
+		return line;
+	}
 
 	@Override
 	protected Polygon newPolygon(Object o) {
@@ -241,6 +287,28 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 		return polygon;
 	}
 
+	@Override
+	protected Polygon newPolygonDiff(Element previousVersion, Object o) {
+
+		// Cast the object to a GeoTools SimpleFeature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Retrieve its ID.
+
+		String id = feature.getID();
+
+		// Instantiate a new line.
+
+		Polygon polygon = new Polygon(id, getCategory());
+
+		// Bind the attributes according to the filter.
+
+		bindAttributesToElementDiff(previousVersion, feature, polygon);
+
+		return polygon;
+	}
+
 	/**
 	 * Copy the attributes of an element from its input format to the simple
 	 * geometric format.
@@ -262,4 +330,26 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 				element.setAttribute(property.getName().toString(), property.getValue());
 	}
 
+	protected void bindAttributesToElementDiff(Element previousVersion, SimpleFeature feature, Element element) {
+		
+		Collection<Property> newVersionProperties = feature.getProperties();
+		HashMap<String, Object> newVersionAttributes = new HashMap<String, Object>();
+		for(Property property : newVersionProperties)
+			newVersionAttributes.put(property.getName().toString(), property.getValue());
+		
+		HashMap<String, Object> previousVersionAttributes = previousVersion.getAttributes();
+		
+		for(Entry<String, Object> entry : previousVersionAttributes.entrySet())
+			if(!newVersionAttributes.containsKey(entry.getKey()))
+				element.addRemovedAttribute(entry.getKey());
+		
+		for(Entry<String, Object> entry : newVersionAttributes.entrySet())
+			if(!previousVersionAttributes.containsKey(entry.getKey()))
+				element.setAttribute(entry.getKey(), entry.getValue());
+		
+		for(Entry<String, Object> entry : newVersionAttributes.entrySet())
+			if(previousVersionAttributes.containsKey(entry.getKey()) && !previousVersionAttributes.get(entry.getKey()).equals(entry.getValue()))
+				element.setAttribute(entry.getKey(), entry.getValue());
+	}
+	
 }

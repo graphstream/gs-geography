@@ -51,19 +51,26 @@ import org.graphstream.geography.Point;
 public class GeoSourceNavteq extends GeoSourceSHP {
 
 	/**
-	 * The descriptor matching geographic objects with Z-index points.
+	 * Handle to the descriptor matching geographic objects with Z-index points.
 	 */
 	protected ElementDescriptor zDescriptor;
 
-	protected AttributeFilter zAttributeFilter;
-	
 	/**
-	 * The descriptor matching geographic objects with representations of roads.
+	 * Handle to the filter associated with the Z-index point descriptor.
+	 */
+	protected AttributeFilter zAttributeFilter;
+
+	/**
+	 * Handle to the descriptor matching geographic objects with representations
+	 * of roads.
 	 */
 	protected ElementDescriptor roadDescriptor;
 
+	/**
+	 * Handle to the filter associated with the road descriptor.
+	 */
 	protected AttributeFilter roadAttributeFilter;
-	
+
 	/**
 	 * A record of nodes already added to the output graph.
 	 */
@@ -98,9 +105,9 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		this.zDescriptor.sendElementsToSpatialIndex();
 		this.zDescriptor.mustHave("INTRSECT", "Y");
-		
+
 		zFileDescriptor.addDescriptor(this.zDescriptor);
-		
+
 		this.addFileDescriptor(zFileDescriptor);
 
 		// Second: select and filter the road points.
@@ -118,9 +125,9 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		this.roadDescriptor.onlyConsiderLineEndPoints();
 
 		this.roadDescriptor.mustBe(Element.Type.LINE);
-		
+
 		roadFileDescriptor.addDescriptor(roadDescriptor);
-		
+
 		addFileDescriptor(roadFileDescriptor);
 	}
 
@@ -133,9 +140,14 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		return this.zDescriptor;
 	}
-	
+
+	/**
+	 * Give the filter associated with the Z-index point descriptor.
+	 * 
+	 * @return The Z-index point filter.
+	 */
 	public AttributeFilter getZAttributeFilter() {
-		
+
 		return this.zAttributeFilter;
 	}
 
@@ -150,11 +162,16 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		return this.roadDescriptor;
 	}
 
+	/**
+	 * Give the filter associated with the road descriptor.
+	 * 
+	 * @return The road filter.
+	 */
 	public AttributeFilter getRoadAttributeFilter() {
-		
+
 		return this.roadAttributeFilter;
 	}
-	
+
 	@Override
 	public boolean next() {
 
@@ -182,14 +199,10 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 				sendEdgeAdded(this.sourceId, line.getId(), idNode1, idNode2, false);
 
 			// Bind the attributes
-			
+
 		}
-		
-		//
-		
-		++this.currentTimeStep;
-		
-		return this.currentTimeStep < this.timeSteps;
+
+		return false;
 	}
 
 	/**
@@ -243,7 +256,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		if(alreadyHerePoint == null) {
 
 			alreadyHerePoint = lineZPoint;
-			
+
 			sendNodeAdded(this.sourceId, alreadyHerePoint.getId());
 
 			this.addedNodeIds.add(alreadyHerePoint.getId());

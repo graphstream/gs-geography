@@ -134,6 +134,31 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
+	 * Go through each file and read their data.
+	 */
+	public void read() {
+
+		for(FileDescriptor fileDescriptor : this.fileDescriptors) {
+
+			try {
+
+				open(fileDescriptor.getFileName());
+
+				traverse();
+
+				close();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			++this.currentFileIndex;
+		}
+
+		this.timeSteps = this.currentFileIndex;
+	};
+	
+	/**
 	 * Process a single geographic object coming from the data source and check
 	 * if it suits the user's needs. If it is the case, keep it for a later use,
 	 * ignore it otherwise.
@@ -193,31 +218,6 @@ public abstract class GeoSource extends SourceBase {
 		if(descriptor.areElementsSentToSpatialIndex())
 			this.index.add(element);
 	}
-
-	/**
-	 * Go through each file and read their data.
-	 */
-	public void read() {
-
-		for(FileDescriptor fileDescriptor : this.fileDescriptors) {
-
-			try {
-
-				open(fileDescriptor.getFileName());
-
-				traverse();
-
-				close();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			++this.currentFileIndex;
-		}
-
-		this.timeSteps = this.currentFileIndex;
-	};
 
 	/**
 	 * Populate the output graph in a single step.

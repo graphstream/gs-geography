@@ -34,6 +34,7 @@ package org.graphstream.geography;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.graphstream.geography.index.SpatialIndexPoint;
 
@@ -81,14 +82,26 @@ public abstract class Element {
 	protected HashMap<String, Object> attributes;
 
 	/**
-	 * A key/value mapping of attributes.
+	 * A key/value mapping of attributes that were removed from the previous
+	 * version of the element.
 	 */
 	protected ArrayList<String> removedAttributes;
 
 	/**
-	 * 
+	 * Flag indicating if the element is base version or a diff version.
 	 */
 	protected boolean diff;
+
+	/**
+	 * Instantiate a new element.
+	 * 
+	 * @param id
+	 *            The element ID.
+	 */
+	public Element(String id) {
+
+		this(id, null, false);
+	}
 
 	/**
 	 * Instantiate a new element.
@@ -103,13 +116,23 @@ public abstract class Element {
 		this(id, category, false);
 	}
 
+	/**
+	 * Instantiate a new element.
+	 * 
+	 * @param id
+	 *            The element ID.
+	 * @param category
+	 *            The element category.
+	 * @param diff
+	 *            True if the element is a diff, false if it is a base.
+	 */
 	public Element(String id, String category, boolean diff) {
-	
+
 		this.id = id;
 		this.category = category;
 		this.diff = diff;
 	}
-	
+
 	/**
 	 * Give the ID of the element.
 	 * 
@@ -143,7 +166,8 @@ public abstract class Element {
 	}
 
 	/**
-	 * Add an attribute to the element.
+	 * Add a new attribute to the element or modify its value if it already
+	 * exists.
 	 * 
 	 * @param key
 	 *            The key of the attribute.
@@ -152,9 +176,13 @@ public abstract class Element {
 	 */
 	public void setAttribute(String key, Object value) {
 
+		// Instantiate the map if has not been done yet.
+		
 		if(this.attributes == null)
 			this.attributes = new HashMap<String, Object>();
 
+		// Add the attribute to the map.
+		
 		this.attributes.put(key, value);
 	}
 
@@ -171,7 +199,7 @@ public abstract class Element {
 	}
 
 	/**
-	 * Give the value of a stored attribute.
+	 * Give the value of an attribute.
 	 * 
 	 * @param key
 	 *            The key of the attribute.
@@ -186,7 +214,7 @@ public abstract class Element {
 	}
 
 	/**
-	 * Give all of the stored attributes.
+	 * Give all attributes.
 	 * 
 	 * @return A list of key/value pairs.
 	 */
@@ -194,12 +222,12 @@ public abstract class Element {
 
 		if(this.attributes == null)
 			return null;
-
-		return new HashMap<String, Object>(this.attributes);
+		
+		return this.attributes;
 	}
 
 	/**
-	 * Check if the element possesses an attribute.
+	 * Check if the element possesses a specific attribute.
 	 * 
 	 * @param key
 	 *            The key of the attribute.
@@ -212,32 +240,46 @@ public abstract class Element {
 	}
 
 	/**
-	 * Check if the element possesses the supplied attribute AND if it equals
-	 * the supplied value.
+	 * Check if the element possesses a specific attribute AND if it equals the
+	 * supplied value.
 	 * 
 	 * @param key
 	 *            The key of the attribute.
 	 * @param value
-	 *            The value that the attribute should have.
-	 * @return True if the attribute matches, false otherwise.
+	 *            The value of the attribute.
+	 * @return True if the exact same attribute exists, false otherwise.
 	 */
 	public boolean hasAttribute(String key, Object value) {
 
 		return this.attributes != null && this.attributes.containsKey(key) && this.attributes.get(key).equals(value);
 	}
 
+	/**
+	 * Add an attribute to the list of attributes removed since the last version
+	 * of the element.
+	 * 
+	 * This list is only populated in diff versions of the element.
+	 * 
+	 * @param key
+	 *            The key of the attribute.
+	 */
 	public void addRemovedAttribute(String key) {
+
+		// instantiate the list if has not been done yet.
 		
 		if(this.removedAttributes == null)
 			this.removedAttributes = new ArrayList<String>();
+
+		// Add the key to the list.
 		
 		this.removedAttributes.add(key);
 	}
-	
+
 	/**
-	 * Give all of the stored attributes.
+	 * Give all the attributes that have been removed since the last version of
+	 * the element.
 	 * 
-	 * @return A list of key/value pairs.
+	 * @return A list of keys.
 	 */
 	public ArrayList<String> getRemovedAttributes() {
 
@@ -245,7 +287,7 @@ public abstract class Element {
 	}
 
 	/**
-	 * Check if the element is its base version of it is based on another one.
+	 * Check if the element is its own base version of a diff version.
 	 * 
 	 * @return True if the element is its own base version, false otherwise.
 	 */
@@ -312,19 +354,25 @@ public abstract class Element {
 		String s = new String();
 
 		if(isPoint())
-			s += "Point ";
+			s += "Point";
 		else if(isLine())
-			s += "Line ";
+			s += "Line";
 		else if(isPolygon())
-			s += "Polygon ";
+			s += "Polygon";
 
-		s += "[" + this.id + "] ";
+		s += " | " + this.id;
 
-		s += "{ ";
+		s += " | attributes: {";
 		if(this.attributes != null)
-			for(String key : this.attributes.keySet())
-				s += key + ":" + this.attributes.get(key) + " ";
-		s += "}";
+			for(Entry<String, Object> keyValue : this.attributes.entrySet())
+				s += " " + keyValue.getKey() + ":" + keyValue.getValue();
+		s += " }";
+		
+		s += " | removed attributes: {";
+		if(this.removedAttributes != null)
+			for(String key : this.removedAttributes)
+				s += " " + key;
+		s += " }";
 
 		return s;
 	}

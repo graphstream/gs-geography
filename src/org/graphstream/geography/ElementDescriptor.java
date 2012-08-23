@@ -50,11 +50,12 @@ import java.util.List;
  * attributes). As such, the implementation of a descriptor needs to be capable
  * of determining the type of a feature and of instantiating a new Point, Line
  * and Polygon from the input format of the considered object by means of the
- * isXXX() and newXXX() methods.
+ * isXXX(), newXXX() and newXXXDiff() methods.
  * 
  * Moreover, the library-specific object is only converted after it has been
  * matched (for efficiency reasons). Thus, a descriptor must be capable of
- * reading its attribute from its original format.
+ * reading its attribute from its original format using the hasKey() and
+ * hasKeyValue() methods.
  * 
  * For all these reasons, each implementation of the Descriptor base class must
  * focus on a single input format.
@@ -94,23 +95,23 @@ public abstract class ElementDescriptor {
 	protected String category;
 
 	/**
-	 * The filter for the attributes of matched elements.
+	 * The filter applied on the attributes of matched elements.
 	 */
 	protected AttributeFilter filter;
 
 	/**
-	 * Optional element type (point, line or polygon) used to filter down the
-	 * features matched by this descriptor.
+	 * Optional element type (point, line or polygon) that a matching object
+	 * must have.
 	 */
 	protected Element.Type type;
 
 	/**
-	 * Optional list of attribute keys that a matching feature must have.
+	 * Optional list of attribute keys that a matching object must have.
 	 */
 	protected List<String> mustHaveKeys;
 
 	/**
-	 * Optional list of attribute keys/values pairs that a matching feature must
+	 * Optional list of attribute keys/values pairs that a matching object must
 	 * have.
 	 */
 	protected HashMap<String, Object> mustHaveValues;
@@ -125,16 +126,18 @@ public abstract class ElementDescriptor {
 	 * 
 	 * In some cases, geographic elements should be referenced in a spatial
 	 * index to query them faster and ask questions like
-	 * "what point are at (x,y)?" (especially with huge data sets with
+	 * "what point are at (x,y)?" (especially with huge data sets using
 	 * position-based relationships). In other cases, a spatial index is useless
-	 * and would only slow down the import process. It is the user choice to
-	 * decide if he needs to reference spatially the described elements and it
-	 * really depends on what he wants to achieve.
+	 * and would only slow down the import process.
+	 * 
+	 * It is the implementation programmer's choice to decide if he needs to
+	 * spatially reference the described elements and it really depends on what
+	 * he wants to achieve.
 	 * 
 	 * Note that this flag is descriptor-dependent because a category of
 	 * elements (like points representing crossroads) could benefit from being
-	 * spatially referenced where an other category of feature (like lines
-	 * representing roads) would not.
+	 * spatially referenced where an other category of feature matched by an
+	 * other descriptor (like lines representing roads) would not.
 	 */
 	protected boolean toSpatialIndex;
 
@@ -193,11 +196,13 @@ public abstract class ElementDescriptor {
 	}
 
 	/**
+	 * Give the date associated with a specific element version.
 	 * 
 	 * @param element
-	 * @return
+	 *            The element.
+	 * @return The date.
 	 */
-	public Integer getTime(Element element) {
+	public Integer getDate(Element element) {
 
 		// If time is not even considered, all events happen at the same time.
 
@@ -206,14 +211,18 @@ public abstract class ElementDescriptor {
 
 		// If time is file-based, the events happen in the order of the files.
 
+		// TODO wrong, there are no guarantee that this call is synchronized
+		// with the
+		// import.
+
 		if(this.timeConsideration == TimeConsideration.TIME_FILE)
 			return this.source.getCurrentFileIndex();
-		
+
 		// If time is attribute-based, read the corresponding attribute.
-		
+
 		if(this.timeConsideration == TimeConsideration.TIME_ATTRIBUTE)
-			return 0; // TODO
-		
+			return 0; // TODO if such a file format exists
+
 		return 0;
 	}
 
@@ -353,11 +362,12 @@ public abstract class ElementDescriptor {
 	}
 
 	/**
-	 * Give a geographic object in the standard geometric format.
+	 * Give a simple geometric element (point, line or polygon with attributes)
+	 * based on a library-dependent object.
 	 * 
 	 * @param o
 	 *            The object to convert.
-	 * @return A simple geometric element.
+	 * @return A simple geometric element representing the object.
 	 */
 	public Element newElement(Object o) {
 
@@ -372,7 +382,19 @@ public abstract class ElementDescriptor {
 
 		return null;
 	}
-	
+
+	/**
+	 * Give a simple geometric element representing the difference between the
+	 * current state of a library-dependent object and a version from a previous
+	 * date.
+	 * 
+	 * @param previousVersion
+	 *            The previous version of the element.
+	 * @param o
+	 *            The new version of the object to convert.
+	 * @return A simple geometric element representing the difference between
+	 *         the two dates.
+	 */
 	public Element newElementDiff(Element previousVersion, Object o) {
 
 		if(isPoint(o))
@@ -386,7 +408,7 @@ public abstract class ElementDescriptor {
 
 		return null;
 	}
-	
+
 	@Override
 	public String toString() {
 
@@ -417,13 +439,26 @@ public abstract class ElementDescriptor {
 			s += "}";
 		}
 
+		if(this.onlyLineEndPointsConsidered)
+			s += " | only line end points are considered";
+
+		if(this.toSpatialIndex)
+			s += " | matching elements stored in a spatial index";
+
 		return s;
 	}
 
 	// Abstract
 
+	/**
+	 * Give the ID of a library-dependent geographic object.
+	 * 
+	 * @param o
+	 *            The object.
+	 * @return The ID of the object from its original format.
+	 */
 	public abstract String getElementId(Object o);
-	
+
 	/**
 	 * Check if a geographic object, in its library-dependent form, represents a
 	 * point.
@@ -490,6 +525,7 @@ public abstract class ElementDescriptor {
 	 * @return A standard point.
 	 */
 	protected abstract Point newPoint(Object o);
+
 	
 	protected abstract Point newPointDiff(Element previousVersion, Object o);
 

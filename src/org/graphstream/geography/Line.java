@@ -113,7 +113,7 @@ public class Line extends Element {
 	 */
 	public ArrayList<Point> getPoints() {
 
-		return new ArrayList<Point>(this.points);
+		return this.points;
 	}
 
 	/**

@@ -71,9 +71,9 @@ public abstract class GeoSource extends SourceBase {
 	 * 
 	 */
 	protected int currentFileIndex;
-	
+
 	protected int timeSteps;
-	
+
 	protected int currentTimeStep;
 
 	/**
@@ -167,23 +167,28 @@ public abstract class GeoSource extends SourceBase {
 
 		Element element = null;
 
+		// Retrieve the last version of the element.
+
 		Element previousVersionOfElement = this.elements.getElementLastVersion(descriptor.getElementId(o));
-		System.out.println("> "+previousVersionOfElement);
-		
+
+		// If the element has not been stored, instantiate a new one.
+
 		if(previousVersionOfElement == null)
 			element = descriptor.newElement(o);
+
+		// Otherwise, Instantiate a new diff from its previous version.
+
 		else
 			element = descriptor.newElementDiff(previousVersionOfElement, o);
 
-		// Get the date of the element that we are keeping.
+		// Get the date associated with this element and add it to the
+		// appropriate time slot.
 
-		Integer date = descriptor.getTime(element);
-
-		// Add it at the appropriate time slot.
+		Integer date = descriptor.getDate(element);
 
 		this.elements.addElement(element, date);
 
-		// Reference it in the spatial index if necessary.
+		// Reference the element in the spatial index if necessary.
 
 		if(descriptor.areElementsSentToSpatialIndex())
 			this.index.add(element);
@@ -210,14 +215,20 @@ public abstract class GeoSource extends SourceBase {
 
 			++this.currentFileIndex;
 		}
-		
+
 		this.timeSteps = this.currentFileIndex;
 	};
-	
+
+	/**
+	 * Populate the output graph in a single step.
+	 * 
+	 * All time steps will be played without interruption and the output graph
+	 * will immediately be in its final configuration.
+	 */
 	public void end() {
-		
+
 		boolean remainingSteps = true;
-		
+
 		do {
 			remainingSteps = next();
 		} while(remainingSteps);
@@ -242,7 +253,10 @@ public abstract class GeoSource extends SourceBase {
 
 	/**
 	 * Finalize the data import, generally by closing input data sources and
-	 * freeing resources.
+	 * freeing resources for the garbage collector.
+	 * 
+	 * As geographic data files tends to be very large, it is a good practice to
+	 * use this method.
 	 * 
 	 * @throws IOException
 	 */
@@ -251,6 +265,10 @@ public abstract class GeoSource extends SourceBase {
 	/**
 	 * Populate the output graph from the geometric elements accumulated during
 	 * the selection phase.
+	 * 
+	 * After this method has been executed, all the events occurring during a
+	 * single time step (new elements, modified attributes, removed elements,
+	 * ...) should be reflected to the output graph.
 	 * 
 	 * This is were the magic happens. A programmer that wants to build a
 	 * specific implementation of GeoSource will do most of its work in this

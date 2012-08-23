@@ -41,18 +41,18 @@ import java.util.TreeMap;
  * source.
  * 
  * Elements are grouped in blocks corresponding to specific times. An element is
- * recorded in a block if it just appeared (it is then a "base" element) or if
- * it has changed (it is then a "diff" element).
+ * recorded in a block if it just appeared (it is then a base element) or if it
+ * has changed (it is then a diff element).
  * 
  * It the progress of time is not considered, all elements are stored at time 0
- * as "base" versions.
+ * as base versions.
  * 
  * @author Merwan Achibet
  */
 public class Elements {
 
 	/**
-	 * The ordered map of element blocks.
+	 * The map of element blocks, ordered by time.
 	 */
 	protected TreeMap<Integer, ArrayList<Element>> elementsByDate;
 
@@ -74,17 +74,37 @@ public class Elements {
 	 */
 	public void addElement(Element element, Integer date) {
 
+		// Retrieve the block of elements representing the current
+		// configuration.
+
 		ArrayList<Element> elementsAtDate = this.elementsByDate.get(date);
 
+		// Instantiate the block if has not been done yet.
+
 		if(elementsAtDate == null) {
+
 			elementsAtDate = new ArrayList<Element>();
+
 			this.elementsByDate.put(date, elementsAtDate);
 		}
-		// System.out.println(element + " " + date);
+
+		// Add the element to the list.
+
 		elementsAtDate.add(element);
 	}
 
+	/**
+	 * Give all the elements appearing at a specific time step.
+	 * 
+	 * @param step
+	 *            The time step.
+	 * @return The list of elements at this time step or null if the step does
+	 *         not exist.
+	 */
 	public ArrayList<Element> getElementsAtStep(int step) {
+
+		// Element blocks are ordered by date so advance to the 'step'-th block
+		// and return it.
 
 		int s = 0;
 		for(Integer d : this.elementsByDate.keySet()) {
@@ -99,31 +119,52 @@ public class Elements {
 	}
 
 	/**
-	 * Give the states of all the elements at a specific time.
+	 * Give all the elements at a specific date.
 	 * 
 	 * @param date
 	 *            The date.
-	 * @return A list of elements at this time.
+	 * @return A list of elements at this date.
 	 */
 	public ArrayList<Element> getElementsAtDate(Integer date) {
 
-		return accumulateElements(date);
+		return rebuildElements(date);
 	}
 
 	/**
-	 * Give the states of all the elements at the last time.
+	 * Give all the elements at the first date. In other words, give the
+	 * starting configuration.
 	 * 
-	 * @return A list of elements in their final form.
+	 * @return A list of all elements in their starting state.
+	 */
+	public ArrayList<Element> getElementsAtBeginning() {
+
+		return rebuildElements(this.elementsByDate.firstEntry().getKey());
+	}
+
+	/**
+	 * Give all the elements at the last date. In other words, give the final
+	 * configuration.
+	 * 
+	 * @return A list of all elements in their final state.
 	 */
 	public ArrayList<Element> getElementsAtEnd() {
 
-		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet())
-			System.out.println(entry.getKey() + " " + entry.getValue());
-
-		return accumulateElements(this.elementsByDate.lastEntry().getKey());
+		return rebuildElements(this.elementsByDate.lastEntry().getKey());
 	}
 
+	/**
+	 * Give the first version of an Element.
+	 * 
+	 * This element should be a base version.
+	 * 
+	 * @param id
+	 *            The element ID.
+	 * @return The base of the element, or null if the element never appears.
+	 */
 	public Element getElementFirstVersion(String id) {
+
+		// Go though each time block until the element appears for the first
+		// time.
 
 		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet())
 			for(Element e : entry.getValue())
@@ -133,115 +174,152 @@ public class Elements {
 		return null;
 	}
 
+	/**
+	 * Give the last version of an Element.
+	 * 
+	 * This element could be a base version if it only appears during a single
+	 * time step or a diff version if it remains present across several time
+	 * steps.
+	 * 
+	 * @param id
+	 *            The element ID.
+	 * @return The last version of the element, or null if the element never
+	 *         appears.
+	 */
 	public Element getElementLastVersion(String id) {
 
 		if(this.elementsByDate.size() == 0)
 			return null;
 
-		return accumulateElement(id, this.elementsByDate.lastEntry().getKey());
+		// Rebuild entirely the element from its diff versions.
+
+		return rebuildElement(id, this.elementsByDate.lastEntry().getKey());
 	}
 
-	protected Element accumulateElement(String id, Integer date) {
+	// TODO hashmap <- arraylist
+	/**
+	 * Rebuild an element from its diff versions.
+	 * 
+	 * @param id
+	 *            The element ID.
+	 * @param date
+	 *            The date of the rebuilt version of the element.
+	 * @return A base element rebuilt from its diff to a specific date or null
+	 *         if the date does not exist.
+	 */
+	protected Element rebuildElement(String id, Integer date) {
 
-		// XXX attention à reconstruire l'élement et pas le DIFF !!! TODO TODO TODO
-		
-		Element accumulatedElement = null;
+		Element rebuiltElement = null;
+
+		// Go though each date block in the ascending order until the date is
+		// reached.
+
+		for(Entry<Integer, ArrayList<Element>> dateElements : this.elementsByDate.entrySet()) {
+
+			for(Element nextDiff : dateElements.getValue()) {
+
+				// If the element to rebuild has not been found yet, look for
+				// its base version.
+
+				if(rebuiltElement == null && nextDiff.getId().equals(id))
+					rebuiltElement = nextDiff; // COPY? XXX
+
+				// Otherwise, update it with its diff version.
+
+				else if(nextDiff.getId().equals(id)) {
+
+					// Remove the attributes that disappeared with this diff.
+
+					ArrayList<String> removedAttributes = nextDiff.getRemovedAttributes();
+					
+					if(removedAttributes != null)
+						for(String key : removedAttributes)
+							rebuiltElement.removeAttribute(key);
+
+					// Set the attributes which value have changed or that are
+					// entirely new.
+
+					HashMap<String, Object> attributes = nextDiff.getAttributes();
+					
+					if(attributes != null)
+						for(Entry<String, Object> keyValue : attributes.entrySet())
+							rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
+				}
+			}
+
+			// Return the rebuilt element if the appropriate date is reached.
+
+			if(dateElements.getKey() >= date)
+				return rebuiltElement;
+
+		}
+
+		return null;
+	}
+
+	// XXX what if an element disappears and then reappears?
+	
+	/**
+	 * Rebuild all elements from their diff versions.
+	 * 
+	 * @param date
+	 *            The date of the rebuilt versions of the elements.
+	 * @return A list of base elements rebuilt from their diffs to a specific
+	 *         date or null if the date does not exist.
+	 */
+	protected ArrayList<Element> rebuildElements(Integer date) {
+
+		HashMap<String, Element> rebuiltElements = new HashMap<String, Element>();
+
+		// Go though each date block in the ascending order until the date is
+		// reached.
 
 		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet()) {
 
 			for(Element nextDiff : entry.getValue()) {
 
-				if(accumulatedElement == null) {
+				// If the element to rebuild has not been found yet, look for
+				// its base version.
 
-					if(nextDiff.getId().equals(id))
-						accumulatedElement = nextDiff; // COPY!!!! TODO
-				}
-				else {
+				if(rebuiltElements.get(nextDiff.getId()) == null)
+					rebuiltElements.put(nextDiff.getId(), nextDiff);
 
-					if(nextDiff.getId().equals(id)) {
-
-						ArrayList<String> removedAttributes = nextDiff.getRemovedAttributes();
-						if(removedAttributes != null)
-							for(String key : removedAttributes) {
-								System.out.println("remove "+key);
-								accumulatedElement.removeAttribute(key);
-							}
-						
-						HashMap<String, Object> attributes = nextDiff.getAttributes();
-						if(attributes != null)
-							for(Entry<String, Object> entry2 : attributes.entrySet()) {
-								System.out.println("change "+entry2.getKey());
-								accumulatedElement.setAttribute(entry2.getKey(), entry2.getValue());
-							}
-					}
-				}
-
-			}
-
-			if(entry.getKey() >= date)
-				return accumulatedElement;
-
-		}
-
-		return accumulatedElement;
-	}
-
-	// TODO simplify with the method above
-	/**
-	 * 
-	 * @param date
-	 * @return
-	 */
-	protected ArrayList<Element> accumulateElements(Integer date) {
-
-		// This list will hold the progressive state of each element and will be
-		// updated with diffs through each time step.
-		System.out.println("=" + elementsByDate);
-		HashMap<String, Element> accumulatedElements = new HashMap<String, Element>();
-
-		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet()) {
-
-			for(Element elementDiff : entry.getValue()) {
-
-				// If the element is a "base", just add it to the accumulated
-				// elements.
-
-				if(elementDiff.isBase())
-					accumulatedElements.put(elementDiff.getId(), elementDiff);
-
-				// If the element is a "diff", update its accumulated version.
+				// Otherwise, update it with its diff version.
 
 				else {
 
 					// Retrieve the last version of the element.
 
-					Element previousElementDiff = accumulatedElements.get(elementDiff.getId());
+					Element rebuiltElement = rebuiltElements.get(nextDiff.getId());
 
-					// Delete attributes that have been removed.
+					// Remove the attributes that disappeared with this diff.
 
-					ArrayList<String> removedAttributes = elementDiff.getRemovedAttributes();
+					ArrayList<String> removedAttributes = nextDiff.getRemovedAttributes();
 
 					if(removedAttributes != null)
 						for(String key : removedAttributes)
-							previousElementDiff.removeAttribute(key);
+							rebuiltElement.removeAttribute(key);
 
-					// Update attributes which values have been changed and add
-					// new attributes.
+					// Set the attributes which value have changed or that are
+					// entirely new.
 
-					HashMap<String, Object> attributes = elementDiff.getAttributes();
+					HashMap<String, Object> attributes = nextDiff.getAttributes();
 
 					if(attributes != null)
-						for(Entry<String, Object> entry2 : attributes.entrySet())
-							previousElementDiff.setAttribute(entry2.getKey(), entry2.getValue());
+						for(Entry<String, Object> keyValue : attributes.entrySet())
+							rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
 
 					// TODO shape? position?
 				}
 			}
-			System.out.println("- " + accumulatedElements);
+			
+			// Return the rebuilt element if the appropriate date is reached.
+
 			if(entry.getKey() >= date)
-				return new ArrayList<Element>(accumulatedElements.values());
+				return new ArrayList<Element>(rebuiltElements.values());
 		}
 
-		return new ArrayList<Element>(accumulatedElements.values());
+		return null;
 	}
+	
 }

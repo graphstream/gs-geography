@@ -168,7 +168,8 @@ public abstract class GeoSource extends SourceBase {
 		Element element = null;
 
 		Element previousVersionOfElement = this.elements.getElementLastVersion(descriptor.getElementId(o));
-
+		System.out.println("> "+previousVersionOfElement);
+		
 		if(previousVersionOfElement == null)
 			element = descriptor.newElement(o);
 		else

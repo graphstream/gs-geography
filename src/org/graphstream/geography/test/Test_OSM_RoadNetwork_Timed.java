@@ -52,21 +52,21 @@ public class Test_OSM_RoadNetwork_Timed {
 		src.getRoadAttributeFilter().addAttribute("highway");
 
 		src.read();
-		
+
 		graph.display(false);
-		
+
 		boolean running = true;
 		do {
-			
+
 			try {
-			Thread.sleep(1000);
+				Thread.sleep(1000);
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 			running = src.next();
 		} while(running);
-	}
 
+	}
 }

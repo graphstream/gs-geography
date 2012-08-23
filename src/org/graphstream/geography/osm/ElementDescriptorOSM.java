@@ -31,6 +31,9 @@
 
 package org.graphstream.geography.osm;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.ElementDescriptor;
@@ -395,35 +398,28 @@ public class ElementDescriptorOSM extends ElementDescriptor {
 	}
 
 	protected void bindAttributesToElementDiff(Element previousVersion, nu.xom.Element xmlElement, Element element) {
-
+		System.out.println("a " + previousVersion);
 		// Retrieve all of the element attributes.
 
+		HashMap<String, Object> previousVersionAttributes = previousVersion.getAttributes();
+
 		nu.xom.Elements tags = xmlElement.getChildElements("tag");
+		HashMap<String, Object> newVersionAttributes = new HashMap<String, Object>();
+		for(int i = 0, l = tags.size(); i < l; ++i)
+			newVersionAttributes.put(tags.get(i).getAttributeValue("k"), tags.get(i).getAttributeValue("v"));
 
-		// Add attributes that have been removed to the dedicated list.
+		for(Entry<String, Object> entry : previousVersionAttributes.entrySet())
+			if(!newVersionAttributes.containsKey(entry.getKey()))
+				element.addRemovedAttribute(entry.getKey());
 		
-		for(int i = 0, l = tags.size(); i < l; ++i) {
-			
-			nu.xom.Element tag = tags.get(i);
-			
-			String key = tag.getAttributeValue("k");
-			
-			if(previousVersion.hasAttribute(key))
-				element.addRemovedAttribute(key);
-		}
+		for(Entry<String, Object> entry : newVersionAttributes.entrySet())
+			if(!previousVersionAttributes.containsKey(entry.getKey()))
+				element.setAttribute(entry.getKey(), entry.getValue());
 		
-		// Only new or changed attributes.
+		for(Entry<String, Object> entry : newVersionAttributes.entrySet())
+			if(previousVersionAttributes.containsKey(entry.getKey()) && !previousVersionAttributes.get(entry.getKey()).equals(entry.getValue()))
+				element.setAttribute(entry.getKey(), entry.getValue());
 
-		for(int i = 0, l = tags.size(); i < l; ++i) {
-
-			nu.xom.Element tag = tags.get(i);
-
-			String key = tag.getAttributeValue("k");
-			String value = tag.getAttributeValue("v");
-
-			if(this.filter == null || this.filter.isKept(key))
-				if(!previousVersion.hasAttribute(key, value))
-					element.setAttribute(key, value);
-		}
+		System.out.println("b " + element);
 	}
 }

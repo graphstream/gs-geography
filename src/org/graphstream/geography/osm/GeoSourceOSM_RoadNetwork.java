@@ -67,6 +67,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 * A record of nodes already added to the output graph.
 	 */
 	protected List<String> addedNodeIds;
+	
+	protected List<String> addedEdgeIds;
 
 	/**
 	 * Instantiate a new OpenStreetMap source producing a road network graph.
@@ -78,6 +80,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		super(fileNames);
 
 		this.addedNodeIds = new ArrayList<String>();
+		
+		this.addedEdgeIds = new ArrayList<String>();
 		
 		// By default, there are no attribute worth keeping.
 
@@ -122,7 +126,10 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	public boolean next() {
 		
 		System.out.println(this.currentTimeStep);
+		
 		ArrayList<Element> allElements = this.elements.getElementsAtStep(this.currentTimeStep);
+		
+		System.out.println(allElements);
 
 		for(Element element : allElements) {
 
@@ -150,9 +157,12 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 				// Link it to the previous point.
 
-				if(line.isBase())
-					sendEdgeAdded(this.sourceId, line.getId() + "_" + idFrom + "_" + idTo, idFrom, idTo, false);
-
+				String edgeId = line.getId() + "_" + idFrom + "_" + idTo;
+				if(!this.addedEdgeIds.contains(edgeId)) {
+					sendEdgeAdded(this.sourceId, edgeId, idFrom, idTo, false);
+					this.addedEdgeIds.add(edgeId);
+				}
+				
 				idFrom = idTo;
 			}
 		}
@@ -196,6 +206,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 			if(attributes != null)
 				for(Entry<String, Object> entry : attributes.entrySet())
 					sendNodeAttributeAdded(this.sourceId, nodeId, entry.getKey(), entry.getValue());
+			
+			sendNodeAttributeAdded(this.sourceId, nodeId, "label", nodeId);
 		}
 	}
 

@@ -85,16 +85,16 @@ public class Elements {
 	}
 
 	public ArrayList<Element> getElementsAtStep(int step) {
-		
+
 		int s = 0;
 		for(Integer d : this.elementsByDate.keySet()) {
 
 			if(s == step)
 				return getElementsAtDate(d);
-			
+
 			++s;
 		}
-		
+
 		return null;
 	}
 
@@ -143,44 +143,50 @@ public class Elements {
 
 	protected Element accumulateElement(String id, Integer date) {
 
+		// XXX attention à reconstruire l'élement et pas le DIFF !!! TODO TODO TODO
+		
 		Element accumulatedElement = null;
 
 		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet()) {
 
-			for(Element elementDiff : entry.getValue()) {
+			for(Element nextDiff : entry.getValue()) {
 
-				if(accumulatedElement == null && elementDiff.getId().equals(id))
-					accumulatedElement = elementDiff; // XXX copy?
-				else if(elementDiff.getId().equals(id)) {
+				if(accumulatedElement == null) {
 
-					// Delete attributes that have been removed.
-
-					ArrayList<String> removedAttributes = elementDiff.getRemovedAttributes();
-
-					if(removedAttributes != null)
-						for(String key : removedAttributes)
-							accumulatedElement.removeAttribute(key);
-
-					// Update attributes which values have been changed and add
-					// new attributes.
-
-					HashMap<String, Object> attributes = elementDiff.getAttributes();
-
-					if(attributes != null)
-						for(Entry<String, Object> entry2 : attributes.entrySet())
-							accumulatedElement.setAttribute(entry2.getKey(), entry2.getValue());
-
-					// TODO shape? position?
+					if(nextDiff.getId().equals(id))
+						accumulatedElement = nextDiff; // COPY!!!! TODO
 				}
+				else {
+
+					if(nextDiff.getId().equals(id)) {
+
+						ArrayList<String> removedAttributes = nextDiff.getRemovedAttributes();
+						if(removedAttributes != null)
+							for(String key : removedAttributes) {
+								System.out.println("remove "+key);
+								accumulatedElement.removeAttribute(key);
+							}
+						
+						HashMap<String, Object> attributes = nextDiff.getAttributes();
+						if(attributes != null)
+							for(Entry<String, Object> entry2 : attributes.entrySet()) {
+								System.out.println("change "+entry2.getKey());
+								accumulatedElement.setAttribute(entry2.getKey(), entry2.getValue());
+							}
+					}
+				}
+
 			}
 
 			if(entry.getKey() >= date)
 				return accumulatedElement;
+
 		}
 
 		return accumulatedElement;
 	}
 
+	// TODO simplify with the method above
 	/**
 	 * 
 	 * @param date
@@ -190,7 +196,7 @@ public class Elements {
 
 		// This list will hold the progressive state of each element and will be
 		// updated with diffs through each time step.
-
+		System.out.println("=" + elementsByDate);
 		HashMap<String, Element> accumulatedElements = new HashMap<String, Element>();
 
 		for(Entry<Integer, ArrayList<Element>> entry : this.elementsByDate.entrySet()) {
@@ -231,7 +237,7 @@ public class Elements {
 					// TODO shape? position?
 				}
 			}
-
+			System.out.println("- " + accumulatedElements);
 			if(entry.getKey() >= date)
 				return new ArrayList<Element>(accumulatedElements.values());
 		}

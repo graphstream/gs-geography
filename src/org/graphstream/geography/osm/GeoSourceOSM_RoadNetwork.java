@@ -207,7 +207,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 				for(Entry<String, Object> entry : attributes.entrySet())
 					sendNodeAttributeAdded(this.sourceId, nodeId, entry.getKey(), entry.getValue());
 			
-			sendNodeAttributeAdded(this.sourceId, nodeId, "label", nodeId);
+			//sendNodeAttributeAdded(this.sourceId, nodeId, "label", nodeId);
 		}
 	}
 

@@ -168,7 +168,6 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	protected void process(Object o) {
 
-		// XXX really necessary?
 		if(o == null)
 			return;
 
@@ -186,7 +185,7 @@ public abstract class GeoSource extends SourceBase {
 	 * @param o
 	 *            The geographic object to add.
 	 * @param descriptor
-	 *            The descriptor that classified the elements.
+	 *            The descriptor that classified the element.
 	 */
 	protected void keep(Object o, ElementDescriptor descriptor) {
 

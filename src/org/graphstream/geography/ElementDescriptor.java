@@ -375,7 +375,7 @@ public abstract class ElementDescriptor {
 		else if(isPolygon(o))
 			return newPolygon(o);
 
-		// XXX What happens in other cases?
+		System.out.println("Warning: feature not recognized -> "+o);
 
 		return null;
 	}
@@ -401,7 +401,7 @@ public abstract class ElementDescriptor {
 		else if(isPolygon(o))
 			return newPolygonDiff(previousVersion, o);
 
-		// XXX What happens in other cases?
+		System.out.println("Warning: feature not recognized -> "+o);
 
 		return null;
 	}

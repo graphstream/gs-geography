@@ -263,11 +263,13 @@ public class Elements {
 		// Go though each date block in the ascending order until the date is
 		// reached.
 
-		for(Entry<Integer, HashMap<String, Element>> dateElements : this.elementsByDate.entrySet()) {
+		for(Entry<Integer, HashMap<String, Element>> dateElementsPair : this.elementsByDate.entrySet()) {
 
 			// Retrieve the diff of this element at this date.
 
-			Element nextDiff = dateElements.getValue().get("id");
+			Element nextDiff = dateElementsPair.getValue().get("id");
+
+			// Check if the element exists at the date.
 
 			if(nextDiff != null) {
 
@@ -300,17 +302,21 @@ public class Elements {
 				}
 			}
 
+			// If the element does not exist at the date, it has been removed
+			// and the accumulated element is cleared.
+
+			else
+				rebuiltElement = null;
+
 			// Return the rebuilt element if the appropriate date is reached.
 
-			if(dateElements.getKey() >= date)
+			if(dateElementsPair.getKey() >= date)
 				return rebuiltElement;
 
 		}
 
 		return null;
 	}
-
-	// XXX what if an element disappears and then reappears?
 
 	/**
 	 * Rebuild the elements of a specific category from their diff versions.
@@ -326,56 +332,72 @@ public class Elements {
 
 		HashMap<String, Element> rebuiltElements = new HashMap<String, Element>();
 
-		// Go though each date block in the ascending order until the date is
-		// reached.
+		// Go though each date block in the ascending order and rebuild the
+		// element until the date is reached.
 
-		for(Entry<Integer, HashMap<String, Element>> dateElements : this.elementsByDate.entrySet()) {
+		for(Entry<Integer, HashMap<String, Element>> dateElementsPair : this.elementsByDate.entrySet()) {
 
-			for(Entry<String, Element> idElement : dateElements.getValue().entrySet()) {
+			// First pass: check for elements that existed at the previous date and do not exist anymore.
+			
+			HashMap<String, Element> elementsAtDate = dateElementsPair.getValue();
+			
+			for(String id: rebuiltElements.keySet())				
+				if(elementsAtDate.get(id) == null)
+					rebuiltElements.remove(id);
+			
+			// Second pass: update the remaining elements with their new diff.
+			
+			for(Entry<String, Element> idElementPair : elementsAtDate.entrySet()) {
 
-				Element nextDiff = copyElement(idElement.getValue());
+				Element nextDiff = null;
 
-				if(category != null && !nextDiff.getCategory().equals(category))
-					continue;
+				if(idElementPair.getValue() != null) {
 
-				// If the element to rebuild has not been found yet, look for
-				// its base version.
+					nextDiff = copyElement(idElementPair.getValue());
 
-				if(rebuiltElements.get(nextDiff.getId()) == null)
-					rebuiltElements.put(nextDiff.getId(), nextDiff);
+					if(category != null && !nextDiff.getCategory().equals(category))
+						continue;
 
-				// Otherwise, update it with its diff version.
+					// If the element to rebuild has not been found yet, look
+					// for its base version.
 
-				else {
+					if(rebuiltElements.get(nextDiff.getId()) == null)
+						rebuiltElements.put(nextDiff.getId(), nextDiff);
 
-					// Retrieve the last version of the element.
+					// Otherwise, update it with its diff version.
 
-					Element rebuiltElement = rebuiltElements.get(nextDiff.getId());
+					else {
 
-					// Remove the attributes that disappeared with this diff.
+						// Retrieve the last version of the element.
 
-					ArrayList<String> removedAttributes = nextDiff.getRemovedAttributes();
+						Element rebuiltElement = rebuiltElements.get(nextDiff.getId());
 
-					if(removedAttributes != null)
-						for(String key : removedAttributes)
-							rebuiltElement.removeAttribute(key);
+						// Remove the attributes that disappeared with this
+						// diff.
 
-					// Set the attributes which value have changed or that are
-					// entirely new.
+						ArrayList<String> removedAttributes = nextDiff.getRemovedAttributes();
 
-					HashMap<String, Object> attributes = nextDiff.getAttributes();
+						if(removedAttributes != null)
+							for(String key : removedAttributes)
+								rebuiltElement.removeAttribute(key);
 
-					if(attributes != null)
-						for(Entry<String, Object> keyValue : attributes.entrySet())
-							rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
+						// Set the attributes which value have changed or that
+						// are entirely new.
 
-					// TODO shape? position?
+						HashMap<String, Object> attributes = nextDiff.getAttributes();
+
+						if(attributes != null)
+							for(Entry<String, Object> keyValue : attributes.entrySet())
+								rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
+
+						// TODO shape? position?
+					}
 				}
 			}
 
 			// Return the rebuilt element if the appropriate date is reached.
 
-			if(dateElements.getKey() >= date)
+			if(dateElementsPair.getKey() >= date)
 				return new ArrayList<Element>(rebuiltElements.values());
 		}
 
@@ -390,8 +412,8 @@ public class Elements {
 			return new Line((Line)other);
 		if(other.isPolygon())
 			return new Polygon((Polygon)other);
-		
+
 		return null;
 	}
-	
+
 }

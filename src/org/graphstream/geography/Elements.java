@@ -103,6 +103,22 @@ public class Elements {
 	 */
 	public ArrayList<Element> getElementsAtStep(int step) {
 
+		return getElementsAtStep(step, null);
+	}
+
+	/**
+	 * Give the elements of a specific category appearing at a specific time
+	 * step.
+	 * 
+	 * @param step
+	 *            The time step.
+	 * @param category
+	 *            The category.
+	 * @return The list of elements of this category at this time step or null
+	 *         if the step does not exist.
+	 */
+	public ArrayList<Element> getElementsAtStep(int step, String category) {
+
 		// Element blocks are ordered by date so advance to the 'step'-th block
 		// and return it.
 
@@ -110,7 +126,7 @@ public class Elements {
 		for(Integer d : this.elementsByDate.keySet()) {
 
 			if(s == step)
-				return getElementsAtDate(d);
+				return getElementsAtDate(d, category);
 
 			++s;
 		}
@@ -127,7 +143,21 @@ public class Elements {
 	 */
 	public ArrayList<Element> getElementsAtDate(Integer date) {
 
-		return rebuildElements(date);
+		return getElementsAtDate(date, null);
+	}
+
+	/**
+	 * Give the elements of a specific category at a specific date.
+	 * 
+	 * @param date
+	 *            The date.
+	 * @param category
+	 *            The category.
+	 * @return A list of elements at this date.
+	 */
+	public ArrayList<Element> getElementsAtDate(Integer date, String category) {
+
+		return rebuildElements(date, category);
 	}
 
 	/**
@@ -138,7 +168,20 @@ public class Elements {
 	 */
 	public ArrayList<Element> getElementsAtBeginning() {
 
-		return rebuildElements(this.elementsByDate.firstEntry().getKey());
+		return getElementsAtBeginning(null);
+	}
+
+	/**
+	 * Give the elements of a specific category at the first date. In other
+	 * words, give the starting configuration.
+	 * 
+	 * @param category
+	 *            The category.
+	 * @return A list of all elements in their starting state.
+	 */
+	public ArrayList<Element> getElementsAtBeginning(String category) {
+
+		return rebuildElements(this.elementsByDate.firstEntry().getKey(), category);
 	}
 
 	/**
@@ -149,13 +192,24 @@ public class Elements {
 	 */
 	public ArrayList<Element> getElementsAtEnd() {
 
-		return rebuildElements(this.elementsByDate.lastEntry().getKey());
+		return getElementsAtEnd(null);
+	}
+
+	/**
+	 * Give the elements of the specific category at the last date. In other
+	 * words, give the final configuration.
+	 * 
+	 * @param category
+	 *            The category.
+	 * @return A list of all elements in their final state.
+	 */
+	public ArrayList<Element> getElementsAtEnd(String category) {
+
+		return rebuildElements(this.elementsByDate.lastEntry().getKey(), category);
 	}
 
 	/**
 	 * Give the first version of an Element.
-	 * 
-	 * This element should be a base version.
 	 * 
 	 * @param id
 	 *            The element ID.
@@ -176,10 +230,6 @@ public class Elements {
 
 	/**
 	 * Give the last version of an Element.
-	 * 
-	 * This element could be a base version if it only appears during a single
-	 * time step or a diff version if it remains present across several time
-	 * steps.
 	 * 
 	 * @param id
 	 *            The element ID.
@@ -263,14 +313,16 @@ public class Elements {
 	// XXX what if an element disappears and then reappears?
 
 	/**
-	 * Rebuild all elements from their diff versions.
+	 * Rebuild the elements of a specific category from their diff versions.
 	 * 
 	 * @param date
 	 *            The date of the rebuilt versions of the elements.
+	 * @param category
+	 *            The category. If null, all elements are accepted.
 	 * @return A list of base elements rebuilt from their diffs to a specific
 	 *         date or null if the date does not exist.
 	 */
-	protected ArrayList<Element> rebuildElements(Integer date) {
+	protected ArrayList<Element> rebuildElements(Integer date, String category) {
 
 		HashMap<String, Element> rebuiltElements = new HashMap<String, Element>();
 
@@ -280,8 +332,11 @@ public class Elements {
 		for(Entry<Integer, HashMap<String, Element>> dateElements : this.elementsByDate.entrySet()) {
 
 			for(Entry<String, Element> idElement : dateElements.getValue().entrySet()) {
-			
+
 				Element nextDiff = idElement.getValue();
+
+				if(category != null && !nextDiff.getCategory().equals(category))
+					continue;
 
 				// If the element to rebuild has not been found yet, look for
 				// its base version.

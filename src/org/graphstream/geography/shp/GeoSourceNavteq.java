@@ -87,7 +87,10 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	public GeoSourceNavteq(String roadFileName, String zFileName) {
 
 		FileDescriptor zFileDescriptor = new FileDescriptor(zFileName);
+		addFileDescriptor(zFileDescriptor);
+		
 		FileDescriptor roadFileDescriptor = new FileDescriptor(roadFileName);
+		addFileDescriptor(roadFileDescriptor);
 
 		// First: select and filter the Z-index points.
 
@@ -102,13 +105,12 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		// We are only interested in intersection points.
 
 		this.zDescriptor = new ElementDescriptorSHP(this, "Z", this.zAttributeFilter);
-
-		this.zDescriptor.sendElementsToSpatialIndex();
+		
 		this.zDescriptor.mustHave("INTRSECT", "Y");
+		
+		this.zDescriptor.sendElementsToSpatialIndex();
 
 		zFileDescriptor.addDescriptor(this.zDescriptor);
-
-		this.addFileDescriptor(zFileDescriptor);
 
 		// Second: select and filter the road points.
 
@@ -120,15 +122,13 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// We are only interested in line features..
 
-		this.roadDescriptor = new ElementDescriptorSHP(this, "Z", this.roadAttributeFilter);
+		this.roadDescriptor = new ElementDescriptorSHP(this, "ROAD", this.roadAttributeFilter);
 
 		this.roadDescriptor.onlyConsiderLineEndPoints();
 
 		this.roadDescriptor.mustBe(Element.Type.LINE);
 
 		roadFileDescriptor.addDescriptor(roadDescriptor);
-
-		addFileDescriptor(roadFileDescriptor);
 	}
 
 	/**
@@ -177,12 +177,9 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		this.addedNodeIds = new ArrayList<String>();
 
-		ArrayList<Element> allElements = this.elements.getElementsAtEnd();
+		ArrayList<Element> allElements = this.elements.getElementsAtEnd("ROAD");
 
 		for(Element element : allElements) {
-
-			if(!element.isLine())
-				continue;
 
 			Line line = (Line)element;
 

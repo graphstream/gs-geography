@@ -66,6 +66,10 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 */
 	protected ElementDescriptor buildingDescriptor;
 
+
+	/**
+	 * The attribute filter for the buildings.
+	 */
 	protected AttributeFilter buildingAttributeFilter;
 
 	/**
@@ -115,6 +119,11 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		return this.buildingDescriptor;
 	}
 
+	/**
+	 * Give the attribute filter for the buildings.
+	 * 
+	 * @return the attribute filter.
+	 */
 	public AttributeFilter getBuildingAttributeFilter() {
 
 		return this.buildingAttributeFilter;
@@ -152,6 +161,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 			// Draw an edge between the new node and already placed ones if
 			// their distance is below the neighborhood radius.
+			
 			// TODO there surely is a faster way to do that using the quadtree.
 
 			for(String id : placedBuildings.keySet())

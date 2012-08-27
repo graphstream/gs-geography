@@ -72,14 +72,43 @@ public class Line extends Element {
 	 *            The line category.
 	 */
 	public Line(String id, String category) {
-		
+
 		this(id, category, false);
 	}
-	
+
+	/**
+	 * Instantiate a new line.
+	 * 
+	 * @param id
+	 *            The line ID.
+	 * @param category
+	 *            The line category.
+	 * @param diff
+	 *            True if the line is a diff, false otherwise.
+	 */
 	public Line(String id, String category, boolean diff) {
 		super(id, category, diff);
-		
+
+		this.type = Type.LINE;
 		this.points = new ArrayList<Point>();
+	}
+
+	/**
+	 * Instantiate a new line by deep-copying another one.
+	 * 
+	 * @param other
+	 *            The line to copy.
+	 */
+	public Line(Line other) {
+		super(other);
+
+		this.type = Type.LINE;
+		this.points = new ArrayList<Point>();
+		
+		ArrayList<Point> otherPoints = other.getPoints();
+		if(otherPoints != null)
+			for(Point point : other.getPoints())
+				addPoint(point.getId(), point.getX(), point.getY());
 	}
 
 	/**

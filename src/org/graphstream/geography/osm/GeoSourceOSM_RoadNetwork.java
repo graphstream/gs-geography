@@ -47,7 +47,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * This geographical source implementation produces a road network from an
- * OpenStreetMap file.
+ * OpenStreetMap XML file.
  * 
  * @author Merwan Achibet
  */
@@ -59,7 +59,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	protected ElementDescriptor roadDescriptor;
 
 	/**
-	 * 
+	 * The attribute filter for roads.
 	 */
 	protected AttributeFilter roadAttributeFilter;
 
@@ -67,7 +67,10 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 * A record of nodes already added to the output graph.
 	 */
 	protected List<String> addedNodeIds;
-	
+
+	/**
+	 * A record of edges already added to the output graph.
+	 */
 	protected List<String> addedEdgeIds;
 
 	/**
@@ -80,9 +83,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		super(fileNames);
 
 		this.addedNodeIds = new ArrayList<String>();
-		
 		this.addedEdgeIds = new ArrayList<String>();
-		
+
 		// By default, there are no attribute worth keeping.
 
 		this.roadAttributeFilter = new AttributeFilter();
@@ -117,6 +119,11 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		return this.roadDescriptor;
 	}
 
+	/**
+	 * Give the attribute filter for the roads.
+	 * 
+	 * @return the attribute filter.
+	 */
 	public AttributeFilter getRoadAttributeFilter() {
 
 		return this.roadAttributeFilter;
@@ -124,12 +131,10 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 	@Override
 	public boolean next() {
-		
+
 		System.out.println(this.currentTimeStep);
-		
+
 		ArrayList<Element> allElements = this.elements.getElementsAtStep(this.currentTimeStep);
-		
-		System.out.println(allElements);
 
 		for(Element element : allElements) {
 
@@ -162,7 +167,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 					sendEdgeAdded(this.sourceId, edgeId, idFrom, idTo, false);
 					this.addedEdgeIds.add(edgeId);
 				}
-				
+
 				idFrom = idTo;
 			}
 		}
@@ -206,8 +211,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 			if(attributes != null)
 				for(Entry<String, Object> entry : attributes.entrySet())
 					sendNodeAttributeAdded(this.sourceId, nodeId, entry.getKey(), entry.getValue());
-			
-			//sendNodeAttributeAdded(this.sourceId, nodeId, "label", nodeId);
+
+			// sendNodeAttributeAdded(this.sourceId, nodeId, "label", nodeId);
 		}
 	}
 

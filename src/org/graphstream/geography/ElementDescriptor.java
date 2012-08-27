@@ -195,6 +195,7 @@ public abstract class ElementDescriptor {
 		this.timeConsideration = timeConsideration;
 	}
 
+	// TODO not happy with that...
 	/**
 	 * Give the date associated with a specific element version.
 	 * 
@@ -210,10 +211,6 @@ public abstract class ElementDescriptor {
 			return 0;
 
 		// If time is file-based, the events happen in the order of the files.
-
-		// TODO wrong, there are no guarantee that this call is synchronized
-		// with the
-		// import.
 
 		if(this.timeConsideration == TimeConsideration.TIME_FILE)
 			return this.source.getCurrentFileIndex();

@@ -71,6 +71,11 @@ public abstract class Element {
 	protected String id;
 
 	/**
+	 * The geometric type of the element.
+	 */
+	protected Type type;
+
+	/**
 	 * The category of the element (attributed by the descriptor that
 	 * instantiated the object from a matching feature).
 	 */
@@ -128,9 +133,29 @@ public abstract class Element {
 	 */
 	public Element(String id, String category, boolean diff) {
 
-		this.id = id;
-		this.category = category;
+		this.id = new String(id);
+
+		if(category != null)
+			this.category = new String(category);
+
 		this.diff = diff;
+	}
+
+	public Element(Element other) {
+
+		this.id = new String(other.getId());
+		this.category = new String(other.getCategory());
+		this.diff = !other.isBase();
+
+		HashMap<String, Object> otherAttributes = other.getAttributes();
+		if(otherAttributes != null)
+			for(Entry<String, Object> keyValuePair : otherAttributes.entrySet())
+				setAttribute(new String(keyValuePair.getKey()), keyValuePair.getValue());
+
+		ArrayList<String> otherRemovedAttributes = other.getRemovedAttributes();
+		if(otherRemovedAttributes != null)
+			for(String key : otherRemovedAttributes)
+				addRemovedAttribute(new String(key));
 	}
 
 	/**
@@ -141,6 +166,67 @@ public abstract class Element {
 	public String getId() {
 
 		return new String(this.id);
+	}
+
+	/**
+	 * Give the geometric type of the element.
+	 * 
+	 * @return The geometric type.
+	 */
+	public Type getType() {
+
+		return this.type;
+	}
+
+	/**
+	 * Check if the element has a specific geometric type.
+	 * 
+	 * @param type
+	 *            The geometric type.
+	 * @return True if the element has the same type, false otherwise.
+	 */
+	public boolean isType(Type type) {
+
+		if(type == Type.POINT)
+			return isPoint();
+
+		if(type == Type.LINE)
+			return isLine();
+
+		if(type == Type.POLYGON)
+			return isPolygon();
+
+		return false;
+	}
+
+	/**
+	 * Check if the element is a point.
+	 * 
+	 * @return True if the element is a point, false otherwise.
+	 */
+	public boolean isPoint() {
+
+		return this.type == Type.POINT;
+	}
+
+	/**
+	 * Check if the element is a line.
+	 * 
+	 * @return True if the element is a line, false otherwise.
+	 */
+	public boolean isLine() {
+
+		return this.type == Type.LINE;
+	}
+
+	/**
+	 * Check if the element is a polygon.
+	 * 
+	 * @return True if the element is a polygon, false otherwise.
+	 */
+	public boolean isPolygon() {
+
+		return this.type == Type.POLYGON;
 	}
 
 	/**
@@ -177,12 +263,12 @@ public abstract class Element {
 	public void setAttribute(String key, Object value) {
 
 		// Instantiate the map if has not been done yet.
-		
+
 		if(this.attributes == null)
 			this.attributes = new HashMap<String, Object>();
 
 		// Add the attribute to the map.
-		
+
 		this.attributes.put(key, value);
 	}
 
@@ -222,7 +308,7 @@ public abstract class Element {
 
 		if(this.attributes == null)
 			return null;
-		
+
 		return this.attributes;
 	}
 
@@ -266,12 +352,12 @@ public abstract class Element {
 	public void addRemovedAttribute(String key) {
 
 		// instantiate the list if has not been done yet.
-		
+
 		if(this.removedAttributes == null)
 			this.removedAttributes = new ArrayList<String>();
 
 		// Add the key to the list.
-		
+
 		this.removedAttributes.add(key);
 	}
 
@@ -296,58 +382,6 @@ public abstract class Element {
 		return !this.diff;
 	}
 
-	/**
-	 * Check if the element has a specific geometric type.
-	 * 
-	 * @param type
-	 *            The geometric type.
-	 * @return True if the element has the same type, false otherwise.
-	 */
-	public boolean isType(Type type) {
-
-		if(type == Type.POINT)
-			return isPoint();
-
-		if(type == Type.LINE)
-			return isLine();
-
-		if(type == Type.POLYGON)
-			return isPolygon();
-
-		return false;
-	}
-
-	/**
-	 * Check if the element is a point.
-	 * 
-	 * @return True if the element is a point, false otherwise.
-	 */
-	public boolean isPoint() {
-
-		return this instanceof Point;
-	}
-
-	/**
-	 * Check if the element is a line.
-	 * 
-	 * @return True if the element is a line, false otherwise.
-	 */
-	public boolean isLine() {
-
-		return this instanceof Line;
-	}
-
-	// XXX what does "poly instanceOf Line" return? Does this really work?
-	/**
-	 * Check if the element is a polygon.
-	 * 
-	 * @return True if the element is a polygon, false otherwise.
-	 */
-	public boolean isPolygon() {
-
-		return this instanceof Polygon;
-	}
-
 	@Override
 	public String toString() {
 
@@ -367,7 +401,7 @@ public abstract class Element {
 			for(Entry<String, Object> keyValue : this.attributes.entrySet())
 				s += " " + keyValue.getKey() + ":" + keyValue.getValue();
 		s += " }";
-		
+
 		s += " | removed attributes: {";
 		if(this.removedAttributes != null)
 			for(String key : this.removedAttributes)

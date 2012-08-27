@@ -275,7 +275,7 @@ public class Elements {
 				// diff as its base version.
 
 				if(rebuiltElement == null)
-					rebuiltElement = nextDiff; // XXX COPY?
+					rebuiltElement = copyElement(nextDiff);
 
 				// Otherwise, update it with this diff version.
 
@@ -333,7 +333,7 @@ public class Elements {
 
 			for(Entry<String, Element> idElement : dateElements.getValue().entrySet()) {
 
-				Element nextDiff = idElement.getValue();
+				Element nextDiff = copyElement(idElement.getValue());
 
 				if(category != null && !nextDiff.getCategory().equals(category))
 					continue;
@@ -382,4 +382,16 @@ public class Elements {
 		return null;
 	}
 
+	public Element copyElement(Element other) {
+
+		if(other.isPoint())
+			return new Point((Point)other);
+		if(other.isLine())
+			return new Line((Line)other);
+		if(other.isPolygon())
+			return new Polygon((Polygon)other);
+		
+		return null;
+	}
+	
 }

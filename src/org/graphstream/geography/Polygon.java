@@ -55,7 +55,7 @@ public class Polygon extends Line {
 	 *            The polygon ID.
 	 */
 	public Polygon(String id) {
-		
+
 		this(id, null, false);
 	}
 
@@ -68,12 +68,36 @@ public class Polygon extends Line {
 	 *            The polygon category.
 	 */
 	public Polygon(String id, String category) {
-		
+
 		this(id, category, false);
 	}
-	
+
+	/**
+	 * Instantiate a new polygon.
+	 * 
+	 * @param id
+	 *            The polygon ID.
+	 * @param category
+	 *            The polygon category.
+	 * @param diff
+	 *            True if the polygon is diff, false otherwise.
+	 */
 	public Polygon(String id, String category, boolean diff) {
 		super(id, category, diff);
+
+		this.type = Type.POLYGON;
+	}
+
+	/**
+	 * Instantiate a new polygon by deep-copying another one.
+	 * 
+	 * @param other
+	 *            The polygon to copy.
+	 */
+	public Polygon(Polygon other) {
+		super(other);
+
+		this.type = Type.POLYGON;
 	}
 
 	/**

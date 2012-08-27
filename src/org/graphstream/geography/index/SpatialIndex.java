@@ -53,7 +53,7 @@ import org.miv.pherd.ntree.QuadtreeCellSpace;
  * @author Antoine Dutot
  * @author Merwan Achibet
  */
-public class SpatialIndex implements Iterable<SpatialIndexPoint> {
+public class SpatialIndex {
 
 	/**
 	 * The
@@ -237,14 +237,6 @@ public class SpatialIndex implements Iterable<SpatialIndexPoint> {
 		}
 
 		return null;
-	}
-
-	/**
-	 * TODO
-	 */
-	public Iterator<SpatialIndexPoint> iterator() {
-
-		return (Iterator<SpatialIndexPoint>)this.box.getNTree().getRootCell().getParticles();
 	}
 
 }

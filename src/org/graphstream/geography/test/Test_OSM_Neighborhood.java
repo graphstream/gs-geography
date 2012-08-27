@@ -52,7 +52,7 @@ public class Test_OSM_Neighborhood {
 		src.addSink(graph);
 
 		src.read();
-		
+
 		src.end();
 
 		graph.display(false);

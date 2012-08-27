@@ -73,14 +73,38 @@ public class Point extends Element {
 	 *            The point category.
 	 */
 	public Point(String id, String category) {
-		
+
 		this(id, category, false);
 	}
-	
+
+	/**
+	 * Instantiate a new point and assign it to a specific category of elements.
+	 * 
+	 * @param id
+	 *            The point ID.
+	 * @param category
+	 *            The point category.
+	 * @param diff
+	 *            True if the point is a diff, false otherwise.
+	 */
 	public Point(String id, String category, boolean diff) {
 		super(id, category, diff);
 
+		this.type = Type.POINT;
 		this.position = new Coordinate();
+	}
+
+	/**
+	 * Instantiate a new point by deep-copying another one.
+	 * 
+	 * @param other
+	 *            The point to copy.
+	 */
+	public Point(Point other) {
+		super(other);
+
+		this.type = Type.POINT;
+		this.position = new Coordinate(other.getPosition());
 	}
 
 	/**
@@ -91,6 +115,16 @@ public class Point extends Element {
 	public Coordinate getPosition() {
 
 		return new Coordinate(this.position);
+	}
+
+	public double getX() {
+
+		return this.position.x;
+	}
+
+	public double getY() {
+
+		return this.position.y;
 	}
 
 	/**

@@ -77,8 +77,6 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 
 		SimpleFeature feature = (SimpleFeature)o;
 
-		// TODO: A better way to do this?
-
 		return feature.getType().getGeometryDescriptor().getType().getBinding() == com.vividsolutions.jts.geom.Point.class;
 
 	}
@@ -89,8 +87,6 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 		// Cast the object to a GeoTools feature.
 
 		SimpleFeature feature = (SimpleFeature)o;
-
-		// TODO: A better way to do this?
 
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
 
@@ -103,8 +99,6 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 		// Cast the object to a GeoTools feature.
 
 		SimpleFeature feature = (SimpleFeature)o;
-
-		// TODO: A better way to do this?
 
 		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
 
@@ -220,7 +214,6 @@ public class ElementDescriptorSHP extends ElementDescriptor {
 
 		Coordinate[] coords = ((Geometry)feature.getDefaultGeometry()).getCoordinates();
 
-		// TODO same for DescriptorOSM
 		if(this.onlyLineEndPointsConsidered) {
 			line.addPoint(null, coords[0].x, coords[0].y);
 			line.addPoint(null, coords[coords.length - 1].x, coords[coords.length - 1].y);

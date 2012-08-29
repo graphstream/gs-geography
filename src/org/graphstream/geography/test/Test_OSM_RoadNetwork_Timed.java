@@ -49,6 +49,8 @@ public class Test_OSM_RoadNetwork_Timed {
 		GeoSourceOSM_RoadNetwork src = new GeoSourceOSM_RoadNetwork("/home/merwan/map_t0.osm", "/home/merwan/map_t1.osm", "/home/merwan/map_t2.osm");
 		src.addSink(graph);
 		
+		src.timeDependsOnFile();
+
 		src.getRoadAttributeFilter().addAttribute("highway");
 
 		src.read();

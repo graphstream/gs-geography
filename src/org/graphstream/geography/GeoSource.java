@@ -38,7 +38,7 @@ public abstract class GeoSource extends SourceBase {
 	 * 
 	 */
 	protected TemporalLocator temporalLocator;
-	
+
 	/**
 	 * Aggregated elements indexed according to their ID.
 	 */
@@ -48,12 +48,12 @@ public abstract class GeoSource extends SourceBase {
 	 * 
 	 */
 	protected TreeSet<Integer> dates;
-	
+
 	/**
 	 * 
 	 */
 	protected int currentTimeStep;
-	
+
 	/**
 	 * 
 	 * @param fileNames
@@ -69,11 +69,11 @@ public abstract class GeoSource extends SourceBase {
 		this.fileDescriptors = new ArrayList<FileDescriptor>();
 
 		this.temporalLocator = new TemporalLocator(this);
-		
+
 		this.elements = new HashMap<String, Element>();
-		
+
 		this.dates = new TreeSet<Integer>();
-		
+
 		this.currentTimeStep = 0;
 	}
 
@@ -101,7 +101,7 @@ public abstract class GeoSource extends SourceBase {
 			}
 
 			for(Integer date : entry.getValue().keySet()) {
-				
+
 				if(!element.hasStateAtDate(date))
 					element.addStateAtDate(null, date);
 
@@ -172,7 +172,7 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	protected abstract void nextEvents();
-	
+
 	public ArrayList<ElementView> getElementViewsAtStep(int step) {
 
 		ArrayList<ElementView> elementViewsAtStep = new ArrayList<ElementView>();
@@ -190,9 +190,9 @@ public abstract class GeoSource extends SourceBase {
 
 		return elementViewsAtStep;
 	}
-	
+
 	public ArrayList<ElementState> getElementDiffsAtStep(int step) {
-		
+
 		ArrayList<ElementState> elementDiffsAtStep = new ArrayList<ElementState>();
 
 		for(Element element : this.elements.values()) {
@@ -209,18 +209,33 @@ public abstract class GeoSource extends SourceBase {
 		return elementDiffsAtStep;
 	}
 
+	public void noTime() {
+
+		this.temporalLocator = new TemporalLocator(this);
+	}
+
+	public void timeDependsOnFile() {
+		
+		this.temporalLocator = new TemporalLocatorByFile(this);	
+	}
+	
+	public void timeDependsOnAttribute(String attributeName) {
+
+		this.temporalLocator = new TemporalLocatorByAttribute(this, attributeName);
+	}
+
 	public void addFileDescriptor(FileDescriptor fileDescriptor) {
 
 		this.fileDescriptors.add(fileDescriptor);
 	}
-	
+
 	public ArrayList<FileDescriptor> getFileDescriptors() {
 
 		return this.fileDescriptors;
 	}
 
 	public ArrayList<String> getFileNames() {
-		
+
 		return this.fileNames;
 	}
 
@@ -230,7 +245,7 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	public TemporalLocator getTemporalLocator() {
-		
+
 		return this.temporalLocator;
 	}
 

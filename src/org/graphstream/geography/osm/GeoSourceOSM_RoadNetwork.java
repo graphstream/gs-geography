@@ -35,10 +35,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.ElementDescriptor;
-import org.graphstream.geography.Element;
+import org.graphstream.geography.ElementShape;
+import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
@@ -92,9 +94,9 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 		// Roads are linear features that possess a "highway" key with whatever
 		// value.
 
-		this.roadDescriptor = new ElementDescriptorOSM(this, "ROAD", this.roadAttributeFilter);
+		this.roadDescriptor = new ElementDescriptor(this, "ROAD", this.roadAttributeFilter);
 
-		this.roadDescriptor.mustBe(Element.Type.LINE);
+		this.roadDescriptor.mustBe(ElementShape.Type.LINE);
 		this.roadDescriptor.mustHave("highway");
 
 		// Attach this descriptor to every file.
@@ -130,15 +132,13 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	}
 
 	@Override
-	public boolean next() {
+	protected void nextEvents() {
 
-		System.out.println(this.currentTimeStep);
+		ArrayList<ElementView> allElements = getElementsAtStep(this.currentTimeStep);
 
-		ArrayList<Element> allElements = this.elements.getElementsAtStep(this.currentTimeStep);
+		for(ElementView element : allElements) {
 
-		for(Element element : allElements) {
-
-			Line line = (Line)element;
+			Line line = (Line)element.getShape();
 
 			// Add each point shaping the road to the graph, as nodes.
 
@@ -162,21 +162,56 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 				// Link it to the previous point.
 
-				String edgeId = line.getId() + "_" + idFrom + "_" + idTo;
+				String edgeId = line.getElementId() + "_" + idFrom + "_" + idTo;
 				if(!this.addedEdgeIds.contains(edgeId)) {
-					sendEdgeAdded(this.sourceId, edgeId, idFrom, idTo, false);
+					sendEdgeAdded(this.id, edgeId, idFrom, idTo, false);
 					this.addedEdgeIds.add(edgeId);
 				}
 
 				idFrom = idTo;
 			}
 		}
+	}
 
-		//
+	protected void nextEvents2() {
 
-		++this.currentTimeStep;
+		ArrayList<ElementView> allElements = getElementsAtStep(this.currentTimeStep);
 
-		return this.currentTimeStep < this.timeSteps;
+		for(ElementView element : allElements) {
+
+			Line line = (Line)element.getShape();
+
+			// Add each point shaping the road to the graph, as nodes.
+
+			ArrayList<Point> points = line.getPoints();
+
+			// Start with the first point of the line.
+
+			Point from = points.get(0);
+			String idFrom = from.getId();
+
+			addNode(from);
+
+			for(int i = 1, l = points.size(); i < l; ++i) {
+
+				// Add the next point.
+
+				Point to = points.get(i);
+				String idTo = to.getId();
+
+				addNode(to);
+
+				// Link it to the previous point.
+
+				String edgeId = line.getElementId() + "_" + idFrom + "_" + idTo;
+				if(!this.addedEdgeIds.contains(edgeId)) {
+					sendEdgeAdded(this.id, edgeId, idFrom, idTo, false);
+					this.addedEdgeIds.add(edgeId);
+				}
+
+				idFrom = idTo;
+			}
+		}
 	}
 
 	/**
@@ -194,25 +229,15 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 		if(!this.addedNodeIds.contains(nodeId)) {
 
-			sendNodeAdded(this.sourceId, nodeId);
+			sendNodeAdded(this.id, nodeId);
 
 			this.addedNodeIds.add(nodeId);
 
 			// Place the new node at an appropriate position.
 
 			Coordinate position = getNodePosition(nodeId);
-			sendNodeAttributeAdded(this.sourceId, nodeId, "x", position.x);
-			sendNodeAttributeAdded(this.sourceId, nodeId, "y", position.y);
-
-			// Bind the attributes.
-
-			HashMap<String, Object> attributes = point.getAttributes();
-
-			if(attributes != null)
-				for(Entry<String, Object> entry : attributes.entrySet())
-					sendNodeAttributeAdded(this.sourceId, nodeId, entry.getKey(), entry.getValue());
-
-			// sendNodeAttributeAdded(this.sourceId, nodeId, "label", nodeId);
+			sendNodeAttributeAdded(this.id, nodeId, "x", position.x);
+			sendNodeAttributeAdded(this.id, nodeId, "y", position.y);
 		}
 	}
 

@@ -33,10 +33,8 @@ package org.graphstream.geography;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
-
-import org.graphstream.geography.index.SpatialIndexPoint;
+import java.util.TreeMap;
 
 /**
  * An abstract geometric element.
@@ -59,21 +57,12 @@ import org.graphstream.geography.index.SpatialIndexPoint;
  * 
  * @author Merwan Achibet
  */
-public abstract class Element {
-
-	public static enum Type {
-		POINT, LINE, POLYGON
-	};
+public class Element {
 
 	/**
-	 * The ID of the feature.
+	 * The ID of the element.
 	 */
 	protected String id;
-
-	/**
-	 * The geometric type of the element.
-	 */
-	protected Type type;
 
 	/**
 	 * The category of the element (attributed by the descriptor that
@@ -82,20 +71,9 @@ public abstract class Element {
 	protected String category;
 
 	/**
-	 * A key/value mapping of attributes.
+	 * 
 	 */
-	protected HashMap<String, Object> attributes;
-
-	/**
-	 * A key/value mapping of attributes that were removed from the previous
-	 * version of the element.
-	 */
-	protected ArrayList<String> removedAttributes;
-
-	/**
-	 * Flag indicating if the element is base version or a diff version.
-	 */
-	protected boolean diff;
+	protected TreeMap<Integer, ElementState> states;
 
 	/**
 	 * Instantiate a new element.
@@ -105,57 +83,75 @@ public abstract class Element {
 	 */
 	public Element(String id) {
 
-		this(id, null, false);
+		this.id = id;
+
+		this.states = new TreeMap<Integer, ElementState>();
 	}
 
 	/**
-	 * Instantiate a new element.
 	 * 
-	 * @param id
-	 *            The element ID.
-	 * @param category
-	 *            The element category.
+	 * @param other
 	 */
-	public Element(String id, String category) {
-
-		this(id, category, false);
-	}
-
-	/**
-	 * Instantiate a new element.
-	 * 
-	 * @param id
-	 *            The element ID.
-	 * @param category
-	 *            The element category.
-	 * @param diff
-	 *            True if the element is a diff, false if it is a base.
-	 */
-	public Element(String id, String category, boolean diff) {
-
-		this.id = new String(id);
-
-		if(category != null)
-			this.category = new String(category);
-
-		this.diff = diff;
-	}
-
 	public Element(Element other) {
 
 		this.id = new String(other.getId());
 		this.category = new String(other.getCategory());
-		this.diff = !other.isBase();
 
-		HashMap<String, Object> otherAttributes = other.getAttributes();
-		if(otherAttributes != null)
-			for(Entry<String, Object> keyValuePair : otherAttributes.entrySet())
-				setAttribute(new String(keyValuePair.getKey()), keyValuePair.getValue());
+		for(Entry<Integer, ElementState> dateStatePair : other.getStates().entrySet())
+			this.states.put(new Integer(dateStatePair.getKey()), new ElementState(dateStatePair.getValue()));
+	}
 
-		ArrayList<String> otherRemovedAttributes = other.getRemovedAttributes();
-		if(otherRemovedAttributes != null)
-			for(String key : otherRemovedAttributes)
-				addRemovedAttribute(new String(key));
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public ElementView getElementViewAtDate(Integer date) {
+
+		// Check that the element exists at this date.
+
+		if(!this.states.containsKey(date))
+			return null;
+
+		// Go through each state in ascending order and rebuild the element with
+		// its differential states until the date is reached.
+
+		ElementView rebuiltElement = new ElementView(this.id);
+
+		for(Entry<Integer, ElementState> dateElementPair : this.states.entrySet()) {
+
+			// Retrieve the differential state of the element at this date.
+
+			ElementState currentDiff = dateElementPair.getValue();
+
+			// Remove the attributes that disappeared with this diff.
+
+			ArrayList<String> removedAttributes = currentDiff.getRemovedAttributes();
+
+			if(removedAttributes != null)
+				for(String key : removedAttributes)
+					rebuiltElement.removeAttribute(key);
+
+			// Update the attributes which value changed with this diff.
+
+			HashMap<String, Object> changedAttributes = currentDiff.getChangedAttributes();
+
+			if(changedAttributes != null)
+				for(Entry<String, Object> keyValue : changedAttributes.entrySet())
+					rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
+
+			rebuiltElement.shape = currentDiff.shape;
+
+			// Return the rebuilt element if the appropriate date is reached.
+
+			if(dateElementPair.getKey() >= date)
+				return rebuiltElement;
+
+		}
+
+		//
+
+		return null;
 	}
 
 	/**
@@ -169,72 +165,14 @@ public abstract class Element {
 	}
 
 	/**
-	 * Give the geometric type of the element.
-	 * 
-	 * @return The geometric type.
-	 */
-	public Type getType() {
-
-		return this.type;
-	}
-
-	/**
-	 * Check if the element has a specific geometric type.
-	 * 
-	 * @param type
-	 *            The geometric type.
-	 * @return True if the element has the same type, false otherwise.
-	 */
-	public boolean isType(Type type) {
-
-		if(type == Type.POINT)
-			return isPoint();
-
-		if(type == Type.LINE)
-			return isLine();
-
-		if(type == Type.POLYGON)
-			return isPolygon();
-
-		return false;
-	}
-
-	/**
-	 * Check if the element is a point.
-	 * 
-	 * @return True if the element is a point, false otherwise.
-	 */
-	public boolean isPoint() {
-
-		return this.type == Type.POINT;
-	}
-
-	/**
-	 * Check if the element is a line.
-	 * 
-	 * @return True if the element is a line, false otherwise.
-	 */
-	public boolean isLine() {
-
-		return this.type == Type.LINE;
-	}
-
-	/**
-	 * Check if the element is a polygon.
-	 * 
-	 * @return True if the element is a polygon, false otherwise.
-	 */
-	public boolean isPolygon() {
-
-		return this.type == Type.POLYGON;
-	}
-
-	/**
 	 * Give the category of the element.
 	 * 
 	 * @return The category.
 	 */
 	public String getCategory() {
+
+		if(this.category == null)
+			return null;
 
 		return new String(this.category);
 	}
@@ -251,135 +189,19 @@ public abstract class Element {
 		return this.category != null && this.category.equals(category);
 	}
 
-	/**
-	 * Add a new attribute to the element or modify its value if it already
-	 * exists.
-	 * 
-	 * @param key
-	 *            The key of the attribute.
-	 * @param value
-	 *            The value of the attribute.
-	 */
-	public void setAttribute(String key, Object value) {
+	public void addStateAtDate(ElementState state, Integer date) {
 
-		// Instantiate the map if has not been done yet.
-
-		if(this.attributes == null)
-			this.attributes = new HashMap<String, Object>();
-
-		// Add the attribute to the map.
-
-		this.attributes.put(key, value);
+		this.states.put(date, state);
 	}
 
-	/**
-	 * Remove an attribute from the element.
-	 * 
-	 * @param key
-	 *            The key of the attribute to remove.
-	 */
-	public void removeAttribute(String key) {
+	public TreeMap<Integer, ElementState> getStates() {
 
-		if(this.attributes != null)
-			this.attributes.remove(key);
+		return this.states;
 	}
 
-	/**
-	 * Give the value of an attribute.
-	 * 
-	 * @param key
-	 *            The key of the attribute.
-	 * @return The value of the attribute or null if it does not exist.
-	 */
-	public Object getAttribute(String key) {
+	public boolean hasStateAtDate(Integer date) {
 
-		if(this.attributes == null)
-			return null;
-
-		return this.attributes.get(key);
-	}
-
-	/**
-	 * Give all attributes.
-	 * 
-	 * @return A list of key/value pairs.
-	 */
-	public HashMap<String, Object> getAttributes() {
-
-		if(this.attributes == null)
-			return null;
-
-		return this.attributes;
-	}
-
-	/**
-	 * Check if the element possesses a specific attribute.
-	 * 
-	 * @param key
-	 *            The key of the attribute.
-	 * @return True if the attribute is possessed by the element, false
-	 *         otherwise.
-	 */
-	public boolean hasAttribute(String key) {
-
-		return this.attributes != null && this.attributes.containsKey(key);
-	}
-
-	/**
-	 * Check if the element possesses a specific attribute AND if it equals the
-	 * supplied value.
-	 * 
-	 * @param key
-	 *            The key of the attribute.
-	 * @param value
-	 *            The value of the attribute.
-	 * @return True if the exact same attribute exists, false otherwise.
-	 */
-	public boolean hasAttribute(String key, Object value) {
-
-		return this.attributes != null && this.attributes.containsKey(key) && this.attributes.get(key).equals(value);
-	}
-
-	/**
-	 * Add an attribute to the list of attributes removed since the last version
-	 * of the element.
-	 * 
-	 * This list is only populated in diff versions of the element.
-	 * 
-	 * @param key
-	 *            The key of the attribute.
-	 */
-	public void addRemovedAttribute(String key) {
-
-		// instantiate the list if has not been done yet.
-
-		if(this.removedAttributes == null)
-			this.removedAttributes = new ArrayList<String>();
-
-		// Add the key to the list.
-
-		this.removedAttributes.add(key);
-	}
-
-	/**
-	 * Give all the attributes that have been removed since the last version of
-	 * the element.
-	 * 
-	 * @return A list of keys.
-	 */
-	public ArrayList<String> getRemovedAttributes() {
-
-		return this.removedAttributes;
-	}
-
-	/**
-	 * Check if the element is its own base version of a diff version.
-	 * 
-	 * @return True if the element is its own base version, false otherwise.
-	 */
-	public boolean isBase() {
-
-		return !this.diff;
+		return this.states.containsKey(date);
 	}
 
 	@Override
@@ -387,31 +209,12 @@ public abstract class Element {
 
 		String s = new String();
 
-		if(isPoint())
-			s += "Point";
-		else if(isLine())
-			s += "Line";
-		else if(isPolygon())
-			s += "Polygon";
+		s += " Element " + this.id;
 
-		s += " | " + this.id;
-
-		s += " | attributes: {";
-		if(this.attributes != null)
-			for(Entry<String, Object> keyValue : this.attributes.entrySet())
-				s += " " + keyValue.getKey() + ":" + keyValue.getValue();
-		s += " }";
-
-		s += " | removed attributes: {";
-		if(this.removedAttributes != null)
-			for(String key : this.removedAttributes)
-				s += " " + key;
-		s += " }";
+		s += " | " + this.states.toString();
 
 		return s;
 	}
-
-	// Abstract
 
 	/**
 	 * Give special points that spatially represent the shape of the element and
@@ -419,6 +222,6 @@ public abstract class Element {
 	 * 
 	 * @return A list of spatial references to the shape of the element.
 	 */
-	public abstract List<SpatialIndexPoint> toSpatialIndexPoints();
+	// public abstract List<SpatialIndexPoint> toSpatialIndexPoints();
 
 }

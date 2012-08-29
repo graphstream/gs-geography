@@ -32,9 +32,6 @@
 package org.graphstream.geography;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import org.graphstream.geography.index.SpatialIndexPoint;
 
 /**
  * A Line.
@@ -46,7 +43,7 @@ import org.graphstream.geography.index.SpatialIndexPoint;
  * 
  * @author Merwan Achibet
  */
-public class Line extends Element {
+public class Line extends ElementShape {
 
 	/**
 	 * The list of points forming the line.
@@ -59,56 +56,11 @@ public class Line extends Element {
 	 * @param id
 	 *            The line ID.
 	 */
-	public Line(String id) {
-		this(id, null, false);
-	}
-
-	/**
-	 * Instantiate a new line.
-	 * 
-	 * @param id
-	 *            The line ID.
-	 * @param category
-	 *            The line category.
-	 */
-	public Line(String id, String category) {
-
-		this(id, category, false);
-	}
-
-	/**
-	 * Instantiate a new line.
-	 * 
-	 * @param id
-	 *            The line ID.
-	 * @param category
-	 *            The line category.
-	 * @param diff
-	 *            True if the line is a diff, false otherwise.
-	 */
-	public Line(String id, String category, boolean diff) {
-		super(id, category, diff);
-
-		this.type = Type.LINE;
-		this.points = new ArrayList<Point>();
-	}
-
-	/**
-	 * Instantiate a new line by deep-copying another one.
-	 * 
-	 * @param other
-	 *            The line to copy.
-	 */
-	public Line(Line other) {
-		super(other);
-
-		this.type = Type.LINE;
-		this.points = new ArrayList<Point>();
+	public Line(Element element) {
+		super(element);
 		
-		ArrayList<Point> otherPoints = other.getPoints();
-		if(otherPoints != null)
-			for(Point point : other.getPoints())
-				addPoint(point.getId(), point.getX(), point.getY());
+		this.type = Type.LINE;
+		this.points = new ArrayList<Point>();
 	}
 
 	/**
@@ -123,12 +75,7 @@ public class Line extends Element {
 	 */
 	public void addPoint(String id, double x, double y) {
 
-		// If no ID is specified use the ID of the line followed by the index of
-		// the new point.
-		if(id == null)
-			id = this.id + "_" + this.points.size();
-
-		Point point = new Point(id);
+		Point point = new Point(this.element, id);
 
 		point.setPosition(x, y);
 
@@ -156,6 +103,7 @@ public class Line extends Element {
 		return new Point[]{this.points.get(0), this.points.get(this.points.size() - 1)};
 	}
 
+	/*
 	@Override
 	public List<SpatialIndexPoint> toSpatialIndexPoints() {
 
@@ -170,5 +118,5 @@ public class Line extends Element {
 
 		return spatialIndexPoints;
 	}
-
+	*/
 }

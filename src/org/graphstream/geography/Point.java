@@ -31,11 +31,6 @@
 
 package org.graphstream.geography;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.graphstream.geography.index.SpatialIndexPoint;
-
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
@@ -47,64 +42,43 @@ import com.vividsolutions.jts.geom.Coordinate;
  * 
  * @author Merwan Achibet
  */
-public class Point extends Element {
+public class Point extends ElementShape {
 
 	/**
 	 * The Cartesian position of the point in the studied space.
 	 */
-	private Coordinate position;
+	protected Coordinate position;
 
 	/**
-	 * Instantiate a new point.
-	 * 
-	 * @param id
-	 *            The point ID.
+	 * Optional ID.
 	 */
-	public Point(String id) {
-		this(id, null, false);
-	}
+	protected String id;
 
-	/**
-	 * Instantiate a new point and assign it to a specific category of elements.
-	 * 
-	 * @param id
-	 *            The point ID.
-	 * @param category
-	 *            The point category.
-	 */
-	public Point(String id, String category) {
-
-		this(id, category, false);
-	}
-
-	/**
-	 * Instantiate a new point and assign it to a specific category of elements.
-	 * 
-	 * @param id
-	 *            The point ID.
-	 * @param category
-	 *            The point category.
-	 * @param diff
-	 *            True if the point is a diff, false otherwise.
-	 */
-	public Point(String id, String category, boolean diff) {
-		super(id, category, diff);
-
+	public Point(Element element) {
+		super(element);
+		
 		this.type = Type.POINT;
 		this.position = new Coordinate();
 	}
 
-	/**
-	 * Instantiate a new point by deep-copying another one.
-	 * 
-	 * @param other
-	 *            The point to copy.
-	 */
-	public Point(Point other) {
-		super(other);
+	public Point(Element element, String id) {
+		this(element);
+		
+		this.id = id;
+	}
 
-		this.type = Type.POINT;
-		this.position = new Coordinate(other.getPosition());
+	/**
+	 * Change the Cartesian position of the point.
+	 * 
+	 * @param x
+	 *            The x-axis coordinate.
+	 * @param y
+	 *            The y-axis coordinate.
+	 */
+	public void setPosition(double x, double y) {
+
+		this.position.x = x;
+		this.position.y = y;
 	}
 
 	/**
@@ -127,28 +101,20 @@ public class Point extends Element {
 		return this.position.y;
 	}
 
+	public String getId() {
+	
+		return this.id;
+	}
+	
 	/**
-	 * Change the Cartesian position of the point.
+	 * public List<SpatialIndexPoint> toSpatialIndexPoints() {
 	 * 
-	 * @param x
-	 *            The x-axis coordinate.
-	 * @param y
-	 *            The y-axis coordinate.
+	 * List<SpatialIndexPoint> spatialIndexPoints = new
+	 * ArrayList<SpatialIndexPoint>();
+	 * 
+	 * spatialIndexPoints.add(new SpatialIndexPoint(this, this.getId(),
+	 * this.position.x, this.position.y));
+	 * 
+	 * return spatialIndexPoints; }
 	 */
-	public void setPosition(double x, double y) {
-
-		this.position.x = x;
-		this.position.y = y;
-	}
-
-	@Override
-	public List<SpatialIndexPoint> toSpatialIndexPoints() {
-
-		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
-
-		spatialIndexPoints.add(new SpatialIndexPoint(this, this.getId(), this.position.x, this.position.y));
-
-		return spatialIndexPoints;
-	}
-
 }

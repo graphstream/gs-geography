@@ -31,8 +31,6 @@
 
 package org.graphstream.geography.osm;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 import org.graphstream.geography.GeoSource;
@@ -75,60 +73,15 @@ public abstract class GeoSourceOSM extends GeoSource {
 	public GeoSourceOSM(String... fileNames) {
 		super(fileNames);
 		
+		this.aggregator = new AggregatorOSM(this);
+		this.diffBuilder = new DiffbuilderOSM(this);
+		
 		this.nodePositions = new HashMap<String, Coordinate>();
 	}
-
-	@Override
-	public void open(String fileName) throws IOException {
-
-		try {
-
-			File file = new File(fileName);
-
-			// Instantiate a XOM parser.
-
-			nu.xom.Builder builder = new nu.xom.Builder();
-
-			// Save the root of the XML document.
-
-			this.xmlRoot = builder.build(file).getRootElement();
-
-			// Store the position of every node as they will be referred to by
-			// most of the other elements.
-
-			nu.xom.Elements nodes = this.xmlRoot.getChildElements("node");
-
-			for(int i = 0, l = nodes.size(); i < l; ++i) {
-
-				nu.xom.Element node = nodes.get(i);
-
-				String id = node.getAttributeValue("id");
-
-				double x = Double.parseDouble(node.getAttributeValue("lon"));
-				double y = Double.parseDouble(node.getAttributeValue("lat"));
-				Coordinate pos = new Coordinate(x, y);
-
-				this.nodePositions.put(id, pos);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void traverse() {
-
-		nu.xom.Elements xmlElements = this.xmlRoot.getChildElements();
-
-		for(int i = 0, l = xmlElements.size(); i < l; ++i)
-			process(xmlElements.get(i));
-	}
-
-	@Override
-	public void close() throws IOException {
-
-		this.xmlRoot = null;
+	
+	public void addNodePosition(String id, Coordinate position) {
+		
+		this.nodePositions.put(id, position);
 	}
 
 	/**
@@ -139,7 +92,7 @@ public abstract class GeoSourceOSM extends GeoSource {
 	 * @return The coordinates of the node.
 	 */
 	public Coordinate getNodePosition(String id) {
-
+		
 		return new Coordinate(this.nodePositions.get(id));
 	}
 

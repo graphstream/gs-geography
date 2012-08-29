@@ -31,11 +31,6 @@
 
 package org.graphstream.geography.test;
 
-import java.util.Random;
-
-import org.graphstream.geography.Point;
-import org.graphstream.geography.index.SpatialIndex;
-
 /**
  * Basic test of the spatial index structure.
  * 
@@ -45,6 +40,7 @@ public class Test_SpatialIndex {
 
 	public static void main(String[] args) {
 
+		/*
 		// Instantiate the spatial index.
 
 		SpatialIndex index = new SpatialIndex();
@@ -78,6 +74,7 @@ public class Test_SpatialIndex {
 		System.out.println(index.size());
 
 		System.out.println(index.getElementsAt(0, 0));
+		*/
 	}
 
 }

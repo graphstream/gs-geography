@@ -37,7 +37,8 @@ import java.util.Map.Entry;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.ElementDescriptor;
-import org.graphstream.geography.Element;
+import org.graphstream.geography.ElementShape;
+import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Polygon;
 
@@ -92,9 +93,9 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		// We are only interested in buildings.
 
-		this.buildingDescriptor = new ElementDescriptorOSM(this, "BUILDINGS", this.buildingAttributeFilter);
+		this.buildingDescriptor = new ElementDescriptor(this, "BUILDINGS", this.buildingAttributeFilter);
 
-		this.buildingDescriptor.mustBe(Element.Type.POLYGON);
+		this.buildingDescriptor.mustBe(ElementShape.Type.POLYGON);
 		this.buildingDescriptor.mustHave("building", "yes");
 
 		// Attach this descriptor to every file.
@@ -130,34 +131,33 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	}
 
 	@Override
-	public boolean next() {
+	public void nextEvents() {
 
 		// Keep a record of the buildings that have already been inserted into
 		// the graph.
 
 		HashMap<String, Coordinate> placedBuildings = new HashMap<String, Coordinate>();
 		
-		ArrayList<Element> allElements = this.elements.getElementsAtStep(this.currentTimeStep);
+		ArrayList<ElementView> allElements = getElementsAtStep(0/*this.currentTimeStep*/); // TODO
 		
-		for(Element element : allElements) {
+		for(ElementView element : allElements) {
 
 			// Compute the center of the current building and add a new node at
 			// this position.
 
-			Coordinate centroid = ((Polygon)element).getCentroid();
+			Coordinate centroid = ((Polygon)element.shape).getCentroid();
 
-			sendNodeAdded(this.sourceId, element.getId());
+			sendNodeAdded(this.id, element.id);
 
-			sendNodeAttributeAdded(this.sourceId, element.getId(), "x", centroid.x);
-			sendNodeAttributeAdded(this.sourceId, element.getId(), "y", centroid.y);
+			sendNodeAttributeAdded(this.id, element.id, "x", centroid.x);
+			sendNodeAttributeAdded(this.id, element.id, "y", centroid.y);
 
 			// Bind the attributes.
 
-			HashMap<String, Object> attributes = element.getAttributes();
+			HashMap<String, Object> attributes = element.attributes;
 
-			if(attributes != null)
-				for(Entry<String, Object> entry : attributes.entrySet())
-					sendNodeAttributeAdded(this.sourceId, element.getId(), entry.getKey(), entry.getValue());
+			for(Entry<String, Object> entry : attributes.entrySet())
+				sendNodeAttributeAdded(this.id, element.id, entry.getKey(), entry.getValue());
 
 			// Draw an edge between the new node and already placed ones if
 			// their distance is below the neighborhood radius.
@@ -166,16 +166,10 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 			for(String id : placedBuildings.keySet())
 				if(centroid.distance(placedBuildings.get(id)) < this.radius)
-					sendEdgeAdded(this.sourceId, element.getId() + id, element.getId(), id, false);
+					sendEdgeAdded(this.id, element.id + id, element.id, id, false);
 
-			placedBuildings.put(element.getId(), centroid);
+			placedBuildings.put(element.id, centroid);
 		}
-		
-		//
-
-		++this.currentTimeStep;
-
-		return this.currentTimeStep < this.timeSteps;
 	}
 
 }

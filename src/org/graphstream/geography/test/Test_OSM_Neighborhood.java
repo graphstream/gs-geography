@@ -37,7 +37,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 
 /**
- * Test the import of a radial neighborhood graph from an OpenStreetMap XML
+ * Test the creation of a radial neighborhood graph from an OpenStreetMap XML
  * file.
  * 
  * @author Merwan Achibet

@@ -67,22 +67,7 @@ import java.util.List;
  * 
  * @author Merwan Achibet
  */
-public abstract class ElementDescriptor {
-
-	/**
-	 * How is time considered?
-	 * 
-	 * NO_TIME: the temporal dimension is ignored.
-	 * 
-	 * TIME_FILE: each supplied file matches with a time step.
-	 * 
-	 * TIME_ATTRIBUTE: a specific attribute indicates the time step.
-	 * 
-	 * @author Merwan Achibet
-	 */
-	public static enum TimeConsideration {
-		NO_TIME, TIME_FILE, TIME_ATTRIBUTE
-	};
+public class ElementDescriptor {
 
 	/**
 	 * The source using this descriptor.
@@ -103,7 +88,7 @@ public abstract class ElementDescriptor {
 	 * Optional element type (point, line or polygon) that a matching object
 	 * must have.
 	 */
-	protected Element.Type type;
+	protected ElementShape.Type mustBeType;
 
 	/**
 	 * Optional list of attribute keys that a matching object must have.
@@ -115,11 +100,6 @@ public abstract class ElementDescriptor {
 	 * have.
 	 */
 	protected HashMap<String, Object> mustHaveValues;
-
-	/**
-	 * The way that this descriptor takes time into account.
-	 */
-	protected TimeConsideration timeConsideration;
 
 	/**
 	 * Should matching elements be stored in the spatial index?
@@ -168,8 +148,6 @@ public abstract class ElementDescriptor {
 		this.category = category;
 		this.filter = filter;
 
-		this.timeConsideration = TimeConsideration.NO_TIME;
-
 		this.toSpatialIndex = false;
 		this.onlyLineEndPointsConsidered = false;
 	}
@@ -185,52 +163,13 @@ public abstract class ElementDescriptor {
 	}
 
 	/**
-	 * Set the way that the temporal component is handled.
-	 * 
-	 * @param timeConsideration
-	 *            The time consideration mode.
-	 */
-	public void setTimeConsideration(TimeConsideration timeConsideration) {
-
-		this.timeConsideration = timeConsideration;
-	}
-
-	// TODO not happy with that...
-	/**
-	 * Give the date associated with a specific element version.
-	 * 
-	 * @param element
-	 *            The element.
-	 * @return The date.
-	 */
-	public Integer getDate(Element element) {
-
-		// If time is not even considered, all events happen at the same time.
-
-		if(this.timeConsideration == TimeConsideration.NO_TIME)
-			return 0;
-
-		// If time is file-based, the events happen in the order of the files.
-
-		if(this.timeConsideration == TimeConsideration.TIME_FILE)
-			return this.source.getCurrentFileIndex();
-
-		// If time is attribute-based, read the corresponding attribute.
-
-		if(this.timeConsideration == TimeConsideration.TIME_ATTRIBUTE)
-			return 0; // TODO if such a file format exists
-
-		return 0;
-	}
-
-	/**
 	 * Set the descriptor to reference matching elements in a spatial index.
 	 */
 	public void sendElementsToSpatialIndex() {
 
 		this.toSpatialIndex = true;
 
-		this.source.prepareSpatialIndex();
+		// TODO this.source.prepareSpatialIndex();
 	}
 
 	/**
@@ -259,9 +198,9 @@ public abstract class ElementDescriptor {
 	 * @param type
 	 *            The geometric type of wanted objects.
 	 */
-	public void mustBe(Element.Type type) {
+	public void mustBe(ElementShape.Type type) {
 
-		this.type = type;
+		this.mustBeType = type;
 	}
 
 	/**
@@ -311,99 +250,28 @@ public abstract class ElementDescriptor {
 	 * @return True if the element conforms to the descriptor definition, false
 	 *         otherwise.
 	 */
-	public boolean matches(Object o) {
+	public boolean matches(Object o, Aggregator aggregator) {
 
 		// Check for an optional geometric type condition.
 
-		if(this.type != null && !isOfType(this.type, o))
+		if(this.mustBeType != null && !aggregator.isOfType(o, this.mustBeType))
 			return false;
 
 		// Check for optional attribute presence conditions.
 
 		if(this.mustHaveKeys != null)
 			for(String key : this.mustHaveKeys)
-				if(!hasKey(key, o))
+				if(!aggregator.hasKey(o, key))
 					return false;
 
 		// Check for optional attribute value conditions.
 
 		if(this.mustHaveValues != null)
 			for(String key : this.mustHaveValues.keySet())
-				if(!hasKeyValue(key, this.mustHaveValues.get(key), o))
+				if(!aggregator.hasKeyValue(o, key, this.mustHaveValues.get(key)))
 					return false;
 
 		return true;
-	}
-
-	/**
-	 * Check if a geographic feature has a specific geometric type.
-	 * 
-	 * @param type
-	 *            The geometric type.
-	 * @param o
-	 *            The geographic object.
-	 * @return True is the object has the same type, false otherwise?
-	 */
-	public boolean isOfType(Element.Type type, Object o) {
-
-		if(type == Element.Type.POINT)
-			return isPoint(o);
-
-		if(type == Element.Type.LINE)
-			return isLine(o);
-
-		if(type == Element.Type.POLYGON)
-			return isPolygon(o);
-
-		return false;
-	}
-
-	/**
-	 * Give a simple geometric element (point, line or polygon with attributes)
-	 * based on a library-dependent object.
-	 * 
-	 * @param o
-	 *            The object to convert.
-	 * @return A simple geometric element representing the object.
-	 */
-	public Element newElement(Object o) {
-
-		if(isPoint(o))
-			return newPoint(o);
-		else if(isLine(o))
-			return newLine(o);
-		else if(isPolygon(o))
-			return newPolygon(o);
-
-		System.out.println("Warning: feature not recognized -> "+o);
-
-		return null;
-	}
-
-	/**
-	 * Give a simple geometric element representing the difference between the
-	 * current state of a library-dependent object and a version from a previous
-	 * date.
-	 * 
-	 * @param previousVersion
-	 *            The previous version of the element.
-	 * @param o
-	 *            The new version of the object to convert.
-	 * @return A simple geometric element representing the difference between
-	 *         the two dates.
-	 */
-	public Element newElementDiff(Element previousVersion, Object o) {
-
-		if(isPoint(o))
-			return newPointDiff(previousVersion, o);
-		else if(isLine(o))
-			return newLineDiff(previousVersion, o);
-		else if(isPolygon(o))
-			return newPolygonDiff(previousVersion, o);
-
-		System.out.println("Warning: feature not recognized -> "+o);
-
-		return null;
 	}
 
 	@Override
@@ -413,8 +281,8 @@ public abstract class ElementDescriptor {
 
 		s += "Descriptor";
 
-		if(this.type != null)
-			s += " | type: " + this.type.toString();
+		if(this.mustBeType != null)
+			s += " | type: " + this.mustBeType.toString();
 
 		if(this.mustHaveKeys != null) {
 
@@ -444,110 +312,5 @@ public abstract class ElementDescriptor {
 
 		return s;
 	}
-
-	// Abstract
-
-	/**
-	 * Give the ID of a library-dependent geographic object.
-	 * 
-	 * @param o
-	 *            The object.
-	 * @return The ID of the object from its original format.
-	 */
-	public abstract String getElementId(Object o);
-
-	/**
-	 * Check if a geographic object, in its library-dependent form, represents a
-	 * point.
-	 * 
-	 * @param o
-	 *            The geographic object.
-	 * @return True if the object is a point, false otherwise.
-	 */
-	protected abstract boolean isPoint(Object o);
-
-	/**
-	 * Check if a geographic object, in its library-dependent form, represents a
-	 * line.
-	 * 
-	 * @param o
-	 *            The geographic object.
-	 * @return True if the object is a line, false otherwise.
-	 */
-	protected abstract boolean isLine(Object o);
-
-	/**
-	 * Check if a geographic object, in its library-dependent form, represents a
-	 * polygon.
-	 * 
-	 * @param o
-	 *            The geographic object.
-	 * @return True if the object is a polygon, false otherwise.
-	 */
-	protected abstract boolean isPolygon(Object o);
-
-	/**
-	 * Check if a geographic object, in its library-dependent form, possess a
-	 * specific attribute key.
-	 * 
-	 * @param key
-	 *            The attribute key.
-	 * @param o
-	 *            The geographic object.
-	 * @return True if the object has the attribute key, false otherwise.
-	 */
-	protected abstract boolean hasKey(String key, Object o);
-
-	/**
-	 * Check if a geographic object, in its library-dependent form, possess a
-	 * specific attribute key and a matching value.
-	 * 
-	 * @param key
-	 *            The attribute key.
-	 * @param value
-	 *            The attribute value.
-	 * @param o
-	 *            The geographic object.
-	 * @return True if the object has the attribute key and the same value,
-	 *         false otherwise.
-	 */
-	protected abstract boolean hasKeyValue(String key, Object value, Object o);
-
-	/**
-	 * Give a simple point representation based on the supplied
-	 * library-dependent geographical object.
-	 * 
-	 * @param o
-	 *            The object to convert.
-	 * @return A standard point.
-	 */
-	protected abstract Point newPoint(Object o);
-
-	
-	protected abstract Point newPointDiff(Element previousVersion, Object o);
-
-	/**
-	 * Give a simple line representation based on the supplied library-dependent
-	 * geographical object.
-	 * 
-	 * @param o
-	 *            The object to convert.
-	 * @return A standard line.
-	 */
-	protected abstract Line newLine(Object o);
-
-	protected abstract Line newLineDiff(Element previousVersion, Object o);
-
-	/**
-	 * Give a simple polygon representation based on the supplied
-	 * library-dependent geographical object.
-	 * 
-	 * @param o
-	 *            The object to convert.
-	 * @return A standard polygon.
-	 */
-	protected abstract Polygon newPolygon(Object o);
-
-	protected abstract Polygon newPolygonDiff(Element previousVersion, Object o);
 
 }

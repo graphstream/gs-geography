@@ -31,15 +31,7 @@
 
 package org.graphstream.geography.shp;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.geotools.data.FeatureSource;
-import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.feature.FeatureIterator;
 import org.graphstream.geography.GeoSource;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * Abstract shapefile source.
@@ -53,53 +45,13 @@ import org.opengis.feature.simple.SimpleFeatureType;
 public abstract class GeoSourceSHP extends GeoSource {
 
 	/**
-	 * Iterator on the features from the shapefile.
-	 */
-	protected FeatureIterator<SimpleFeature> iterator;
-
-	/**
 	 * Instantiate a new shapefile source.
 	 */
-	public GeoSourceSHP() {
+	public GeoSourceSHP(String... fileNames) {
+		super(fileNames);
 		
-	}
-
-	@Override
-	public void open(String fileName) throws IOException {
-
-		if(this.iterator == null) {
-
-			try {
-
-				File file = new File(fileName);
-
-				ShapefileDataStore store = new ShapefileDataStore(file.toURI().toURL());
-
-				String type = store.getTypeNames()[0];
-				FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource(type);
-
-				this.iterator = source.getFeatures().features();
-			}
-			catch (IOException e) {
-
-				throw new RuntimeException("I/O error : " + e.getMessage());
-			}
-		}
-	}
-	
-	@Override
-	public void traverse() {
-
-		while(this.iterator != null && this.iterator.hasNext())
-			process(iterator.next());
-
-		this.iterator = null;
-	}
-
-	@Override
-	public void close() throws IOException {
-
-		this.iterator = null;
+		this.aggregator = new AggregatorSHP(this);
+		this.diffBuilder = new DiffbuilderSHP(this);
 	}
 
 }

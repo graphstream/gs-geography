@@ -36,8 +36,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.graphstream.geography.AttributeFilter;
-import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.Element;
+import org.graphstream.geography.ElementDescriptor;
+import org.graphstream.geography.ElementShape;
+import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;
@@ -104,7 +106,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// We are only interested in intersection points.
 
-		this.zDescriptor = new ElementDescriptorSHP(this, "Z", this.zAttributeFilter);
+		this.zDescriptor = new ElementDescriptor(this, "Z", this.zAttributeFilter);
 		
 		this.zDescriptor.mustHave("INTRSECT", "Y");
 		
@@ -122,11 +124,11 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// We are only interested in line features..
 
-		this.roadDescriptor = new ElementDescriptorSHP(this, "ROAD", this.roadAttributeFilter);
+		this.roadDescriptor = new ElementDescriptor(this, "ROAD", this.roadAttributeFilter);
 
 		this.roadDescriptor.onlyConsiderLineEndPoints();
 
-		this.roadDescriptor.mustBe(Element.Type.LINE);
+		this.roadDescriptor.mustBe(ElementShape.Type.LINE);
 
 		roadFileDescriptor.addDescriptor(roadDescriptor);
 	}
@@ -173,15 +175,15 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	}
 
 	@Override
-	public boolean next() {
+	public void nextEvents() {
 
 		this.addedNodeIds = new ArrayList<String>();
 
-		ArrayList<Element> allElements = this.elements.getElementsAtEnd("ROAD");
+		ArrayList<ElementView> allElements = getElementsAtStep(0);
 
-		for(Element element : allElements) {
+		for(ElementView element : allElements) {
 
-			Line line = (Line)element;
+			Line line = (Line)element.getShape();
 
 			// Add the two end points to the graph if necessary.
 
@@ -193,13 +195,11 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 			// Draw an edge between the two points.
 
 			if(idNode1 != null && idNode2 != null)
-				sendEdgeAdded(this.sourceId, line.getId(), idNode1, idNode2, false);
+				sendEdgeAdded(this.id, line.id, idNode1, idNode2, false);
 
 			// Bind the attributes
 
 		}
-
-		return false;
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		Point lineZPoint = null;
 
 		for(Element zPoint : zPoints)
-			if(zPoint.getAttribute("LINK_ID").equals(line.getAttribute("LINK_ID")))
+			if(zPoint.getChangedAttribute("LINK_ID").equals(line.getChangedAttribute("LINK_ID")))
 				lineZPoint = (Point)zPoint;
 
 		if(lineZPoint == null)
@@ -235,7 +235,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		// Get the Z level of the Z-level point.
 
-		Object zLevel = lineZPoint.getAttribute("Z_LEVEL");
+		Object zLevel = lineZPoint.getChangedAttribute("Z_LEVEL");
 
 		// Check if a point at the same position and with the same Z level is
 		// already in the output graph.
@@ -243,7 +243,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		Point alreadyHerePoint = null;
 
 		for(Element zPoint : zPoints)
-			if(zPoint.getAttribute("Z_LEVEL").equals(zLevel) && this.addedNodeIds.contains(zPoint.getId())) {
+			if(zPoint.getChangedAttribute("Z_LEVEL").equals(zLevel) && this.addedNodeIds.contains(zPoint.id)) {
 				alreadyHerePoint = (Point)zPoint;
 				break;
 			}
@@ -254,25 +254,25 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 			alreadyHerePoint = lineZPoint;
 
-			sendNodeAdded(this.sourceId, alreadyHerePoint.getId());
+			sendNodeAdded(this.id, alreadyHerePoint.id);
 
-			this.addedNodeIds.add(alreadyHerePoint.getId());
+			this.addedNodeIds.add(alreadyHerePoint.id);
 
 			// Place the new node at an appropriate position.
 
-			sendNodeAttributeAdded(this.sourceId, alreadyHerePoint.getId(), "x", alreadyHerePoint.getPosition().x);
-			sendNodeAttributeAdded(this.sourceId, alreadyHerePoint.getId(), "y", alreadyHerePoint.getPosition().y);
+			sendNodeAttributeAdded(this.id, alreadyHerePoint.id, "x", alreadyHerePoint.getPosition().x);
+			sendNodeAttributeAdded(this.id, alreadyHerePoint.id, "y", alreadyHerePoint.getPosition().y);
 
 			// Bind the attributes.
 
-			HashMap<String, Object> attributes = alreadyHerePoint.getAttributes();
+			HashMap<String, Object> attributes = alreadyHerePoint.getChangedAttributes();
 
 			if(attributes != null)
 				for(Entry<String, Object> entry : attributes.entrySet())
-					sendNodeAttributeAdded(this.sourceId, alreadyHerePoint.getId(), entry.getKey(), entry.getValue());
+					sendNodeAttributeAdded(this.id, alreadyHerePoint.id, entry.getKey(), entry.getValue());
 		}
 
-		return alreadyHerePoint.getId();
+		return alreadyHerePoint.id;
 	}
 
 }

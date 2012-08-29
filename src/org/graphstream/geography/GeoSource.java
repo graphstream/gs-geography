@@ -122,7 +122,7 @@ public abstract class GeoSource extends SourceBase {
 		 * their states.
 		 */
 
-		Aggregate aggregatedIds = this.aggregator.read(this, true);
+		Aggregate aggregatedIds = this.aggregator.read(true);
 
 		for(Entry<String, HashMap<Integer, Object>> entry : aggregatedIds) {
 
@@ -150,7 +150,7 @@ public abstract class GeoSource extends SourceBase {
 		 * attribute and shape data.
 		 */
 
-		Aggregate aggregate = this.aggregator.read(this, false);
+		Aggregate aggregate = this.aggregator.read(false);
 
 		for(Element element : this.elements.values()) {
 

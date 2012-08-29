@@ -32,34 +32,51 @@
 package org.graphstream.geography;
 
 /**
+ * This temporal locator implementation determines the date of appearance of a
+ * feature according to a special attribute that each dated feature must
+ * possess.
  * 
  * @author Merwan Achibet
  */
 public class TemporalLocatorByAttribute extends TemporalLocator {
 
 	/**
-	 * 
+	 * The key of the attribute specifying the date.
 	 */
 	protected String attributeKey;
-	
+
 	/**
+	 * Instantiate a new temporal locator using a specific attribute to
+	 * determine the date of appearance.
 	 * 
 	 * @param source
+	 *            The source using the temporal locator.
 	 * @param attributeKey
+	 *            The key of the date attribute.
 	 */
 	public TemporalLocatorByAttribute(GeoSource source, String attributeKey) {
 		super(source);
-		
+
 		this.attributeKey = attributeKey;
 	}
-	
+
 	@Override
 	public Integer date(Object o) {
-		
-		String dateString = this.source.getAggregator().getAttributeValue(o, this.attributeKey).toString();
-		
+
+		// Retrieve the aggregator that read the input file(s).
+
+		Aggregator aggregator = this.source.getAggregator();
+
+		// Get the date attribute from the feature.
+
+		String dateString = aggregator.getAttributeValue(o, this.attributeKey).toString();
+
+		// Check that the date attribute is specified.
+
 		if(dateString == null)
-			return null;
+			return null; // TODO warning message if not?
+
+		// Return the date as an Integer.
 
 		return Integer.parseInt(dateString);
 	}

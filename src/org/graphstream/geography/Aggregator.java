@@ -36,51 +36,69 @@ import java.util.ArrayList;
 import org.graphstream.geography.ElementShape.Type;
 
 /**
+ * An aggregator is a format-specific reader that goes through all input files
+ * specified by a geo source and stores (aggregates) the geographic features
+ * that match the descriptors of the source.
+ * 
+ * The aggregated data is structured so that different versions of an element
+ * are indexed by the time of their appearance.
+ * 
+ * It is possible to only aggregate features ID instead of keeping a record of
+ * all their data (attributes and shape). This is especially useful to check at
+ * which moments a feature appears without wasting memory.
  * 
  * @author Merwan Achibet
  */
 public abstract class Aggregator {
 
 	/**
-	 * 
+	 * The source using the aggregator.
 	 */
 	protected GeoSource source;
-	
+
 	/**
 	 * 
 	 */
-	protected Aggregate aggregate; // XXX same aggregate?
-	
+	protected Aggregate aggregate;
+
 	/**
-	 * 
+	 * The name of the file currently traversed.
 	 */
 	protected String currentFileName;
 
 	/**
+	 * Instantiate a new aggregator.
 	 * 
 	 * @param source
+	 *            The source using the aggregator.
 	 */
 	public Aggregator(GeoSource source) {
 
 		this.source = source;
-
-		this.aggregate = new Aggregate();
 	}
 
 	/**
+	 * Go in order through the input files specified by the geo source and
+	 * aggregate relevant features.
 	 * 
-	 * @param source
+	 * If the onlyReadId flag is set to true then only the IDs of aggregated
+	 * features will be in the final aggregate.
+	 * 
 	 * @param onlyReadId
-	 * @return
+	 *            The flag to only aggregate IDs.
+	 * @return An aggregate containing the relevant features from the input
+	 *         files.
 	 */
-	public Aggregate read(GeoSource source, boolean onlyReadId) {
+	public Aggregate read(boolean onlyReadId) {
 
-		ArrayList<FileDescriptor> fileDescriptors = source.getFileDescriptors();
+		this.aggregate = new Aggregate();
+
+		ArrayList<FileDescriptor> fileDescriptors = this.source.getFileDescriptors();
 
 		for(FileDescriptor fileDescriptor : fileDescriptors) {
 
 			this.currentFileName = fileDescriptor.getFileName();
-			
+
 			open(fileDescriptor);
 
 			traverse(fileDescriptor, onlyReadId);
@@ -92,19 +110,25 @@ public abstract class Aggregator {
 	}
 
 	/**
+	 * Open the input file described by a file descriptor.
 	 * 
 	 * @param fileDescriptor
 	 */
 	abstract protected void open(FileDescriptor fileDescriptor);
 
 	/**
+	 * Go through the content of the input file described by a file descriptor
+	 * and aggregate the appropriate data.
 	 * 
 	 * @param fileDescriptor
+	 *            The file descriptor.
 	 * @param onlyReadId
+	 *            The flag to only aggregate IDs.
 	 */
 	abstract protected void traverse(FileDescriptor fileDescriptor, boolean onlyReadId);
 
 	/**
+	 * Close the input file described by a file descriptor.
 	 * 
 	 * @param fileDescriptor
 	 */
@@ -147,30 +171,30 @@ public abstract class Aggregator {
 
 		return false;
 	}
-	
+
 	public ElementShape.Type getType(Object o) {
-		
+
 		if(isPoint(o))
 			return Type.POINT;
-		
+
 		if(isLine(o))
 			return Type.LINE;
-		
+
 		if(isPolygon(o))
 			return Type.POLYGON;
-		
+
 		return null;
 	}
 
 	public abstract boolean hasKey(Object o, String key);
 
 	public abstract boolean hasKeyValue(Object o, String key, Object value);
-	
+
 	public abstract Object getAttributeValue(Object o, String key);
-	
+
 	public String getCurrentFileName() {
-		
+
 		return this.currentFileName;
 	}
-	
+
 }

@@ -58,6 +58,10 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class DiffbuilderSHP extends DiffBuilder {
 
+	/**
+	 * 
+	 * @param source
+	 */
 	public DiffbuilderSHP(GeoSource source) {
 		super(source);
 	}

@@ -36,6 +36,12 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 /**
+ * An aggregate is the result of the aggregation of the content of one or
+ * several input files.
+ * 
+ * Its storage structure is two-dimensional and depends on the ID of a stored
+ * feature and its date of appearance. This way we can store different versions
+ * of a same feature when time progression is taken into account.
  * 
  * @author Merwan Achibet
  */
@@ -45,53 +51,66 @@ public class Aggregate implements Iterable<Entry<String, HashMap<Integer, Object
 	 * 
 	 */
 	protected HashMap<String, HashMap<Integer, Object>> content;
-	
+
 	/**
-	 * 
+	 * Instantiate a new Aggregate.
 	 */
 	public Aggregate() {
-		
-		this.content = new HashMap<String, HashMap<Integer,Object>>();
+
+		this.content = new HashMap<String, HashMap<Integer, Object>>();
 	}
-	
+
 	/**
+	 * Add an object to the aggregate.
+	 * 
+	 * The object typically is a geographic feature from an input file but it
+	 * can also be null when the aggregator that calls this method only wants to
+	 * monitor which elements appear at which date without needing more
+	 * information like attributes or shape.
 	 * 
 	 * @param id
+	 *            The ID of the object.
 	 * @param date
+	 *            The date of appearance of the object.
 	 * @param o
+	 *            The object.
 	 */
 	public void add(String id, Integer date, Object o) {
-	
+
 		HashMap<Integer, Object> objectsAtDate = this.content.get(id);
-		
+
 		if(objectsAtDate == null) {
 			objectsAtDate = new HashMap<Integer, Object>();
 			this.content.put(id, objectsAtDate);
 		}
-		
-		objectsAtDate.put(date,  o);
+
+		objectsAtDate.put(date, o);
 	}
-	
+
 	/**
+	 * Give the object of the aggregate with a specific ID and a specific
+	 * appearance date.
 	 * 
 	 * @param id
+	 *            The object ID.
 	 * @param date
-	 * @return
+	 *            The date of appearance of the object.
+	 * @return The object or null if it isn't aggregated.
 	 */
 	public Object get(String id, Integer date) {
-	
+
 		HashMap<Integer, Object> objectAtDate = content.get(id);
-		
+
 		if(objectAtDate == null)
 			return null;
-		
+
 		return objectAtDate.get(date);
 	}
 
 	@Override
 	public Iterator<Entry<String, HashMap<Integer, Object>>> iterator() {
-		
+
 		return this.content.entrySet().iterator();
 	}
-	
+
 }

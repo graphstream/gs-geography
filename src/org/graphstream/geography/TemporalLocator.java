@@ -32,32 +32,40 @@
 package org.graphstream.geography;
 
 /**
+ * A temporal locator is used to determine the date of appearance of a
+ * geographic feature being aggregated.
+ * 
+ * By default, a geo source uses this implementation which actually does not
+ * take time into account and assign the date 0 to every feature that it
+ * encounters.
  * 
  * @author Merwan Achibet
  */
 public class TemporalLocator {
 
 	/**
-	 * 
+	 * The source using the temporal locator.
 	 */
 	protected GeoSource source;
 
 	/**
+	 * Instantiate a new temporal locator.
 	 * 
-	 * @param mode
+	 * @param source
+	 *            The source using the temporal locator.
 	 */
 	public TemporalLocator(GeoSource source) {
-		
+
 		this.source = source;
 	}
-	
+
 	/**
 	 * 
 	 * @param o
 	 * @return
 	 */
 	public Integer date(Object o) {
-		
+
 		return 0;
 	}
 

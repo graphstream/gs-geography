@@ -32,22 +32,34 @@
 package org.graphstream.geography;
 
 /**
+ * This temporal locator implementation determines the date of appearance of a
+ * feature according to the input file it came from.
+ * 
+ * The main condition is that the order in which the input files were given to
+ * the geo source corresponds to the temporal order.
  * 
  * @author Merwan Achibet
  */
 public class TemporalLocatorByFile extends TemporalLocator {
 
+	/**
+	 * Instantiate a new temporal locator using the origin file to determine the
+	 * date of appearance.
+	 * 
+	 * @param source
+	 *            The source using the temporal locator.
+	 */
 	public TemporalLocatorByFile(GeoSource source) {
 		super(source);
 	}
-	
+
 	@Override
 	public Integer date(Object o) {
-	
+
 		String currentFileName = this.source.getAggregator().getCurrentFileName();
-		
+
 		int fileIndex = this.source.getFileNames().indexOf(currentFileName);
-		
+
 		return fileIndex;
 	}
 

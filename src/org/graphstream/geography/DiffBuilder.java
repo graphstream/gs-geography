@@ -32,18 +32,38 @@
 package org.graphstream.geography;
 
 /**
+ * The main task of a diff builder is to create a differential version of a
+ * geographic object from its previous version.
  * 
  * @author Merwan Achibet
  */
 public abstract class DiffBuilder {
 
+	/**
+	 * The source using the diff builder.
+	 */
 	protected GeoSource source;
-	
+
+	/**
+	 * Instantiate a new diff builder.
+	 * 
+	 * @param source
+	 *            The source using the diff builder.
+	 */
 	public DiffBuilder(GeoSource source) {
-	
+
 		this.source = source;
 	}
-	
+
+	/**
+	 * TODO
+	 * 
+	 * @param element
+	 * @param previousDiff
+	 * @param previousDate
+	 * @param o
+	 * @return
+	 */
 	abstract public ElementState diff(Element element, ElementState previousDiff, Integer previousDate, Object o);
 
 }

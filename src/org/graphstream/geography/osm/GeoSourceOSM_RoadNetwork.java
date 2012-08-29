@@ -32,14 +32,12 @@
 package org.graphstream.geography.osm;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.ElementShape;
+import org.graphstream.geography.ElementState;
 import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
@@ -134,48 +132,58 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	@Override
 	protected void nextEvents() {
 
-		ArrayList<ElementView> allElements = getElementsAtStep(this.currentTimeStep);
+		ArrayList<ElementState> elementDiffs = getElementDiffsAtStep(this.currentTimeStep);
 
-		for(ElementView element : allElements) {
+		for(ElementState elementDiff : elementDiffs) {
 
-			Line line = (Line)element.getShape();
+			// If the diff actually is a base, entirely insert the element.
 
-			// Add each point shaping the road to the graph, as nodes.
+			if(elementDiff.isBase()) {
 
-			ArrayList<Point> points = line.getPoints();
+				Line line = (Line)elementDiff.getShape();
 
-			// Start with the first point of the line.
+				// Add each point shaping the road to the graph, as nodes.
 
-			Point from = points.get(0);
-			String idFrom = from.getId();
+				ArrayList<Point> points = line.getPoints();
 
-			addNode(from);
+				// Start with the first point of the line.
 
-			for(int i = 1, l = points.size(); i < l; ++i) {
+				Point from = points.get(0);
+				String idFrom = from.getId();
 
-				// Add the next point.
+				addNode(from);
 
-				Point to = points.get(i);
-				String idTo = to.getId();
+				for(int i = 1, l = points.size(); i < l; ++i) {
 
-				addNode(to);
+					// Add the next point.
 
-				// Link it to the previous point.
+					Point to = points.get(i);
+					String idTo = to.getId();
 
-				String edgeId = line.getElementId() + "_" + idFrom + "_" + idTo;
-				if(!this.addedEdgeIds.contains(edgeId)) {
-					sendEdgeAdded(this.id, edgeId, idFrom, idTo, false);
-					this.addedEdgeIds.add(edgeId);
+					addNode(to);
+
+					// Link it to the previous point.
+
+					String edgeId = line.getElementId() + "_" + idFrom + "_" + idTo;
+					if(!this.addedEdgeIds.contains(edgeId)) {
+						sendEdgeAdded(this.id, edgeId, idFrom, idTo, false);
+						this.addedEdgeIds.add(edgeId);
+					}
+
+					idFrom = idTo;
 				}
-
-				idFrom = idTo;
 			}
+			
+			// Update attributes and shape.
+			
+			// TODO
 		}
+
 	}
 
 	protected void nextEvents2() {
 
-		ArrayList<ElementView> allElements = getElementsAtStep(this.currentTimeStep);
+		ArrayList<ElementView> allElements = getElementViewsAtStep(this.currentTimeStep);
 
 		for(ElementView element : allElements) {
 

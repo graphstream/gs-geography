@@ -25,7 +25,7 @@ public class DiffbuilderOSM extends DiffBuilder {
 	@Override
 	public ElementState diff(Element element, ElementState previousDiff, Integer previousDate, Object o) {
 
-		ElementState nextDiff = new ElementState();
+		ElementState nextDiff = null;
 
 		// Cast the object to a XOM element;
 
@@ -44,10 +44,12 @@ public class DiffbuilderOSM extends DiffBuilder {
 
 		if(previousDiff == null) {
 
+			nextDiff = new ElementState(true);
+
 			for(Entry<String, Object> entry : currentAttributes.entrySet())
 				nextDiff.setChangedAttribute(entry.getKey(), entry.getValue());
 
-			ElementShape.Type type = this.source.getFeatureAggregator().getType(o);
+			ElementShape.Type type = this.source.getAggregator().getType(o);
 
 			ElementShape shape = null;
 
@@ -104,6 +106,8 @@ public class DiffbuilderOSM extends DiffBuilder {
 
 		else {
 
+			nextDiff = new ElementState();
+			
 			ElementView elementAtPreviousDate = element.getElementViewAtDate(previousDate);
 
 			for(Entry<String, Object> entry : elementAtPreviousDate.getAttributes().entrySet())

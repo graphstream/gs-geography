@@ -35,6 +35,11 @@ public abstract class GeoSource extends SourceBase {
 	protected DiffBuilder diffBuilder;
 
 	/**
+	 * 
+	 */
+	protected TemporalLocator temporalLocator;
+	
+	/**
 	 * Aggregated elements indexed according to their ID.
 	 */
 	protected HashMap<String, Element> elements;
@@ -63,6 +68,8 @@ public abstract class GeoSource extends SourceBase {
 
 		this.fileDescriptors = new ArrayList<FileDescriptor>();
 
+		this.temporalLocator = new TemporalLocator(this);
+		
 		this.elements = new HashMap<String, Element>();
 		
 		this.dates = new TreeSet<Integer>();
@@ -166,38 +173,65 @@ public abstract class GeoSource extends SourceBase {
 
 	protected abstract void nextEvents();
 	
-	public ArrayList<ElementView> getElementsAtStep(int step) {
+	public ArrayList<ElementView> getElementViewsAtStep(int step) {
 
-		// TODO step != date
-
-		ArrayList<ElementView> elementsAtStep = new ArrayList<ElementView>();
+		ArrayList<ElementView> elementViewsAtStep = new ArrayList<ElementView>();
 
 		for(Element element : this.elements.values()) {
 
 			// Retrieve the element view at this step.
 
-			ElementView elementAtStep = element.getElementViewAtDate(step);
+			Integer date = step; // TODO step -> date
+			ElementView elementAtDate = element.getElementViewAtDate(date);
 
-			if(elementAtStep != null)
-				elementsAtStep.add(elementAtStep);
+			if(elementAtDate != null)
+				elementViewsAtStep.add(elementAtDate);
 		}
 
-		return elementsAtStep;
+		return elementViewsAtStep;
+	}
+	
+	public ArrayList<ElementState> getElementDiffsAtStep(int step) {
+		
+		ArrayList<ElementState> elementDiffsAtStep = new ArrayList<ElementState>();
+
+		for(Element element : this.elements.values()) {
+
+			// Retrieve the element diff at this step.
+
+			Integer date = step; // TODO step -> date
+			ElementState elementAtDate = element.getElementDiffAtDate(date);
+
+			if(elementAtDate != null)
+				elementDiffsAtStep.add(elementAtDate);
+		}
+
+		return elementDiffsAtStep;
 	}
 
 	public void addFileDescriptor(FileDescriptor fileDescriptor) {
 
 		this.fileDescriptors.add(fileDescriptor);
 	}
+	
+	public ArrayList<FileDescriptor> getFileDescriptors() {
 
-	public Aggregator getFeatureAggregator() {
+		return this.fileDescriptors;
+	}
+
+	public ArrayList<String> getFileNames() {
+		
+		return this.fileNames;
+	}
+
+	public Aggregator getAggregator() {
 
 		return this.aggregator;
 	}
 
-	public ArrayList<FileDescriptor> getFileDescriptors() {
-
-		return this.fileDescriptors;
+	public TemporalLocator getTemporalLocator() {
+		
+		return this.temporalLocator;
 	}
 
 }

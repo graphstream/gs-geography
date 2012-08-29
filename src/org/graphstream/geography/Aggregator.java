@@ -6,10 +6,25 @@ import org.graphstream.geography.ElementShape.Type;
 
 public abstract class Aggregator {
 
+	/**
+	 * 
+	 */
 	protected GeoSource source;
 	
-	protected Aggregate aggregate;
+	/**
+	 * 
+	 */
+	protected Aggregate aggregate; // XXX same aggregate?
+	
+	/**
+	 * 
+	 */
+	protected String currentFileName;
 
+	/**
+	 * 
+	 * @param source
+	 */
 	public Aggregator(GeoSource source) {
 
 		this.source = source;
@@ -17,12 +32,20 @@ public abstract class Aggregator {
 		this.aggregate = new Aggregate();
 	}
 
+	/**
+	 * 
+	 * @param source
+	 * @param onlyReadId
+	 * @return
+	 */
 	public Aggregate read(GeoSource source, boolean onlyReadId) {
 
 		ArrayList<FileDescriptor> fileDescriptors = source.getFileDescriptors();
 
 		for(FileDescriptor fileDescriptor : fileDescriptors) {
 
+			this.currentFileName = fileDescriptor.getFileName();
+			
 			open(fileDescriptor);
 
 			traverse(fileDescriptor, onlyReadId);
@@ -33,18 +56,36 @@ public abstract class Aggregator {
 		return this.aggregate;
 	}
 
+	/**
+	 * 
+	 * @param fileDescriptor
+	 */
 	abstract protected void open(FileDescriptor fileDescriptor);
 
+	/**
+	 * 
+	 * @param fileDescriptor
+	 * @param onlyReadId
+	 */
 	abstract protected void traverse(FileDescriptor fileDescriptor, boolean onlyReadId);
 
+	/**
+	 * 
+	 * @param fileDescriptor
+	 */
 	abstract protected void close(FileDescriptor fileDescriptor);
 
-	protected void aggregate(Object o, boolean onlyReadId) {
+	/**
+	 * 
+	 * @param o
+	 * @param onlyReadId
+	 */
+	protected void aggregate(Object o, Integer date, boolean onlyReadId) {
 
 		String id = getFeatureId(o);
-		Integer date = 0; // TODO TODO TODO TODO TODO
+
 		Object object = onlyReadId ? id : o;
-		
+
 		this.aggregate.add(id, date, object);
 	}
 
@@ -89,4 +130,12 @@ public abstract class Aggregator {
 	public abstract boolean hasKey(Object o, String key);
 
 	public abstract boolean hasKeyValue(Object o, String key, Object value);
+	
+	public abstract Object getAttributeValue(Object o, String key);
+	
+	public String getCurrentFileName() {
+		
+		return this.currentFileName;
+	}
+	
 }

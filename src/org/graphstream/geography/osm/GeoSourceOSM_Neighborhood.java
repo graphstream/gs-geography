@@ -138,7 +138,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		HashMap<String, Coordinate> placedBuildings = new HashMap<String, Coordinate>();
 		
-		ArrayList<ElementView> allElements = getElementsAtStep(0/*this.currentTimeStep*/); // TODO
+		ArrayList<ElementView> allElements = getElementViewsAtStep(0/*this.currentTimeStep*/); // TODO
 		
 		for(ElementView element : allElements) {
 

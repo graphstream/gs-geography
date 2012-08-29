@@ -59,8 +59,12 @@ public class AggregatorSHP extends Aggregator {
 			SimpleFeature feature = this.iterator.next();
 
 			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors())
-				if(descriptor.matches(feature, this))
-					aggregate(feature, onlyReadId);
+				if(descriptor.matches(feature, this)) {
+					
+					Integer date = this.source.getTemporalLocator().date(feature);
+					
+					aggregate(feature, date, onlyReadId);
+				}
 		}
 	}
 
@@ -150,7 +154,7 @@ public class AggregatorSHP extends Aggregator {
 
 		// Go through the feature properties until the same key and value are
 		// found.
-		
+
 		Collection<Property> properties = feature.getProperties();
 
 		for(Property property : properties)
@@ -158,6 +162,25 @@ public class AggregatorSHP extends Aggregator {
 				return true;
 
 		return false;
+	}
+
+	@Override
+	public Object getAttributeValue(Object o, String key) {
+
+		// Cast the object to a GeoTools feature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Go through the feature properties until the same key and value are
+		// found.
+
+		Collection<Property> properties = feature.getProperties();
+
+		for(Property property : properties)
+			if(property.getName().toString().equals(key))
+				return property.getValue();
+
+		return null;
 	}
 
 }

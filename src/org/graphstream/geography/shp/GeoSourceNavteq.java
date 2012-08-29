@@ -179,7 +179,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		this.addedNodeIds = new ArrayList<String>();
 
-		ArrayList<ElementView> allElements = getElementsAtStep(0);
+		ArrayList<ElementView> allElements = getElementViewsAtStep(0);
 
 		for(ElementView element : allElements) {
 

@@ -21,9 +21,19 @@ public class ElementState {
 	 * version of the element.
 	 */
 	protected ArrayList<String> removedAttributes;
+	
+	/**
+	 * 
+	 */
+	protected boolean isBaseFlag;
 
 	public ElementState() {
+		this(false);
+	}
 
+	public ElementState(boolean isBaseFlag) {
+
+		this.isBaseFlag = isBaseFlag;
 	}
 
 	public ElementState(ElementState other) {
@@ -170,6 +180,15 @@ public class ElementState {
 		return this.removedAttributes;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isBase() {
+		
+		return this.isBaseFlag;
+	}
+	
 	@Override
 	public String toString() {
 

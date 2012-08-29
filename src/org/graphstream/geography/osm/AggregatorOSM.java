@@ -12,7 +12,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 public class AggregatorOSM extends Aggregator {
 
 	protected nu.xom.Element xmlRoot;
-	
+
 	public AggregatorOSM(GeoSource source) {
 		super(source);
 	}
@@ -66,8 +66,12 @@ public class AggregatorOSM extends Aggregator {
 			nu.xom.Element xmlElement = xmlElements.get(i);
 
 			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors())
-				if(descriptor.matches(xmlElement, this))
-					aggregate(xmlElement, onlyReadId);
+				if(descriptor.matches(xmlElement, this)) {
+
+					Integer date = this.source.getTemporalLocator().date(xmlElement);
+
+					aggregate(xmlElement, date, onlyReadId);
+				}
 		}
 	}
 
@@ -186,6 +190,24 @@ public class AggregatorOSM extends Aggregator {
 		}
 
 		return false;
+	}
+
+	@Override
+	public Object getAttributeValue(Object o, String key) {
+		
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
+
+		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
+
+			nu.xom.Element xmlTag = xmlTags.get(i);
+
+			if(xmlTag.getAttribute("k").getValue().equals(key))
+				return xmlTag.getAttribute("v").getValue();
+		}
+
+		return null;
 	}
 
 }

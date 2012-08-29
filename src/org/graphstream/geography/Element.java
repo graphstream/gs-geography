@@ -73,7 +73,7 @@ public class Element {
 	/**
 	 * 
 	 */
-	protected TreeMap<Integer, ElementState> states;
+	protected TreeMap<Integer, ElementState> diffs;
 
 	/**
 	 * Instantiate a new element.
@@ -85,7 +85,7 @@ public class Element {
 
 		this.id = id;
 
-		this.states = new TreeMap<Integer, ElementState>();
+		this.diffs = new TreeMap<Integer, ElementState>();
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class Element {
 		this.category = new String(other.getCategory());
 
 		for(Entry<Integer, ElementState> dateStatePair : other.getStates().entrySet())
-			this.states.put(new Integer(dateStatePair.getKey()), new ElementState(dateStatePair.getValue()));
+			this.diffs.put(new Integer(dateStatePair.getKey()), new ElementState(dateStatePair.getValue()));
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class Element {
 
 		// Check that the element exists at this date.
 
-		if(!this.states.containsKey(date))
+		if(!this.diffs.containsKey(date))
 			return null;
 
 		// Go through each state in ascending order and rebuild the element with
@@ -118,7 +118,7 @@ public class Element {
 
 		ElementView rebuiltElement = new ElementView(this.id);
 
-		for(Entry<Integer, ElementState> dateElementPair : this.states.entrySet()) {
+		for(Entry<Integer, ElementState> dateElementPair : this.diffs.entrySet()) {
 
 			// Retrieve the differential state of the element at this date.
 
@@ -152,6 +152,11 @@ public class Element {
 		//
 
 		return null;
+	}
+	
+	public ElementState getElementDiffAtDate(Integer date) {
+		
+		return this.diffs.get(date);
 	}
 
 	/**
@@ -191,17 +196,17 @@ public class Element {
 
 	public void addStateAtDate(ElementState state, Integer date) {
 
-		this.states.put(date, state);
+		this.diffs.put(date, state);
 	}
 
 	public TreeMap<Integer, ElementState> getStates() {
 
-		return this.states;
+		return this.diffs;
 	}
 
 	public boolean hasStateAtDate(Integer date) {
 
-		return this.states.containsKey(date);
+		return this.diffs.containsKey(date);
 	}
 
 	@Override
@@ -211,7 +216,7 @@ public class Element {
 
 		s += " Element " + this.id;
 
-		s += " | " + this.states.toString();
+		s += " | " + this.diffs.toString();
 
 		return s;
 	}

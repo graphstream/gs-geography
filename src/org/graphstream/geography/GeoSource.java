@@ -154,14 +154,14 @@ public abstract class GeoSource extends SourceBase {
 
 		for(Element element : this.elements.values()) {
 
-			ElementState previousDiff = null;
+			ElementDiff previousDiff = null;
 			Integer previousDate = null;
 
 			for(Integer date : element.getStates().keySet()) {
 
 				Object currentObject = aggregate.get(element.getId(), date);
 
-				ElementState currentDiff = this.diffBuilder.diff(element, previousDiff, previousDate, currentObject);
+				ElementDiff currentDiff = this.diffBuilder.diff(element, previousDiff, previousDate, currentObject);
 
 				element.addStateAtDate(currentDiff, date);
 
@@ -226,16 +226,16 @@ public abstract class GeoSource extends SourceBase {
 		return elementViewsAtStep;
 	}
 
-	public ArrayList<ElementState> getElementDiffsAtStep(int step) {
+	public ArrayList<ElementDiff> getElementDiffsAtStep(int step) {
 
-		ArrayList<ElementState> elementDiffsAtStep = new ArrayList<ElementState>();
+		ArrayList<ElementDiff> elementDiffsAtStep = new ArrayList<ElementDiff>();
 
 		for(Element element : this.elements.values()) {
 
 			// Retrieve the element diff at this step.
 
 			Integer date = step; // TODO step -> date
-			ElementState elementAtDate = element.getElementDiffAtDate(date);
+			ElementDiff elementAtDate = element.getElementDiffAtDate(date);
 
 			if(elementAtDate != null)
 				elementDiffsAtStep.add(elementAtDate);

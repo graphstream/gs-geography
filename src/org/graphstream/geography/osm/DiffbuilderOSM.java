@@ -38,7 +38,7 @@ import org.graphstream.geography.DiffBuilder;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.ElementShape;
 import org.graphstream.geography.ElementShape.Type;
-import org.graphstream.geography.ElementState;
+import org.graphstream.geography.ElementDiff;
 import org.graphstream.geography.ElementView;
 import org.graphstream.geography.GeoSource;
 import org.graphstream.geography.Line;
@@ -58,9 +58,9 @@ public class DiffbuilderOSM extends DiffBuilder {
 	}
 
 	@Override
-	public ElementState diff(Element element, ElementState previousDiff, Integer previousDate, Object o) {
+	public ElementDiff diff(Element element, ElementDiff previousDiff, Integer previousDate, Object o) {
 
-		ElementState nextDiff = null;
+		ElementDiff nextDiff = null;
 
 		// Cast the object to a XOM element;
 
@@ -79,7 +79,7 @@ public class DiffbuilderOSM extends DiffBuilder {
 
 		if(previousDiff == null) {
 
-			nextDiff = new ElementState(true);
+			nextDiff = new ElementDiff(element, true);
 
 			for(Entry<String, Object> entry : currentAttributes.entrySet())
 				nextDiff.setChangedAttribute(entry.getKey(), entry.getValue());
@@ -141,7 +141,7 @@ public class DiffbuilderOSM extends DiffBuilder {
 
 		else {
 
-			nextDiff = new ElementState();
+			nextDiff = new ElementDiff(element);
 			
 			ElementView elementAtPreviousDate = element.getElementViewAtDate(previousDate);
 

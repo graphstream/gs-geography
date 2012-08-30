@@ -38,7 +38,7 @@ import java.util.Map.Entry;
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.ElementShape;
-import org.graphstream.geography.ElementView;
+import org.graphstream.geography.ElementDiff;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Polygon;
 
@@ -66,7 +66,6 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 * buildings.
 	 */
 	protected ElementDescriptor buildingDescriptor;
-
 
 	/**
 	 * The attribute filter for the buildings.
@@ -137,39 +136,42 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		// the graph.
 
 		HashMap<String, Coordinate> placedBuildings = new HashMap<String, Coordinate>();
-		
-		ArrayList<ElementView> allElements = getElementViewsAtStep(0/*this.currentTimeStep*/); // TODO
-		
-		for(ElementView element : allElements) {
 
-			// Compute the center of the current building and add a new node at
-			// this position.
+		ArrayList<ElementDiff> elementDiffsAtStep = getElementDiffsAtStep(this.currentTimeStep); // TODO
 
-			Coordinate centroid = ((Polygon)element.shape).getCentroid();
+		for(ElementDiff elementDiff : elementDiffsAtStep) {
 
-			sendNodeAdded(this.id, element.id);
+			// If the diff is a base, insert the building.
 
-			sendNodeAttributeAdded(this.id, element.id, "x", centroid.x);
-			sendNodeAttributeAdded(this.id, element.id, "y", centroid.y);
+			if(elementDiff.isBase()) {
 
-			// Bind the attributes.
+				// Compute the center of the current building and add a new node
+				// at this position.
 
-			HashMap<String, Object> attributes = element.attributes;
+				String id = elementDiff.getElementId();
 
-			for(Entry<String, Object> entry : attributes.entrySet())
-				sendNodeAttributeAdded(this.id, element.id, entry.getKey(), entry.getValue());
+				sendNodeAdded(this.id, id);
 
-			// Draw an edge between the new node and already placed ones if
-			// their distance is below the neighborhood radius.
-			
-			// TODO there surely is a faster way to do that using the quadtree.
+				Coordinate centroid = ((Polygon)elementDiff.getShape()).getCentroid();
+				sendNodeAttributeAdded(this.id, id, "x", centroid.x);
+				sendNodeAttributeAdded(this.id, id, "y", centroid.y);
 
-			for(String id : placedBuildings.keySet())
-				if(centroid.distance(placedBuildings.get(id)) < this.radius)
-					sendEdgeAdded(this.id, element.id + id, element.id, id, false);
+				// Draw an edge between the new node and already placed ones if
+				// their distance is below the neighborhood radius.
 
-			placedBuildings.put(element.id, centroid);
+				for(Entry<String, Coordinate> idPosPair : placedBuildings.entrySet())
+					if(centroid.distance(idPosPair.getValue()) < this.radius)
+						sendEdgeAdded(this.id, id + idPosPair.getKey(), id, idPosPair.getKey(), false);
+
+				// Record the this building has been added to the graph.
+
+				placedBuildings.put(id, centroid);
+			}
 		}
+		
+		// Update attributes and shape.
+
+		// TODO
 	}
 
 }

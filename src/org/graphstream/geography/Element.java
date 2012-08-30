@@ -73,7 +73,7 @@ public class Element {
 	/**
 	 * 
 	 */
-	protected TreeMap<Integer, ElementState> diffs;
+	protected TreeMap<Integer, ElementDiff> diffs;
 
 	/**
 	 * Instantiate a new element.
@@ -85,7 +85,7 @@ public class Element {
 
 		this.id = id;
 
-		this.diffs = new TreeMap<Integer, ElementState>();
+		this.diffs = new TreeMap<Integer, ElementDiff>();
 	}
 
 	/**
@@ -97,8 +97,8 @@ public class Element {
 		this.id = new String(other.getId());
 		this.category = new String(other.getCategory());
 
-		for(Entry<Integer, ElementState> dateStatePair : other.getStates().entrySet())
-			this.diffs.put(new Integer(dateStatePair.getKey()), new ElementState(dateStatePair.getValue()));
+		for(Entry<Integer, ElementDiff> dateStatePair : other.getStates().entrySet())
+			this.diffs.put(new Integer(dateStatePair.getKey()), new ElementDiff(dateStatePair.getValue()));
 	}
 
 	/**
@@ -118,11 +118,11 @@ public class Element {
 
 		ElementView rebuiltElement = new ElementView(this.id);
 
-		for(Entry<Integer, ElementState> dateElementPair : this.diffs.entrySet()) {
+		for(Entry<Integer, ElementDiff> dateElementPair : this.diffs.entrySet()) {
 
 			// Retrieve the differential state of the element at this date.
 
-			ElementState currentDiff = dateElementPair.getValue();
+			ElementDiff currentDiff = dateElementPair.getValue();
 
 			// Remove the attributes that disappeared with this diff.
 
@@ -154,7 +154,7 @@ public class Element {
 		return null;
 	}
 	
-	public ElementState getElementDiffAtDate(Integer date) {
+	public ElementDiff getElementDiffAtDate(Integer date) {
 		
 		return this.diffs.get(date);
 	}
@@ -194,12 +194,12 @@ public class Element {
 		return this.category != null && this.category.equals(category);
 	}
 
-	public void addStateAtDate(ElementState state, Integer date) {
+	public void addStateAtDate(ElementDiff state, Integer date) {
 
 		this.diffs.put(date, state);
 	}
 
-	public TreeMap<Integer, ElementState> getStates() {
+	public TreeMap<Integer, ElementDiff> getStates() {
 
 		return this.diffs;
 	}

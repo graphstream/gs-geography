@@ -39,8 +39,13 @@ import java.util.Map.Entry;
  * 
  * @author Merwan Achibet
  */
-public class ElementState {
+public class ElementDiff {
 
+	/**
+	 * The element this diff is associated to.
+	 */
+	protected Element element;
+	
 	/**
 	 * 
 	 */
@@ -62,16 +67,17 @@ public class ElementState {
 	 */
 	protected boolean isBaseFlag;
 
-	public ElementState() {
-		this(false);
+	public ElementDiff(Element element) {
+		this(element, false);
 	}
 
-	public ElementState(boolean isBaseFlag) {
+	public ElementDiff(Element element, boolean isBaseFlag) {
 
+		this.element = element;
 		this.isBaseFlag = isBaseFlag;
 	}
 
-	public ElementState(ElementState other) {
+	public ElementDiff(ElementDiff other) {
 
 		HashMap<String, Object> otherChangedAttributes = other.getChangedAttributes();
 		if(otherChangedAttributes != null)
@@ -82,6 +88,11 @@ public class ElementState {
 		if(otherRemovedAttributes != null)
 			for(String key : otherRemovedAttributes)
 				addRemovedAttribute(new String(key));
+	}
+
+	public String getElementId() {
+		
+		return this.element.getId();
 	}
 
 	public void setShape(ElementShape shape) {

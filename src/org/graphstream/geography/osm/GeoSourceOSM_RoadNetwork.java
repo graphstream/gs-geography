@@ -37,7 +37,7 @@ import java.util.List;
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.ElementShape;
-import org.graphstream.geography.ElementState;
+import org.graphstream.geography.ElementDiff;
 import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
@@ -132,11 +132,11 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	@Override
 	protected void nextEvents() {
 
-		ArrayList<ElementState> elementDiffs = getElementDiffsAtStep(this.currentTimeStep);
+		ArrayList<ElementDiff> elementDiffsAtStep = getElementDiffsAtStep(this.currentTimeStep);
 
-		for(ElementState elementDiff : elementDiffs) {
+		for(ElementDiff elementDiff : elementDiffsAtStep) {
 
-			// If the diff actually is a base, entirely insert the element.
+			// If the diff is a base, insert the road.
 
 			if(elementDiff.isBase()) {
 

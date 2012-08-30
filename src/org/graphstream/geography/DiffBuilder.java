@@ -64,6 +64,6 @@ public abstract class DiffBuilder {
 	 * @param o
 	 * @return
 	 */
-	abstract public ElementState diff(Element element, ElementState previousDiff, Integer previousDate, Object o);
+	abstract public ElementDiff diff(Element element, ElementDiff previousDiff, Integer previousDate, Object o);
 
 }

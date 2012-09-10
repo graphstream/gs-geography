@@ -65,10 +65,9 @@ public class Element {
 	protected String id;
 
 	/**
-	 * The category of the element (attributed by the descriptor that
-	 * instantiated the object from a matching feature).
+	 * The descriptor to which the element has been matched.
 	 */
-	protected String category;
+	protected ElementDescriptor descriptorUsed;
 
 	/**
 	 * 
@@ -80,25 +79,14 @@ public class Element {
 	 * 
 	 * @param id
 	 *            The element ID.
+	 * @param descriptor
+	 * 
 	 */
 	public Element(String id) {
 
 		this.id = id;
 
 		this.diffs = new TreeMap<Integer, ElementDiff>();
-	}
-
-	/**
-	 * 
-	 * @param other
-	 */
-	public Element(Element other) {
-
-		this.id = new String(other.getId());
-		this.category = new String(other.getCategory());
-
-		for(Entry<Integer, ElementDiff> dateStatePair : other.getStates().entrySet())
-			this.diffs.put(new Integer(dateStatePair.getKey()), new ElementDiff(dateStatePair.getValue()));
 	}
 
 	/**
@@ -153,9 +141,9 @@ public class Element {
 
 		return null;
 	}
-	
+
 	public ElementDiff getElementDiffAtDate(Integer date) {
-		
+
 		return this.diffs.get(date);
 	}
 
@@ -168,6 +156,16 @@ public class Element {
 
 		return new String(this.id);
 	}
+	
+	public void setDescriptorUsed(ElementDescriptor descriptorUsed) {
+		
+		this.descriptorUsed = descriptorUsed;
+	}
+	
+	public ElementDescriptor getDescriptorUsed() {
+		
+		return this.descriptorUsed;
+	}
 
 	/**
 	 * Give the category of the element.
@@ -176,10 +174,7 @@ public class Element {
 	 */
 	public String getCategory() {
 
-		if(this.category == null)
-			return null;
-
-		return new String(this.category);
+		return this.descriptorUsed.getCategory();
 	}
 
 	/**
@@ -191,7 +186,7 @@ public class Element {
 	 */
 	public boolean isCategory(String category) {
 
-		return this.category != null && this.category.equals(category);
+		return this.descriptorUsed.getCategory().equals(category);
 	}
 
 	public void addStateAtDate(ElementDiff state, Integer date) {

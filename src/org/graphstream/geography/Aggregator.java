@@ -139,13 +139,15 @@ public abstract class Aggregator {
 	 * @param o
 	 * @param onlyReadId
 	 */
-	protected void aggregate(Object o, Integer date, boolean onlyReadId) {
+	protected void aggregate(Object o, Integer date, ElementDescriptor descriptor, boolean onlyReadId) {
 
 		String id = getFeatureId(o);
 
 		Object object = onlyReadId ? id : o;
 
 		this.aggregate.add(id, date, object);
+		
+		this.aggregate.setDescriptorUsed(id, descriptor);
 	}
 
 	// Abstract

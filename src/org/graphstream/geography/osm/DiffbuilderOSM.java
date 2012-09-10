@@ -38,6 +38,7 @@ import org.graphstream.geography.DiffBuilder;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.ElementShape;
 import org.graphstream.geography.ElementShape.Type;
+import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.ElementDiff;
 import org.graphstream.geography.ElementView;
 import org.graphstream.geography.GeoSource;
@@ -72,9 +73,16 @@ public class DiffbuilderOSM extends DiffBuilder {
 
 		nu.xom.Elements tags = xmlElement.getChildElements("tag");
 
-		for(int i = 0, l = tags.size(); i < l; ++i)
-			currentAttributes.put(tags.get(i).getAttributeValue("k"), tags.get(i).getAttributeValue("v"));
-
+		AttributeFilter filter = element.getDescriptorUsed().getAttributeFilter();
+		
+		for(int i = 0, l = tags.size(); i < l; ++i) {
+			
+			String key = tags.get(i).getAttributeValue("k");
+			
+			if(filter.isKept(key))
+				currentAttributes.put(key, tags.get(i).getAttributeValue("v"));
+		}
+		
 		// If there is no previous diff of the element, copy all the attributes.
 
 		if(previousDiff == null) {

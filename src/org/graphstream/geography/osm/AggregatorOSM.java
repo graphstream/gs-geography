@@ -105,7 +105,7 @@ public class AggregatorOSM extends Aggregator {
 
 					Integer date = this.source.getTemporalLocator().date(xmlElement);
 
-					aggregate(xmlElement, date, onlyReadId);
+					aggregate(xmlElement, date, descriptor, onlyReadId);
 				}
 		}
 	}

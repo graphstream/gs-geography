@@ -161,6 +161,11 @@ public class ElementDescriptor {
 
 		return new String(this.category);
 	}
+	
+	public AttributeFilter getAttributeFilter() {
+		
+		return this.filter;
+	}
 
 	/**
 	 * Set the descriptor to reference matching elements in a spatial index.

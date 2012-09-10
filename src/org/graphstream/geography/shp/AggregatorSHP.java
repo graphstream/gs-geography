@@ -98,7 +98,7 @@ public class AggregatorSHP extends Aggregator {
 					
 					Integer date = this.source.getTemporalLocator().date(feature);
 					
-					aggregate(feature, date, onlyReadId);
+					aggregate(feature, date, descriptor, onlyReadId);
 				}
 		}
 	}

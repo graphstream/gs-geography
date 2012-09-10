@@ -122,6 +122,8 @@ public abstract class GeoSource extends SourceBase {
 		 * their states.
 		 */
 
+		// Aggregate the ID of the elements and the times at which they appear.
+
 		Aggregate aggregatedIds = this.aggregator.read(true);
 
 		for(Entry<String, HashMap<Integer, Object>> entry : aggregatedIds) {
@@ -129,12 +131,15 @@ public abstract class GeoSource extends SourceBase {
 			String id = entry.getKey();
 
 			Element element = this.elements.get(id);
-
+			
 			if(element == null) {
 				element = new Element(id);
 				this.elements.put(id, element);
 			}
 
+			ElementDescriptor descriptorUsed = aggregatedIds.getDescriptorUsed(element.getId());
+			element.setDescriptorUsed(descriptorUsed);
+			
 			for(Integer date : entry.getValue().keySet()) {
 
 				if(!element.hasStateAtDate(date))
@@ -156,11 +161,12 @@ public abstract class GeoSource extends SourceBase {
 
 			ElementDiff previousDiff = null;
 			Integer previousDate = null;
-
+			
 			for(Integer date : element.getStates().keySet()) {
 
 				Object currentObject = aggregate.get(element.getId(), date);
 
+				
 				ElementDiff currentDiff = this.diffBuilder.diff(element, previousDiff, previousDate, currentObject);
 
 				element.addStateAtDate(currentDiff, date);

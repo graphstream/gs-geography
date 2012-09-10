@@ -53,11 +53,18 @@ public class Aggregate implements Iterable<Entry<String, HashMap<Integer, Object
 	protected HashMap<String, HashMap<Integer, Object>> content;
 
 	/**
+	 * 
+	 */
+	protected HashMap<String, ElementDescriptor> descriptorsUsed;
+	
+	/**
 	 * Instantiate a new Aggregate.
 	 */
 	public Aggregate() {
 
 		this.content = new HashMap<String, HashMap<Integer, Object>>();
+		
+		this.descriptorsUsed = new HashMap<String, ElementDescriptor>();
 	}
 
 	/**
@@ -107,6 +114,16 @@ public class Aggregate implements Iterable<Entry<String, HashMap<Integer, Object
 		return objectAtDate.get(date);
 	}
 
+	public void setDescriptorUsed(String id, ElementDescriptor descriptor) {
+		
+		this.descriptorsUsed.put(id, descriptor);
+	}
+	
+	public ElementDescriptor getDescriptorUsed(String id) {
+		
+		return this.descriptorsUsed.get(id);
+	}
+	
 	@Override
 	public Iterator<Entry<String, HashMap<Integer, Object>>> iterator() {
 

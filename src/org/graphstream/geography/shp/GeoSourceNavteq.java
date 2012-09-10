@@ -81,17 +81,15 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	/**
 	 * Instantiate a new Navteq source producing a road network.
 	 * 
-	 * @param roadsFileName
-	 *            The path to the file containing road data.
-	 * @param zFileName
-	 *            The path to the file containing Z data.
+	 * @param TODO
 	 */
-	public GeoSourceNavteq(String roadFileName, String zFileName) {
-
-		FileDescriptor zFileDescriptor = new FileDescriptor(zFileName);
+	public GeoSourceNavteq(String... fileNames) {
+		super(fileNames);
+		
+		FileDescriptor zFileDescriptor = new FileDescriptor(fileNames[0]);
 		addFileDescriptor(zFileDescriptor);
 		
-		FileDescriptor roadFileDescriptor = new FileDescriptor(roadFileName);
+		FileDescriptor roadFileDescriptor = new FileDescriptor(fileNames[1]);
 		addFileDescriptor(roadFileDescriptor);
 
 		// First: select and filter the Z-index points.

@@ -46,7 +46,7 @@ public class Line extends ElementShape {
 	/**
 	 * The list of points forming the line.
 	 */
-	protected ArrayList<Point> points;
+	protected ArrayList<LinePoint> points;
 
 	/**
 	 * Instantiate a new line.
@@ -58,7 +58,7 @@ public class Line extends ElementShape {
 		super(element);
 
 		this.type = Type.LINE;
-		this.points = new ArrayList<Point>();
+		this.points = new ArrayList<LinePoint>();
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class Line extends ElementShape {
 	 */
 	public void addPoint(String id, double x, double y) {
 
-		Point point = new Point(this.element, id);
+		LinePoint point = new LinePoint();
 
 		point.setPosition(x, y);
 
@@ -85,7 +85,7 @@ public class Line extends ElementShape {
 	 * 
 	 * @return The list of points.
 	 */
-	public ArrayList<Point> getPoints() {
+	public ArrayList<LinePoint> getPoints() {
 
 		return this.points;
 	}
@@ -96,33 +96,33 @@ public class Line extends ElementShape {
 	 * @return An array of point. The point at index 0 is the starting point,
 	 *         the point at index 1 is the ending point.
 	 */
-	public Point[] getEndPoints() {
+	public LinePoint[] getEndPoints() {
 
-		return new Point[]{
+		return new LinePoint[]{
 				this.points.get(0), this.points.get(this.points.size() - 1)
 		};
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		
+
 		if(o == this)
 			return true;
-		
+
 		ElementShape oShape = (ElementShape)o;
-		
+
 		if(oShape.getType() != Type.LINE)
 			return false;
 
 		Line lShape = (Line)oShape;
-		
+
 		for(int i = 0, l = lShape.getPoints().size(); i < l; ++i)
 			if(!lShape.getPoints().get(i).equals(points.get(i)))
 				return false;
-		
+
 		return true;
 	}
-	
+
 	/*
 	 * @Override public List<SpatialIndexPoint> toSpatialIndexPoints() {
 	 * 

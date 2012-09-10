@@ -60,6 +60,15 @@ public class TemporalLocatorByAttribute extends TemporalLocator {
 		this.attributeKey = attributeKey;
 	}
 
+	/**
+	 * Give the date of appearance of a given geographic object.
+	 * 
+	 * Here, we use a predefined attribute to determine the date.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @return The date of appearance of the object.
+	 */
 	@Override
 	public Integer date(Object o) {
 

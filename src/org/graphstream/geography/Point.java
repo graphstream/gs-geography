@@ -37,8 +37,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * A point.
  * 
  * The goal of this class is to represent in the simpler manner possible a point
- * element. Its main features are an ID, a position and a set of attributes
- * copied from its original format (potentially filtered).
+ * element. Its main features are an optional ID and a position.
  * 
  * @author Merwan Achibet
  */

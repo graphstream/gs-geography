@@ -187,47 +187,6 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 	}
 
-	protected void nextEvents2() {
-
-		ArrayList<ElementView> allElements = getElementViewsAtStep(this.currentTimeStep);
-
-		for(ElementView element : allElements) {
-
-			Line line = (Line)element.getShape();
-
-			// Add each point shaping the road to the graph, as nodes.
-
-			ArrayList<Point> points = line.getPoints();
-
-			// Start with the first point of the line.
-
-			Point from = points.get(0);
-			String idFrom = from.getId();
-
-			addNode(from);
-
-			for(int i = 1, l = points.size(); i < l; ++i) {
-
-				// Add the next point.
-
-				Point to = points.get(i);
-				String idTo = to.getId();
-
-				addNode(to);
-
-				// Link it to the previous point.
-
-				String edgeId = line.getElementId() + "_" + idFrom + "_" + idTo;
-				if(!this.addedEdgeIds.contains(edgeId)) {
-					sendEdgeAdded(this.id, edgeId, idFrom, idTo, false);
-					this.addedEdgeIds.add(edgeId);
-				}
-
-				idFrom = idTo;
-			}
-		}
-	}
-
 	/**
 	 * Add a node representing part of a road to the output graph.
 	 * 

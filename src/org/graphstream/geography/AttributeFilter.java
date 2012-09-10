@@ -34,7 +34,7 @@ package org.graphstream.geography;
 import java.util.ArrayList;
 
 /**
- * Specify which attributes must be kept/filtered when converting an geographic
+ * Specify which attributes must be kept/filtered when converting a geographic
  * object from a library-dependent format to the simple geometric one.
  * 
  * A filter has a mode. If it is KEEP, only the matched attributes will be kept

@@ -35,7 +35,7 @@ package org.graphstream.geography;
  * The main task of a diff builder is to create a differential version of a
  * geographic object from its previous version.
  * 
- * It must aknowledges the addition of new attributes, the removal of
+ * It must acknowledges the addition of new attributes, the removal of
  * attributes, the modification of existing attributes and the changes in the
  * shape and position of the geographic object.
  * 

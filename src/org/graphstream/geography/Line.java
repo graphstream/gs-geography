@@ -37,9 +37,7 @@ import java.util.ArrayList;
  * A Line.
  * 
  * The goal of this class is to represent in the simpler manner possible a line
- * element. Its main features are an ID, a list of points describing its shape
- * and a set of attributes copied from its original format (potentially
- * filtered).
+ * element. Its main features are an optional ID and a list of points.
  * 
  * @author Merwan Achibet
  */
@@ -58,7 +56,7 @@ public class Line extends ElementShape {
 	 */
 	public Line(Element element) {
 		super(element);
-		
+
 		this.type = Type.LINE;
 		this.points = new ArrayList<Point>();
 	}
@@ -100,23 +98,24 @@ public class Line extends ElementShape {
 	 */
 	public Point[] getEndPoints() {
 
-		return new Point[]{this.points.get(0), this.points.get(this.points.size() - 1)};
+		return new Point[]{
+				this.points.get(0), this.points.get(this.points.size() - 1)
+		};
 	}
 
 	/*
-	@Override
-	public List<SpatialIndexPoint> toSpatialIndexPoints() {
-
-		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
-
-		for(Point point : this.points) {
-
-			SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this, point.getId(), point.getPosition().x, point.getPosition().y);
-
-			spatialIndexPoints.add(spatialIndexPoint);
-		}
-
-		return spatialIndexPoints;
-	}
-	*/
+	 * @Override public List<SpatialIndexPoint> toSpatialIndexPoints() {
+	 * 
+	 * List<SpatialIndexPoint> spatialIndexPoints = new
+	 * ArrayList<SpatialIndexPoint>();
+	 * 
+	 * for(Point point : this.points) {
+	 * 
+	 * SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this,
+	 * point.getId(), point.getPosition().x, point.getPosition().y);
+	 * 
+	 * spatialIndexPoints.add(spatialIndexPoint); }
+	 * 
+	 * return spatialIndexPoints; }
+	 */
 }

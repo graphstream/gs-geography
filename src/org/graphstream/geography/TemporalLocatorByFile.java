@@ -53,6 +53,16 @@ public class TemporalLocatorByFile extends TemporalLocator {
 		super(source);
 	}
 
+	/**
+	 * Give the date of appearance of a given geographic object.
+	 * 
+	 * Here, we return a date that equals the index of the file the element
+	 * comes from.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @return The date of appearance of the object.
+	 */
 	@Override
 	public Integer date(Object o) {
 

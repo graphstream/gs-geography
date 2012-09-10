@@ -32,6 +32,8 @@
 package org.graphstream.geography;
 
 /**
+ * ElementShape represents the shape and position of a geographic element at a
+ * given time.
  * 
  * @author Merwan Achibet
  */
@@ -40,26 +42,47 @@ public abstract class ElementShape {
 	public static enum Type {
 		POINT, LINE, POLYGON
 	};
-	
+
+	/**
+	 * The element associated with this shape.
+	 */
 	protected Element element;
-	
+
+	/**
+	 * The type of the shape (POINT, LINE or POLYGON).
+	 */
 	protected Type type;
-	
+
+	/**
+	 * Instantiate a new ElementShape
+	 * 
+	 * @param element
+	 *            The element associated with this shape.
+	 */
 	public ElementShape(Element element) {
-		
+
 		this.element = element;
 	}
-	
+
+	/**
+	 * 
+	 * @return
+	 */
 	public ElementShape diff() {
-		
-		return this; // TODO
+
+		return this; // TODO TODO TODO
 	}
-	
+
+	/**
+	 * Give the ID of the element associated with this shape.
+	 * 
+	 * @return The ID of the associated element.
+	 */
 	public String getElementId() {
-		
+
 		return this.element.getId();
 	}
-	
+
 	/**
 	 * Check if the element has a specific geometric type.
 	 * 

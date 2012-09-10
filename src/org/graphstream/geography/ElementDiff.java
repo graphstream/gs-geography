@@ -36,6 +36,11 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 /**
+ * An ElementDiff instance represents the differential state of a geographic
+ * element at a given time.
+ * 
+ * Elements are composed of an ordered set of diffs that each contains the
+ * differences in attributes and shape from their previous version.
  * 
  * @author Merwan Achibet
  */
@@ -45,61 +50,77 @@ public class ElementDiff {
 	 * The element this diff is associated to.
 	 */
 	protected Element element;
-	
+
 	/**
-	 * 
+	 * The shape of the element.
 	 */
 	protected ElementShape shape;
 
 	/**
-	 * A key/value mapping of attributes.
+	 * The attributes that appear or are added with this diff.
 	 */
 	protected HashMap<String, Object> changedAttributes;
 
 	/**
-	 * A key/value mapping of attributes that were removed from the previous
-	 * version of the element.
+	 * The attributes that are removed from the previous diff of the element.
 	 */
 	protected ArrayList<String> removedAttributes;
-	
+
 	/**
-	 * 
+	 * Is this diff first in the chain of diffs?
 	 */
 	protected boolean isBaseFlag;
 
+	/**
+	 * Instantiate a new diff for a given element.
+	 * 
+	 * @param element
+	 *            The element this diff is associated to.
+	 */
 	public ElementDiff(Element element) {
 		this(element, false);
 	}
 
+	/**
+	 * Instantiate a new diff for a given element.
+	 * 
+	 * @param element
+	 *            The element this diff is associated to.
+	 * @param isBaseFlag
+	 *            True if the diff is a base, false otherwise.
+	 */
 	public ElementDiff(Element element, boolean isBaseFlag) {
 
 		this.element = element;
 		this.isBaseFlag = isBaseFlag;
 	}
 
-	public ElementDiff(ElementDiff other) {
-
-		HashMap<String, Object> otherChangedAttributes = other.getChangedAttributes();
-		if(otherChangedAttributes != null)
-			for(Entry<String, Object> keyValuePair : otherChangedAttributes.entrySet())
-				setChangedAttribute(new String(keyValuePair.getKey()), keyValuePair.getValue());
-
-		ArrayList<String> otherRemovedAttributes = other.getRemovedAttributes();
-		if(otherRemovedAttributes != null)
-			for(String key : otherRemovedAttributes)
-				addRemovedAttribute(new String(key));
-	}
-
+	/**
+	 * Give the ID of the element associated with this diff.
+	 * 
+	 * @return The ID of the associated element.
+	 */
 	public String getElementId() {
-		
+
 		return this.element.getId();
 	}
 
+	/**
+	 * Bind a shape to this diff.
+	 * 
+	 * @param shape
+	 *            The shape of the associated element.
+	 */
 	public void setShape(ElementShape shape) {
-		
+
 		this.shape = shape;
 	}
-	
+
+	/**
+	 * Give the shape of the associated element.
+	 * 
+	 * @return The shape of the associated element.
+	 */
 	public ElementShape getShape() {
 
 		return this.shape;
@@ -227,20 +248,26 @@ public class ElementDiff {
 	}
 
 	/**
+	 * Check if the diff is a base.
 	 * 
-	 * @return
+	 * In other words, check if this diff is the first in the chain of diffs
+	 * that represents the associated element.
+	 * 
+	 * @return True if the diff is a base, false otherwise.
 	 */
 	public boolean isBase() {
-		
+
 		return this.isBaseFlag;
 	}
-	
+
 	@Override
 	public String toString() {
 
 		String s = new String();
 
-		s += "attributes: {";
+		s += "ElementDiff (element " + this.element.getId() + ")";
+
+		s += " | attributes: {";
 		if(this.changedAttributes != null)
 			for(Entry<String, Object> keyValue : this.changedAttributes.entrySet())
 				s += " " + keyValue.getKey() + ":" + keyValue.getValue();

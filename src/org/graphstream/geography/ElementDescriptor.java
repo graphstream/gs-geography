@@ -36,29 +36,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * The descriptor is the main tool to select geographic objects, filter them and
- * convert them from a library-dependent format to a more standard
- * representation.
+ * The descriptor is the main tool to select geographic objects and filter them.
  * 
  * The heart of a descriptor is its matching method. If an object matches the
  * inner definition of a descriptor then it is kept for the next step of the
  * import. The user can specify the geometric type of the objects he wants to
  * consider (points, lines or polygons) and the attributes they should possess.
- * 
- * Descriptors are also in charge of converting input geographical objects into
- * GraphStream geometric elements (simple Points, Lines and Polygons with
- * attributes). As such, the implementation of a descriptor needs to be capable
- * of determining the type of a feature and of instantiating a new Point, Line
- * and Polygon from the input format of the considered object by means of the
- * isXXX(), newXXX() and newXXXDiff() methods.
- * 
- * Moreover, the library-specific object is only converted after it has been
- * matched (for efficiency reasons). Thus, a descriptor must be capable of
- * reading its attribute from its original format using the hasKey() and
- * hasKeyValue() methods.
- * 
- * For all these reasons, each implementation of the Descriptor base class must
- * focus on a single input format.
  * 
  * Note that the attributes of matched elements are reduced to the set of
  * attributes specified by the user through a filtering process. This way, a lot

@@ -48,32 +48,29 @@ import java.util.Map.Entry;
 public class Aggregate implements Iterable<Entry<String, HashMap<Integer, Object>>> {
 
 	/**
-	 * 
+	 * The aggregated geographic objects, indexed by ID and by date of
+	 * appearance.
 	 */
 	protected HashMap<String, HashMap<Integer, Object>> content;
 
 	/**
-	 * 
+	 * A mapping of the descriptor that matched each geographic object.
 	 */
 	protected HashMap<String, ElementDescriptor> descriptorsUsed;
-	
+
 	/**
 	 * Instantiate a new Aggregate.
 	 */
 	public Aggregate() {
 
 		this.content = new HashMap<String, HashMap<Integer, Object>>();
-		
+
 		this.descriptorsUsed = new HashMap<String, ElementDescriptor>();
 	}
 
 	/**
-	 * Add an object to the aggregate.
-	 * 
-	 * The object typically is a geographic feature from an input file but it
-	 * can also be null when the aggregator that calls this method only wants to
-	 * monitor which elements appear at which date without needing more
-	 * information like attributes or shape.
+	 * Add an object to the aggregate (typically a geographic object in its
+	 * library-dependent form).
 	 * 
 	 * @param id
 	 *            The ID of the object.
@@ -114,16 +111,31 @@ public class Aggregate implements Iterable<Entry<String, HashMap<Integer, Object
 		return objectAtDate.get(date);
 	}
 
+	/**
+	 * Specify the descriptor that matched a given geographic object.
+	 * 
+	 * @param id
+	 *            The ID of the object.
+	 * @param descriptor
+	 *            The descriptor.
+	 */
 	public void setDescriptorUsed(String id, ElementDescriptor descriptor) {
-		
+
 		this.descriptorsUsed.put(id, descriptor);
 	}
-	
+
+	/**
+	 * Give the descriptor that matched a geographic object.
+	 * 
+	 * @param id
+	 *            The ID of the object.
+	 * @return The descriptor.
+	 */
 	public ElementDescriptor getDescriptorUsed(String id) {
-		
+
 		return this.descriptorsUsed.get(id);
 	}
-	
+
 	@Override
 	public Iterator<Entry<String, HashMap<Integer, Object>>> iterator() {
 

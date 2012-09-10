@@ -36,7 +36,7 @@ package org.graphstream.geography;
  * geographic feature being aggregated.
  * 
  * By default, a geo source uses this implementation which actually does not
- * take time into account and assign the date 0 to every feature that it
+ * take time into account and assigns the date 0 to every feature that it
  * encounters.
  * 
  * @author Merwan Achibet
@@ -60,9 +60,13 @@ public class TemporalLocator {
 	}
 
 	/**
+	 * Give the date of appearance of a given geographic object.
+	 * 
+	 * Here, we always return the date 0 as time is not taken into account.
 	 * 
 	 * @param o
-	 * @return
+	 *            The geographic object.
+	 * @return The date of appearance of the object.
 	 */
 	public Integer date(Object o) {
 

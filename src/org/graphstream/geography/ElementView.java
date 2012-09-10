@@ -34,41 +34,86 @@ package org.graphstream.geography;
 import java.util.HashMap;
 
 /**
+ * An ElementView represents the complete state of a geographic element at a
+ * specific date/
+ * 
+ * It contains the id, attributes and shape of the represented element and is
+ * typically reconstructed from all of its diffs to offer a snapshot view of the
+ * object.
  * 
  * @author Merwan Achibet
  */
 public class ElementView {
 
+	/**
+	 * The ID of the element.
+	 */
 	public String id;
-	
+
+	/**
+	 * The attributes of the element.
+	 */
 	public HashMap<String, Object> attributes;
-	
+
+	/**
+	 * The shape of the element.
+	 */
 	public ElementShape shape;
-	
+
+	/**
+	 * Instantiate a new element view.
+	 * 
+	 * @param id
+	 *            The ID of the element.
+	 */
 	public ElementView(String id) {
-		
+
 		this.id = id;
-		
+
 		this.attributes = new HashMap<String, Object>();
 	}
-	
+
+	/**
+	 * Set an attribute of the element.
+	 * 
+	 * @param key
+	 *            The attribute key.
+	 * @param value
+	 *            The attribute value.
+	 */
 	public void setAttribute(String key, Object value) {
-		
+
 		this.attributes.put(key, value);
 	}
-	
+
+	/**
+	 * Remove an attribute from the element.
+	 * 
+	 * @param key
+	 *            The attribute key.
+	 */
 	public void removeAttribute(String key) {
-		
+
 		this.attributes.remove(key);
 	}
 
+	/**
+	 * Give the attributes of the element.
+	 * 
+	 * @return The attributes.
+	 */
 	public HashMap<String, Object> getAttributes() {
-		
+
 		return this.attributes;
 	}
-	
+
+	/**
+	 * Give the shape of the element.
+	 * 
+	 * @return The shape.
+	 */
 	public ElementShape getShape() {
-		
+
 		return this.shape;
 	}
 

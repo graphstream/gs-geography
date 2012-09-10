@@ -152,7 +152,7 @@ public abstract class GeoSource extends SourceBase {
 			for(Integer date : entry.getValue().keySet()) {
 
 				if(!element.hasStateAtDate(date))
-					element.addStateAtDate(null, date);
+					element.addDiffAtDate(null, date);
 
 				dates.add(date);
 			}
@@ -171,13 +171,13 @@ public abstract class GeoSource extends SourceBase {
 			ElementDiff previousDiff = null;
 			Integer previousDate = null;
 
-			for(Integer date : element.getStates().keySet()) {
+			for(Integer date : element.getDiffs().keySet()) {
 
 				Object currentObject = aggregate.get(element.getId(), date);
 
 				ElementDiff currentDiff = this.diffBuilder.diff(element, previousDiff, previousDate, currentObject);
 
-				element.addStateAtDate(currentDiff, date);
+				element.addDiffAtDate(currentDiff, date);
 
 				previousDiff = currentDiff;
 				previousDate = date;

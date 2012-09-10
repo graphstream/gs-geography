@@ -39,21 +39,13 @@ import java.util.TreeMap;
 /**
  * An abstract geometric element.
  * 
- * This class serves as a base for Point, Line and Polygon. These are used as
- * intermediary representations for any kind of geographical features coming
+ * This class serves as a standard representation for geographic objects coming
  * from an external source. The original input formats can be quite
  * heterogeneous as the data they contain is library-dependent and we don't want
  * to force the user to learn GeoTools, XOM or whatever other library.
  * 
- * An Element basically consists of a unique identifier and a list of attributes
- * copied from the original format of the feature (potentially filtered).
- * 
- * An element can exist in two flavors. The "base" version is a complete element
- * with some attributes. The "diff" version is a partial element that is based
- * on a "base" element and only contains the differences between these two
- * versions. This duality becomes useful when dealing with several time steps.
- * The change of an element with respect to time is represented by a chain
- * starting with a "base" element and followed by zero or more "diff" elements.
+ * An Element basically consists of a unique identifier and a list of states (or
+ * diffs) that represent the change it is subject to when time progresses.
  * 
  * @author Merwan Achibet
  */
@@ -70,7 +62,7 @@ public class Element {
 	protected ElementDescriptor descriptorUsed;
 
 	/**
-	 * 
+	 * The states (or diffs) of this element, indexed by time.
 	 */
 	protected TreeMap<Integer, ElementDiff> diffs;
 
@@ -78,9 +70,7 @@ public class Element {
 	 * Instantiate a new element.
 	 * 
 	 * @param id
-	 *            The element ID.
-	 * @param descriptor
-	 * 
+	 *            The ID of the element.
 	 */
 	public Element(String id) {
 
@@ -90,9 +80,11 @@ public class Element {
 	}
 
 	/**
+	 * Get the complete state of the element at a given date.
 	 * 
 	 * @param date
-	 * @return
+	 *            The date of the returned element.
+	 * @return The element as it is at a given date.
 	 */
 	public ElementView getElementViewAtDate(Integer date) {
 
@@ -142,6 +134,13 @@ public class Element {
 		return null;
 	}
 
+	/**
+	 * Give the diff of this element at a given date.
+	 * 
+	 * @param date
+	 *            The date.
+	 * @return The element diff at the given date.
+	 */
 	public ElementDiff getElementDiffAtDate(Integer date) {
 
 		return this.diffs.get(date);
@@ -156,14 +155,25 @@ public class Element {
 
 		return new String(this.id);
 	}
-	
+
+	/**
+	 * Record the descriptor that matched the element.
+	 * 
+	 * @param descriptorUsed
+	 *            The descriptor.
+	 */
 	public void setDescriptorUsed(ElementDescriptor descriptorUsed) {
-		
+
 		this.descriptorUsed = descriptorUsed;
 	}
-	
+
+	/**
+	 * Give the descriptor that matched the element.
+	 * 
+	 * @return The descriptor.
+	 */
 	public ElementDescriptor getDescriptorUsed() {
-		
+
 		return this.descriptorUsed;
 	}
 
@@ -189,23 +199,50 @@ public class Element {
 		return this.descriptorUsed.getCategory().equals(category);
 	}
 
-	public void addStateAtDate(ElementDiff state, Integer date) {
+	/**
+	 * Bind a specific element diff to a given date.
+	 * 
+	 * @param diff
+	 *            The element diff.
+	 * @param date
+	 *            The date.
+	 */
+	public void addDiffAtDate(ElementDiff diff, Integer date) {
 
-		this.diffs.put(date, state);
+		this.diffs.put(date, diff);
 	}
 
-	public TreeMap<Integer, ElementDiff> getStates() {
+	/**
+	 * Give all the diffs of the element.
+	 * 
+	 * @return The diffs.
+	 */
+	public TreeMap<Integer, ElementDiff> getDiffs() {
 
 		return this.diffs;
 	}
 
+	/**
+	 * Check if the element has a diff at the given date.f
+	 * 
+	 * @param date
+	 *            The date.
+	 * @return True if the element has a diff at the date, false otherwise.
+	 */
 	public boolean hasStateAtDate(Integer date) {
 
 		return this.diffs.containsKey(date);
 	}
-	
+
+	/**
+	 * Check if the element still exists at the given date.
+	 * 
+	 * @param date
+	 *            The date.
+	 * @return True if the element still exists at the date, false otherwise.
+	 */
 	public boolean hasExpiredByDate(Integer date) {
-		
+
 		return this.diffs.lastKey() < date;
 	}
 
@@ -221,6 +258,7 @@ public class Element {
 		return s;
 	}
 
+	// TODO
 	/**
 	 * Give special points that spatially represent the shape of the element and
 	 * will be stored in a spatial index.

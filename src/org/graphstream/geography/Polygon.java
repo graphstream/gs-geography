@@ -37,9 +37,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * A Polygon.
  * 
  * The goal of this class is to represent in the simpler manner possible a
- * polygon element. Its main features are an ID, a list of positions describing
- * its shape and a set of attributes copied from its original format
- * (potentially filtered).
+ * polygon element. Its main features are an ID and a list of points.
  * 
  * A polygon essentially is a line for which the starting point is the same as
  * the ending point. In other words, a polygon is a closed line.

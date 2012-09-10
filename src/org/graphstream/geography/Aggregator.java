@@ -43,10 +43,6 @@ import org.graphstream.geography.ElementShape.Type;
  * The aggregated data is structured so that different versions of an element
  * are indexed by the time of their appearance.
  * 
- * It is possible to only aggregate features ID instead of keeping a record of
- * all their data (attributes and shape). This is especially useful to check at
- * which moments a feature appears without wasting memory.
- * 
  * @author Merwan Achibet
  */
 public abstract class Aggregator {
@@ -57,7 +53,7 @@ public abstract class Aggregator {
 	protected GeoSource source;
 
 	/**
-	 * 
+	 * The results aggregated while the file are read.
 	 */
 	protected Aggregate aggregate;
 
@@ -135,29 +131,130 @@ public abstract class Aggregator {
 	abstract protected void close(FileDescriptor fileDescriptor);
 
 	/**
+	 * Aggregate a library-specific geographic object appearing at a specific
+	 * date.
 	 * 
 	 * @param o
-	 * @param onlyReadId
+	 *            The geographic object in its library-dependent form (XOM,
+	 *            GeoTools, ...).
+	 * @param date
+	 *            The date of appearance of the object.
+	 * @param descriptor
+	 *            The descriptor that matched the object.
 	 */
 	protected void aggregate(Object o, Integer date, ElementDescriptor descriptor) {
 
 		String id = getFeatureId(o);
 
 		this.aggregate.add(id, date, o);
-		
+
 		this.aggregate.setDescriptorUsed(id, descriptor);
+	}
+
+	/**
+	 * Get the name of the cile being currently read.
+	 * 
+	 * @return The file name.
+	 */
+	public String getCurrentFileName() {
+
+		return this.currentFileName;
 	}
 
 	// Abstract
 
+	/*
+	 * All of the following abstract methods must be overridden in the
+	 * format-specific implementations of Aggregator. They answer to questions
+	 * about the shape of a geographic object and its attributes.
+	 */
+
+	/**
+	 * Give the ID of the geographic object (Typically the same as in the file
+	 * it is coming from).
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @return The ID of the object.
+	 */
 	public abstract String getFeatureId(Object o);
 
+	/**
+	 * Check if the geographic object has a given key within its attributes.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @param key
+	 *            The attribute key.
+	 * @return True if the object has an attribute with this key, false
+	 *         otherwise.
+	 */
+	public abstract boolean hasKey(Object o, String key);
+
+	/**
+	 * Check if the geographic object has a given key/value pair within its
+	 * attribute.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @param key
+	 *            The attribute key.
+	 * @param value
+	 *            The attribute value.
+	 * @return True if the object has an attribute with these key and value,
+	 *         false otherwise.
+	 */
+	public abstract boolean hasKeyValue(Object o, String key, Object value);
+
+	/**
+	 * Give the value of the attribute of a geometric object with a given key.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @param key
+	 *            The attribute key.
+	 * @return The attribute value or null if there is no attribute with such a
+	 *         key.
+	 */
+	public abstract Object getAttributeValue(Object o, String key);
+
+	/**
+	 * Check if the geographic object is a point.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @return True if the object is a point, false otherwise.
+	 */
 	public abstract boolean isPoint(Object o);
 
+	/**
+	 * Check if the geographic object is a line.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @return True if the object is a line, false otherwise.
+	 */
 	public abstract boolean isLine(Object o);
 
+	/**
+	 * Check if the geographic object is a polygon.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @return True if the object is a polygon, false otherwise.
+	 */
 	public abstract boolean isPolygon(Object o);
 
+	/**
+	 * Check if the shape of a geographic object is the same as the given shape
+	 * type.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @param type
+	 *            The shape type.
+	 * @return True if the object has the same shape, false otherwise.
+	 */
 	public boolean isOfType(Object o, ElementShape.Type type) {
 
 		if(type == ElementShape.Type.POINT)
@@ -172,6 +269,13 @@ public abstract class Aggregator {
 		return false;
 	}
 
+	/**
+	 * Give the type of shape of a given geographic object.
+	 * 
+	 * @param o
+	 *            The geographic object.
+	 * @return The shape type of the object.
+	 */
 	public ElementShape.Type getType(Object o) {
 
 		if(isPoint(o))
@@ -184,17 +288,6 @@ public abstract class Aggregator {
 			return Type.POLYGON;
 
 		return null;
-	}
-
-	public abstract boolean hasKey(Object o, String key);
-
-	public abstract boolean hasKeyValue(Object o, String key, Object value);
-
-	public abstract Object getAttributeValue(Object o, String key);
-
-	public String getCurrentFileName() {
-
-		return this.currentFileName;
 	}
 
 }

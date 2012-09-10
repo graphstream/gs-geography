@@ -229,7 +229,7 @@ public class Element {
 	 *            The date.
 	 * @return True if the element has a diff at the date, false otherwise.
 	 */
-	public boolean hasStateAtDate(Integer date) {
+	public boolean hasDiffAtDate(Integer date) {
 
 		return this.diffs.containsKey(date);
 	}

@@ -148,33 +148,6 @@ public class ElementDiff {
 	}
 
 	/**
-	 * Remove an attribute from the element.
-	 * 
-	 * @param key
-	 *            The key of the attribute to remove.
-	 */
-	public void removeChangedAttribute(String key) {
-
-		if(this.changedAttributes != null)
-			this.changedAttributes.remove(key);
-	}
-
-	/**
-	 * Give the value of an attribute.
-	 * 
-	 * @param key
-	 *            The key of the attribute.
-	 * @return The value of the attribute or null if it does not exist.
-	 */
-	public Object getChangedAttribute(String key) {
-
-		if(this.changedAttributes == null)
-			return null;
-
-		return this.changedAttributes.get(key);
-	}
-
-	/**
 	 * Give all attributes.
 	 * 
 	 * @return A list of key/value pairs.
@@ -185,34 +158,6 @@ public class ElementDiff {
 			return null;
 
 		return this.changedAttributes;
-	}
-
-	/**
-	 * Check if the element possesses a specific attribute.
-	 * 
-	 * @param key
-	 *            The key of the attribute.
-	 * @return True if the attribute is possessed by the element, false
-	 *         otherwise.
-	 */
-	public boolean hasAttribute(String key) {
-
-		return this.changedAttributes != null && this.changedAttributes.containsKey(key);
-	}
-
-	/**
-	 * Check if the element possesses a specific attribute AND if it equals the
-	 * supplied value.
-	 * 
-	 * @param key
-	 *            The key of the attribute.
-	 * @param value
-	 *            The value of the attribute.
-	 * @return True if the exact same attribute exists, false otherwise.
-	 */
-	public boolean hasAttribute(String key, Object value) {
-
-		return this.changedAttributes != null && this.changedAttributes.containsKey(key) && this.changedAttributes.get(key).equals(value);
 	}
 
 	/**

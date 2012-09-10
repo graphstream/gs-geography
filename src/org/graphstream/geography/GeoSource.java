@@ -151,7 +151,7 @@ public abstract class GeoSource extends SourceBase {
 
 			for(Integer date : entry.getValue().keySet()) {
 
-				if(!element.hasStateAtDate(date))
+				if(!element.hasDiffAtDate(date))
 					element.addDiffAtDate(null, date);
 
 				dates.add(date);

@@ -106,16 +106,29 @@ public class Line extends ElementShape {
 	@Override
 	public boolean equals(Object o) {
 
+		// Check if this is the same instance.
+
 		if(o == this)
 			return true;
 
+		// Check if the other shape is a line too.
 		ElementShape oShape = (ElementShape)o;
 
 		if(oShape.getType() != Type.LINE)
 			return false;
 
+		// Check if the other shape is bound to the same element.
+
+		if(!oShape.getElementId().equals(this.element.getId()))
+			return false;
+		
+		// Check if the other shape has the same points.
+		
 		Line lShape = (Line)oShape;
 
+		if(lShape.getPoints().size() != this.points.size())
+			return false;
+		
 		for(int i = 0, l = lShape.getPoints().size(); i < l; ++i)
 			if(!lShape.getPoints().get(i).equals(points.get(i)))
 				return false;

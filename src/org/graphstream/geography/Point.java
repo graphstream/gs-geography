@@ -108,13 +108,24 @@ public class Point extends ElementShape {
 	@Override
 	public boolean equals(Object o) {
 		
+		// Check if this is the same instance.
+		
 		if(o == this)
 			return true;
+		
+		// Check if the other shape is a point too.
 		
 		ElementShape oShape = (ElementShape)o;
 		
 		if(oShape.getType() != Type.POINT)
 			return false;
+		
+		// Check if the other shape is bound to the same element.
+		
+		if(!oShape.getElementId().equals(this.element.getId()))
+			return false;
+		
+		// Check if the other shape is at the same position.
 		
 		Point pShape = (Point)oShape;
 		

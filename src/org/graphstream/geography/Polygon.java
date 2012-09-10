@@ -86,22 +86,36 @@ public class Polygon extends Line {
 
 	@Override
 	public boolean equals(Object o) {
-		
+
+		// Check if this is the same instance.
+
 		if(o == this)
 			return true;
-		
+
+		// Check if the other shape is a polygon too.
+
 		ElementShape oShape = (ElementShape)o;
-		
+
 		if(oShape.getType() != Type.POLYGON)
 			return false;
 
+		// Check if the other shape is bound to the same element.
+
+		if(!oShape.getElementId().equals(this.element.getId()))
+			return false;
+
+		// Check if the other shape has the same points.
+		
 		Polygon pShape = (Polygon)oShape;
+
+		if(pShape.getPoints().size() != this.points.size())
+			return false;
 		
 		for(int i = 0, l = pShape.getPoints().size(); i < l; ++i)
 			if(!pShape.getPoints().get(i).equals(points.get(i)))
 				return false;
-		
+
 		return true;
 	}
-	
+
 }

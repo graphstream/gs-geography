@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.6.0_24" class="java.beans.XMLDecoder">
+ <object class="com.horstmann.violet.ClassDiagramGraph">
+  <void method="addNode">
+   <object id="ClassNode0" class="com.horstmann.violet.ClassNode">
+    <void property="bounds">
+     <object class="java.awt.geom.Rectangle2D$Double">
+      <void method="setRect">
+       <double>200.0</double>
+       <double>20.0</double>
+       <double>460.0</double>
+       <double>320.0</double>
+      </void>
+     </object>
+    </void>
+    <void property="attributes">
+     <void property="text">
+      <string>GeoSource source
+.
+Aggregate aggregate</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>Aggregator(GeoSource source)
+.
+Aggregate read()
+.
+abstract void open()
+abstract void traverse()
+abstract void close()
+.
+void aggregate(Object o, Integer date, ElementDescriptor descriptor)
+.
+abstract boolean hasKey(Object o, String key)
+abstract boolean hasKeyValue(Object o, String key, Object value)
+abstract Object getAttributeValue(Object o, String key)
+abstract boolean isPoint(Object o)
+abstract boolean isLine(Object o)
+abstract boolean isPolygon(Object o)</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>Aggregator</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>200.0</double>
+     <double>20.0</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object id="ClassNode1" class="com.horstmann.violet.ClassNode">
+    <void property="bounds">
+     <object class="java.awt.geom.Rectangle2D$Double">
+      <void method="setRect">
+       <double>30.0</double>
+       <double>400.0</double>
+       <double>360.0</double>
+       <double>220.0</double>
+      </void>
+     </object>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>AggregatorOSM(GeoSource source)
+.
+void open()
+void traverse()
+void close()
+.
+boolean hasKey(Object o, String key)
+boolean hasKeyValue(Object o, String key, Object value)
+Object getAttributeValue(Object o, String key)
+boolean isPoint(Object o)
+boolean isLine(Object o)
+boolean isPolygon(Object o)</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>AggregatorOSM</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>30.0</double>
+     <double>400.0</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object id="ClassNode2" class="com.horstmann.violet.ClassNode">
+    <void property="bounds">
+     <object class="java.awt.geom.Rectangle2D$Double">
+      <void method="setRect">
+       <double>480.0</double>
+       <double>400.0</double>
+       <double>360.0</double>
+       <double>220.0</double>
+      </void>
+     </object>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>AggregatorOSM(GeoSource source)
+.
+void open()
+void traverse()
+void close()
+.
+boolean hasKey(Object o, String key)
+boolean hasKeyValue(Object o, String key, Object value)
+Object getAttributeValue(Object o, String key)
+boolean isPoint(Object o)
+boolean isLine(Object o)
+boolean isPolygon(Object o)</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>AggregatorSHP</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>480.0</double>
+     <double>400.0</double>
+    </void>
+   </object>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.ClassRelationshipEdge">
+    <void property="bentStyle">
+     <object class="com.horstmann.violet.BentStyle" field="VHV"/>
+    </void>
+    <void property="endArrowHead">
+     <object class="com.horstmann.violet.ArrowHead" field="TRIANGLE"/>
+    </void>
+   </object>
+   <object idref="ClassNode1"/>
+   <object idref="ClassNode0"/>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.ClassRelationshipEdge">
+    <void property="bentStyle">
+     <object class="com.horstmann.violet.BentStyle" field="VHV"/>
+    </void>
+    <void property="endArrowHead">
+     <object class="com.horstmann.violet.ArrowHead" field="TRIANGLE"/>
+    </void>
+   </object>
+   <object idref="ClassNode2"/>
+   <object idref="ClassNode0"/>
+  </void>
+ </object>
+</java>

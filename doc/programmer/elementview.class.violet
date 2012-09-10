@@ -6,46 +6,41 @@
     <void property="bounds">
      <object class="java.awt.geom.Rectangle2D$Double">
       <void method="setRect">
-       <double>90.0</double>
-       <double>50.0</double>
-       <double>380.0</double>
-       <double>260.0</double>
+       <double>150.0</double>
+       <double>110.0</double>
+       <double>280.0</double>
+       <double>180.0</double>
       </void>
      </object>
     </void>
     <void property="attributes">
      <void property="text">
       <string>String id
-ElementDescriptor descriptorUsed
-TreeMap&lt;Integer,ElementDiff&gt; diffs</string>
+HashMap&lt;String, Object&gt; attributes
+ElementShape shape</string>
      </void>
     </void>
     <void property="methods">
      <void property="text">
-      <string>Element(String id)
+      <string>ElementView(String id)
 .
-String getId()
+void setAttribute(String key, Object value)
+Object getAttribute(String key)
+HashMap&lt;String, Object&gt; getAttributes()
 .
-void setDescriptorUsed(ElementDescriptor descriptorUsed)
-ElementDescriptor getDescriptorUsed()
-.
-void addDiffAtDate(ElementDiff diff, Integer date)
-boolean hasDiffAtDate(Integer date)
-boolea hasExpiredByDate(Integer date)
-ElementDiff getElementDiffAtDate(Integer date)
-ElementView getElementViewAtDate(Integer date)</string>
+ElementShape getShape()</string>
      </void>
     </void>
     <void property="name">
      <void property="text">
-      <string>Element</string>
+      <string>ElementView</string>
      </void>
     </void>
    </object>
    <object class="java.awt.geom.Point2D$Double">
     <void method="setLocation">
-     <double>90.0</double>
-     <double>50.0</double>
+     <double>150.0</double>
+     <double>110.0</double>
     </void>
    </object>
   </void>

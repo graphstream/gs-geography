@@ -82,7 +82,7 @@ public abstract class GeoSource extends SourceBase {
 	/**
 	 * 
 	 */
-	protected TreeSet<Integer> dates;
+	protected ArrayList<Integer> dates;
 
 	/**
 	 * 
@@ -107,7 +107,7 @@ public abstract class GeoSource extends SourceBase {
 
 		this.elements = new HashMap<String, Element>();
 
-		this.dates = new TreeSet<Integer>();
+		this.dates = new ArrayList<Integer>();
 
 		this.currentTimeStep = 0;
 	}
@@ -117,6 +117,8 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public void read() {
 
+		TreeSet<Integer> dates = new TreeSet<Integer>();
+		
 		/**
 		 * First pass: go through all files and instantiate the elements and
 		 * their states.
@@ -144,11 +146,13 @@ public abstract class GeoSource extends SourceBase {
 
 				if(!element.hasStateAtDate(date))
 					element.addStateAtDate(null, date);
-
-				if(!dates.contains(date))
-					dates.add(date);
+				
+				dates.add(date);
 			}
 		}
+		
+		for(Integer date : dates)
+			this.dates.add(date);
 
 		/**
 		 * Second pass: go through all files and fill the element states with
@@ -226,7 +230,7 @@ public abstract class GeoSource extends SourceBase {
 	 * @param diff
 	 *            The element diff representing the node.
 	 */
-	public void replicateNodeAttributes(String nodeId, ElementDiff diff) {
+	protected void replicateNodeAttributes(String nodeId, ElementDiff diff) {
 
 		if(diff.getChangedAttributes() != null)
 			for(Entry<String, Object> keyValuePair : diff.getChangedAttributes().entrySet())
@@ -249,7 +253,7 @@ public abstract class GeoSource extends SourceBase {
 	 * @param diff
 	 *            The element diff representing the edge.
 	 */
-	public void replicateEdgeAttributes(String edgeId, ElementDiff diff) {
+	protected void replicateEdgeAttributes(String edgeId, ElementDiff diff) {
 
 		if(diff.getChangedAttributes() != null)
 			for(Entry<String, Object> keyValuePair : diff.getChangedAttributes().entrySet())
@@ -258,6 +262,40 @@ public abstract class GeoSource extends SourceBase {
 		if(diff.getRemovedAttributes() != null)
 			for(String key : diff.getRemovedAttributes())
 				sendNodeAttributeRemoved(this.id, edgeId, key);
+	}
+	
+	/**
+	 * 
+	 */
+	protected ArrayList<Element> getExpiredElements() {
+		
+		ArrayList<Element> expiredElements = new ArrayList<Element>();
+		
+		for(Element element : this.elements.values())
+			if(element.hasExpiredByDate(this.currentTimeStep))
+				expiredElements.add(element);
+		
+		return expiredElements;
+	}
+	
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public Integer dateToStep(Integer date) {
+		
+		return this.dates.indexOf(date);
+	}
+
+	/**
+	 * 
+	 * @param step
+	 * @return
+	 */
+	public Integer stepToDate(int step) {
+	
+		return this.dates.get(step);
 	}
 
 	/**
@@ -273,7 +311,7 @@ public abstract class GeoSource extends SourceBase {
 
 			// Retrieve the element view at this step.
 
-			Integer date = step; // TODO step -> date
+			Integer date = stepToDate(step);
 			ElementView elementAtDate = element.getElementViewAtDate(date);
 
 			if(elementAtDate != null)
@@ -296,7 +334,7 @@ public abstract class GeoSource extends SourceBase {
 
 			// Retrieve the element diff at this step.
 
-			Integer date = step; // TODO step -> date
+			Integer date = stepToDate(step);
 			ElementDiff elementAtDate = element.getElementDiffAtDate(date);
 
 			if(elementAtDate != null)

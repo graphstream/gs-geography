@@ -179,6 +179,10 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 			// Update attributes and shape.
 			
 			// TODO
+			
+			// Remove elements that disappeared.
+			
+			// TODO
 		}
 
 	}

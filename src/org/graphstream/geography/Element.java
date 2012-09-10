@@ -203,6 +203,11 @@ public class Element {
 
 		return this.diffs.containsKey(date);
 	}
+	
+	public boolean hasExpiredByDate(Integer date) {
+		
+		return this.diffs.lastKey() < date;
+	}
 
 	@Override
 	public String toString() {

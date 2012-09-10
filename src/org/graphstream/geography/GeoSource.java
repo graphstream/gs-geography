@@ -208,6 +208,57 @@ public abstract class GeoSource extends SourceBase {
 
 	protected abstract void nextEvents();
 
+	/**
+	 * Replicate the attribute changes of an element represented as a node in
+	 * the output graph.
+	 * 
+	 * The node must have already been added to the graph prior to any call to
+	 * this function.
+	 * 
+	 * @param nodeId
+	 *            The ID of the node.
+	 * @param diff
+	 *            The element diff representing the node.
+	 */
+	public void replicateNodeAttributes(String nodeId, ElementDiff diff) {
+
+		if(diff.getChangedAttributes() != null)
+			for(Entry<String, Object> keyValuePair : diff.getChangedAttributes().entrySet())
+				sendNodeAttributeChanged(this.id, nodeId, keyValuePair.getKey(), null, keyValuePair.getValue());
+
+		if(diff.getRemovedAttributes() != null)
+			for(String key : diff.getRemovedAttributes())
+				sendNodeAttributeRemoved(this.id, nodeId, key);
+	}
+
+	/**
+	 * Replicate the attribute changes of an element represented as an edge in
+	 * the output graph.
+	 * 
+	 * The edge must have already been added to the graph prior to any call to
+	 * this function.
+	 * 
+	 * @param edgeId
+	 *            The ID of the edge.
+	 * @param diff
+	 *            The element diff representing the edge.
+	 */
+	public void replicateEdgeAttributes(String edgeId, ElementDiff diff) {
+
+		if(diff.getChangedAttributes() != null)
+			for(Entry<String, Object> keyValuePair : diff.getChangedAttributes().entrySet())
+				sendNodeAttributeChanged(this.id, edgeId, keyValuePair.getKey(), null, keyValuePair.getValue());
+
+		if(diff.getRemovedAttributes() != null)
+			for(String key : diff.getRemovedAttributes())
+				sendNodeAttributeRemoved(this.id, edgeId, key);
+	}
+
+	/**
+	 * 
+	 * @param step
+	 * @return
+	 */
 	public ArrayList<ElementView> getElementViewsAtStep(int step) {
 
 		ArrayList<ElementView> elementViewsAtStep = new ArrayList<ElementView>();
@@ -226,6 +277,11 @@ public abstract class GeoSource extends SourceBase {
 		return elementViewsAtStep;
 	}
 
+	/**
+	 * 
+	 * @param step
+	 * @return
+	 */
 	public ArrayList<ElementDiff> getElementDiffsAtStep(int step) {
 
 		ArrayList<ElementDiff> elementDiffsAtStep = new ArrayList<ElementDiff>();
@@ -244,16 +300,26 @@ public abstract class GeoSource extends SourceBase {
 		return elementDiffsAtStep;
 	}
 
+	/**
+	 * 
+	 */
 	public void noTime() {
 
 		this.temporalLocator = new TemporalLocator(this);
 	}
 
+	/**
+	 * 
+	 */
 	public void timeDependsOnFile() {
-		
-		this.temporalLocator = new TemporalLocatorByFile(this);	
+
+		this.temporalLocator = new TemporalLocatorByFile(this);
 	}
-	
+
+	/**
+	 * 
+	 * @param attributeName
+	 */
 	public void timeDependsOnAttribute(String attributeName) {
 
 		this.temporalLocator = new TemporalLocatorByAttribute(this, attributeName);

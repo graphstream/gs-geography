@@ -137,7 +137,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		HashMap<String, Coordinate> placedBuildings = new HashMap<String, Coordinate>();
 
-		ArrayList<ElementDiff> elementDiffsAtStep = getElementDiffsAtStep(this.currentTimeStep); // TODO
+		ArrayList<ElementDiff> elementDiffsAtStep = getElementDiffsAtStep(this.currentTimeStep);
 
 		for(ElementDiff elementDiff : elementDiffsAtStep) {
 
@@ -155,6 +155,8 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 				Coordinate centroid = ((Polygon)elementDiff.getShape()).getCentroid();
 				sendNodeAttributeAdded(this.id, id, "x", centroid.x);
 				sendNodeAttributeAdded(this.id, id, "y", centroid.y);
+				
+				replicateNodeAttributes(id, elementDiff);
 
 				// Draw an edge between the new node and already placed ones if
 				// their distance is below the neighborhood radius.

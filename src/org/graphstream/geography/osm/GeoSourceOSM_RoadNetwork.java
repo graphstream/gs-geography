@@ -170,6 +170,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 						this.addedEdgeIds.add(edgeId);
 					}
 
+					replicateEdgeAttributes(edgeId, elementDiff); // XXX
+					
 					idFrom = idTo;
 				}
 			}

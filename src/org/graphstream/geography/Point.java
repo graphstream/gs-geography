@@ -105,6 +105,25 @@ public class Point extends ElementShape {
 		return this.id;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		
+		if(o == this)
+			return true;
+		
+		ElementShape oShape = (ElementShape)o;
+		
+		if(oShape.getType() != Type.POINT)
+			return false;
+		
+		Point pShape = (Point)oShape;
+		
+		if(!this.position.equals(pShape.getPosition()))
+			return false;
+		
+		return true;
+	}
+	
 	/**
 	 * public List<SpatialIndexPoint> toSpatialIndexPoints() {
 	 * 

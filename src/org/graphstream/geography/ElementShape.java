@@ -65,15 +65,6 @@ public abstract class ElementShape {
 	}
 
 	/**
-	 * 
-	 * @return
-	 */
-	public ElementShape diff() {
-
-		return this; // TODO TODO TODO
-	}
-
-	/**
 	 * Give the ID of the element associated with this shape.
 	 * 
 	 * @return The ID of the associated element.
@@ -81,6 +72,16 @@ public abstract class ElementShape {
 	public String getElementId() {
 
 		return this.element.getId();
+	}
+
+	/**
+	 * Give the geometric type of the shape.
+	 * 
+	 * @return The geometric type.
+	 */
+	public Type getType() {
+
+		return this.type;
 	}
 
 	/**

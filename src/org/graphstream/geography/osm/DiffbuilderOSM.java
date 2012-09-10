@@ -74,83 +74,38 @@ public class DiffbuilderOSM extends DiffBuilder {
 		nu.xom.Elements tags = xmlElement.getChildElements("tag");
 
 		AttributeFilter filter = element.getDescriptorUsed().getAttributeFilter();
-		
+
 		for(int i = 0, l = tags.size(); i < l; ++i) {
-			
+
 			String key = tags.get(i).getAttributeValue("k");
-			
+
 			if(filter.isKept(key))
 				currentAttributes.put(key, tags.get(i).getAttributeValue("v"));
 		}
-		
-		// If there is no previous diff of the element, copy all the attributes.
+
+		// If there is no previous diff, create a "base" diff.
 
 		if(previousDiff == null) {
 
 			nextDiff = new ElementDiff(element, true);
 
+			// Copy all attributes.
+			
 			for(Entry<String, Object> entry : currentAttributes.entrySet())
 				nextDiff.setChangedAttribute(entry.getKey(), entry.getValue());
 
-			ElementShape.Type type = this.source.getAggregator().getType(o);
-
-			ElementShape shape = null;
-
-			if(type == Type.POINT) {
-
-				Point point = new Point(element);
-
-				Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(element.getId());
-
-				point.setPosition(coord.x, coord.y);
-
-				shape = point;
-			}
-			else if(type == Type.LINE) {
-
-				Line line = new Line(element);
-
-				// Shape the line.
-
-				nu.xom.Elements lineNodes = xmlElement.getChildElements("nd");
-
-				/*
-				 * if(this.onlyLineEndPointsConsidered) { addPointToLine(line,
-				 * lineNodes, 0); addPointToLine(line, lineNodes,
-				 * lineNodes.size() - 1); } else
-				 */// TODO
-				for(int i = 0, l = lineNodes.size(); i < l; ++i)
-					addPointToLine(line, lineNodes, i);
-
-				shape = line;
-			}
-			else if(type == Type.POLYGON) {
-
-				Polygon polygon = new Polygon(element);
-
-				// Shape the polygon. We can use addPointToLine(...) because a
-				// polygon
-				// extends a line. The last node is not added as a point as it
-				// is the
-				// same as the first node.
-
-				nu.xom.Elements polygonNodes = xmlElement.getChildElements("nd");
-
-				for(int i = 0, l = polygonNodes.size() - 1; i < l; ++i)
-					addPointToLine(polygon, polygonNodes, i);
-
-				shape = polygon;
-			}
-
+			// Copy the shape.
+			
+			ElementShape shape = baseShape(element, o);
 			nextDiff.setShape(shape);
 		}
 
-		//
+		// Otherwise, only copy the changes.
 
 		else {
 
 			nextDiff = new ElementDiff(element);
-			
+
 			ElementView elementAtPreviousDate = element.getElementViewAtDate(previousDate);
 
 			for(Entry<String, Object> entry : elementAtPreviousDate.getAttributes().entrySet())
@@ -165,10 +120,78 @@ public class DiffbuilderOSM extends DiffBuilder {
 				if(elementAtPreviousDate.getAttributes().containsKey(entry.getKey()) && !elementAtPreviousDate.getAttributes().get(entry.getKey()).equals(entry.getValue()))
 					nextDiff.setChangedAttribute(entry.getKey(), entry.getValue());
 
-			nextDiff.setShape(previousDiff.getShape());
+			// Only copy the shape if it has changed.
+			
+			ElementShape newShape = diffShape(element, elementAtPreviousDate, o);
+			nextDiff.setShape(newShape);
 		}
 
 		return nextDiff;
+	}
+
+	protected ElementShape baseShape(Element element, Object o) {
+	
+		// Cast the object to a XOM element;
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+		
+		// Determine the shape type of the element.
+		
+		ElementShape.Type type = this.source.getAggregator().getType(o);
+		
+		// Instantiate a new shape.
+		
+		if(type == Type.POINT) {
+
+			Point point = new Point(element);
+
+			Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(element.getId());
+
+			point.setPosition(coord.x, coord.y);
+
+			return point;
+		}
+		else if(type == Type.LINE) {
+
+			Line line = new Line(element);
+
+			// Shape the line.
+
+			nu.xom.Elements lineNodes = xmlElement.getChildElements("nd");
+
+			/*
+			 * if(this.onlyLineEndPointsConsidered) { addPointToLine(line,
+			 * lineNodes, 0); addPointToLine(line, lineNodes,
+			 * lineNodes.size() - 1); } else
+			 */// TODO
+			for(int i = 0, l = lineNodes.size(); i < l; ++i)
+				addPointToLine(line, lineNodes, i);
+
+			return line;
+		}
+		else if(type == Type.POLYGON) {
+
+			Polygon polygon = new Polygon(element);
+
+			nu.xom.Elements polygonNodes = xmlElement.getChildElements("nd");
+
+			for(int i = 0, l = polygonNodes.size() - 1; i < l; ++i)
+				addPointToLine(polygon, polygonNodes, i);
+
+			return polygon;
+		}
+		
+		return null;
+	}
+	
+	protected ElementShape diffShape(Element element, ElementView elementAtPreviousDate, Object o) {
+
+		ElementShape newShape = baseShape(element, o);
+		
+		if(!newShape.equals(elementAtPreviousDate.getShape())) // TODO acc shape in view
+			return newShape;
+		
+		return null;
 	}
 
 	/**

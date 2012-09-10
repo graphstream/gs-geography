@@ -103,6 +103,26 @@ public class Line extends ElementShape {
 		};
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		
+		if(o == this)
+			return true;
+		
+		ElementShape oShape = (ElementShape)o;
+		
+		if(oShape.getType() != Type.LINE)
+			return false;
+
+		Line lShape = (Line)oShape;
+		
+		for(int i = 0, l = lShape.getPoints().size(); i < l; ++i)
+			if(!lShape.getPoints().get(i).equals(points.get(i)))
+				return false;
+		
+		return true;
+	}
+	
 	/*
 	 * @Override public List<SpatialIndexPoint> toSpatialIndexPoints() {
 	 * 

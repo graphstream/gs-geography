@@ -38,7 +38,6 @@ import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.ElementShape;
 import org.graphstream.geography.ElementDiff;
-import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.Point;

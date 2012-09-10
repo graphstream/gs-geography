@@ -84,4 +84,24 @@ public class Polygon extends Line {
 		return sum;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		
+		if(o == this)
+			return true;
+		
+		ElementShape oShape = (ElementShape)o;
+		
+		if(oShape.getType() != Type.POLYGON)
+			return false;
+
+		Polygon pShape = (Polygon)oShape;
+		
+		for(int i = 0, l = pShape.getPoints().size(); i < l; ++i)
+			if(!pShape.getPoints().get(i).equals(points.get(i)))
+				return false;
+		
+		return true;
+	}
+	
 }

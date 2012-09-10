@@ -92,7 +92,7 @@ public class AggregatorOSM extends Aggregator {
 	}
 
 	@Override
-	protected void traverse(FileDescriptor fileDescriptor, boolean onlyReadId) {
+	protected void traverse(FileDescriptor fileDescriptor) {
 
 		nu.xom.Elements xmlElements = this.xmlRoot.getChildElements();
 
@@ -105,7 +105,7 @@ public class AggregatorOSM extends Aggregator {
 
 					Integer date = this.source.getTemporalLocator().date(xmlElement);
 
-					aggregate(xmlElement, date, descriptor, onlyReadId);
+					aggregate(xmlElement, date, descriptor);
 				}
 		}
 	}

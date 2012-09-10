@@ -87,7 +87,7 @@ public class AggregatorSHP extends Aggregator {
 	}
 
 	@Override
-	protected void traverse(FileDescriptor fileDescriptor, boolean onlyReadId) {
+	protected void traverse(FileDescriptor fileDescriptor) {
 
 		while(this.iterator.hasNext()) {
 
@@ -98,7 +98,7 @@ public class AggregatorSHP extends Aggregator {
 					
 					Integer date = this.source.getTemporalLocator().date(feature);
 					
-					aggregate(feature, date, descriptor, onlyReadId);
+					aggregate(feature, date, descriptor);
 				}
 		}
 	}

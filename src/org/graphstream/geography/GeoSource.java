@@ -39,6 +39,10 @@ import java.util.TreeSet;
 import org.graphstream.stream.SourceBase;
 
 /**
+ * The geo source is the main class used when importing geographic data.
+ * 
+ * It manages all of the different modules (aggregator, descriptors, diff
+ * builder, temporal locator) and stores matching elements from the input files.
  * 
  * @author Merwan Achibet
  */
@@ -65,12 +69,12 @@ public abstract class GeoSource extends SourceBase {
 	protected Aggregator aggregator;
 
 	/**
-	 * 
+	 * Differential version builder.
 	 */
 	protected DiffBuilder diffBuilder;
 
 	/**
-	 * 
+	 * Temporal locator that date elements.
 	 */
 	protected TemporalLocator temporalLocator;
 
@@ -80,18 +84,19 @@ public abstract class GeoSource extends SourceBase {
 	protected HashMap<String, Element> elements;
 
 	/**
-	 * 
+	 * List of dates.
 	 */
 	protected ArrayList<Integer> dates;
 
 	/**
-	 * 
+	 * The current time step when playing the events.
 	 */
 	protected int currentTimeStep;
 
 	/**
+	 * Instantiate a new geo source with a set of input files.
 	 * 
-	 * @param fileNames
+	 * @param fileNames The paths to the input files.
 	 */
 	public GeoSource(String... fileNames) {
 
@@ -118,7 +123,7 @@ public abstract class GeoSource extends SourceBase {
 	public void read() {
 
 		TreeSet<Integer> dates = new TreeSet<Integer>();
-		
+
 		/**
 		 * First pass: go through all files and instantiate the elements and
 		 * their states.
@@ -126,31 +131,33 @@ public abstract class GeoSource extends SourceBase {
 
 		// Aggregate the ID of the elements and the times at which they appear.
 
-		Aggregate aggregatedIds = this.aggregator.read(true);
+		Aggregate aggregate = this.aggregator.read();
 
-		for(Entry<String, HashMap<Integer, Object>> entry : aggregatedIds) {
+		for(Entry<String, HashMap<Integer, Object>> entry : aggregate) {
 
 			String id = entry.getKey();
 
 			Element element = this.elements.get(id);
-			
+
 			if(element == null) {
+				
 				element = new Element(id);
+				
 				this.elements.put(id, element);
+
+				ElementDescriptor descriptorUsed = aggregate.getDescriptorUsed(element.getId());
+				element.setDescriptorUsed(descriptorUsed);
 			}
 
-			ElementDescriptor descriptorUsed = aggregatedIds.getDescriptorUsed(element.getId());
-			element.setDescriptorUsed(descriptorUsed);
-			
 			for(Integer date : entry.getValue().keySet()) {
 
 				if(!element.hasStateAtDate(date))
 					element.addStateAtDate(null, date);
-				
+
 				dates.add(date);
 			}
 		}
-		
+
 		for(Integer date : dates)
 			this.dates.add(date);
 
@@ -159,18 +166,15 @@ public abstract class GeoSource extends SourceBase {
 		 * attribute and shape data.
 		 */
 
-		Aggregate aggregate = this.aggregator.read(false);
-
 		for(Element element : this.elements.values()) {
 
 			ElementDiff previousDiff = null;
 			Integer previousDate = null;
-			
+
 			for(Integer date : element.getStates().keySet()) {
 
 				Object currentObject = aggregate.get(element.getId(), date);
 
-				
 				ElementDiff currentDiff = this.diffBuilder.diff(element, previousDiff, previousDate, currentObject);
 
 				element.addStateAtDate(currentDiff, date);
@@ -263,28 +267,28 @@ public abstract class GeoSource extends SourceBase {
 			for(String key : diff.getRemovedAttributes())
 				sendNodeAttributeRemoved(this.id, edgeId, key);
 	}
-	
+
 	/**
 	 * 
 	 */
 	protected ArrayList<Element> getExpiredElements() {
-		
+
 		ArrayList<Element> expiredElements = new ArrayList<Element>();
-		
+
 		for(Element element : this.elements.values())
 			if(element.hasExpiredByDate(this.currentTimeStep))
 				expiredElements.add(element);
-		
+
 		return expiredElements;
 	}
-	
+
 	/**
 	 * 
 	 * @param date
 	 * @return
 	 */
 	public Integer dateToStep(Integer date) {
-		
+
 		return this.dates.indexOf(date);
 	}
 
@@ -294,7 +298,7 @@ public abstract class GeoSource extends SourceBase {
 	 * @return
 	 */
 	public Integer stepToDate(int step) {
-	
+
 		return this.dates.get(step);
 	}
 

@@ -89,7 +89,7 @@ public abstract class Aggregator {
 	 * @return An aggregate containing the relevant features from the input
 	 *         files.
 	 */
-	public Aggregate read(boolean onlyReadId) {
+	public Aggregate read() {
 
 		this.aggregate = new Aggregate();
 
@@ -101,7 +101,7 @@ public abstract class Aggregator {
 
 			open(fileDescriptor);
 
-			traverse(fileDescriptor, onlyReadId);
+			traverse(fileDescriptor);
 
 			close(fileDescriptor);
 		}
@@ -125,7 +125,7 @@ public abstract class Aggregator {
 	 * @param onlyReadId
 	 *            The flag to only aggregate IDs.
 	 */
-	abstract protected void traverse(FileDescriptor fileDescriptor, boolean onlyReadId);
+	abstract protected void traverse(FileDescriptor fileDescriptor);
 
 	/**
 	 * Close the input file described by a file descriptor.
@@ -139,13 +139,11 @@ public abstract class Aggregator {
 	 * @param o
 	 * @param onlyReadId
 	 */
-	protected void aggregate(Object o, Integer date, ElementDescriptor descriptor, boolean onlyReadId) {
+	protected void aggregate(Object o, Integer date, ElementDescriptor descriptor) {
 
 		String id = getFeatureId(o);
 
-		Object object = onlyReadId ? id : o;
-
-		this.aggregate.add(id, date, object);
+		this.aggregate.add(id, date, o);
 		
 		this.aggregate.setDescriptorUsed(id, descriptor);
 	}

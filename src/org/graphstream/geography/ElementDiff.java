@@ -96,6 +96,16 @@ public class ElementDiff {
 	}
 
 	/**
+	 * Give the element associated with this diff.
+	 * 
+	 * @return The associated element.
+	 */
+	public Element getElement() {
+
+		return this.element;
+	}
+
+	/**
 	 * Give the ID of the element associated with this diff.
 	 * 
 	 * @return The ID of the associated element.
@@ -223,7 +233,7 @@ public class ElementDiff {
 			for(String key : this.removedAttributes)
 				s += " " + key;
 		s += " }";
-		
+
 		s += " | " + this.shape;
 
 		return s;

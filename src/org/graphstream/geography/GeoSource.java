@@ -244,6 +244,25 @@ public abstract class GeoSource extends SourceBase {
 			for(String key : diff.getRemovedAttributes())
 				sendNodeAttributeRemoved(this.id, nodeId, key);
 	}
+	
+	/**
+	 * Replicate the attribute changes of an element represented as a node in
+	 * the output graph.
+	 * 
+	 * The node must have already been added to the graph prior to any call to
+	 * this function.
+	 * 
+	 * @param nodeId
+	 *            The ID of the node.
+	 * @param diff
+	 *            The element view representing the node.
+	 */
+	protected void replicateNodeAttributes(String nodeId, ElementView view) {
+
+		if(view.getAttributes() != null)
+			for(Entry<String, Object> keyValuePair : view.getAttributes().entrySet())
+				sendNodeAttributeChanged(this.id, nodeId, keyValuePair.getKey(), null, keyValuePair.getValue());
+	}
 
 	/**
 	 * Replicate the attribute changes of an element represented as an edge in
@@ -266,6 +285,25 @@ public abstract class GeoSource extends SourceBase {
 		if(diff.getRemovedAttributes() != null)
 			for(String key : diff.getRemovedAttributes())
 				sendNodeAttributeRemoved(this.id, edgeId, key);
+	}
+	
+	/**
+	 * Replicate the attribute changes of an element represented as an edge in
+	 * the output graph.
+	 * 
+	 * The edge must have already been added to the graph prior to any call to
+	 * this function.
+	 * 
+	 * @param edgeId
+	 *            The ID of the edge.
+	 * @param view
+	 *            The element view representing the edge.
+	 */
+	protected void replicateEdgeAttributes(String edgeId, ElementView view) {
+
+		if(view.getAttributes() != null)
+			for(Entry<String, Object> keyValuePair : view.getAttributes().entrySet())
+				sendNodeAttributeChanged(this.id, edgeId, keyValuePair.getKey(), null, keyValuePair.getValue());
 	}
 
 	/**

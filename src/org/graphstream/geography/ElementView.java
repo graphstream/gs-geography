@@ -48,17 +48,22 @@ public class ElementView {
 	/**
 	 * The ID of the element.
 	 */
-	public String id;
+	protected String id;
 
 	/**
 	 * The attributes of the element.
 	 */
-	public HashMap<String, Object> attributes;
+	protected HashMap<String, Object> attributes;
 
 	/**
 	 * The shape of the element.
 	 */
-	public ElementShape shape;
+	protected ElementShape shape;
+
+	/**
+	 * The category of the element.
+	 */
+	protected String category;
 
 	/**
 	 * Instantiate a new element view.
@@ -71,6 +76,16 @@ public class ElementView {
 		this.id = id;
 
 		this.attributes = new HashMap<String, Object>();
+	}
+
+	/**
+	 * Give the ID of the element.
+	 * 
+	 * @return The element ID.
+	 */
+	public String getId() {
+
+		return new String(this.id);
 	}
 
 	/**
@@ -98,6 +113,18 @@ public class ElementView {
 	}
 
 	/**
+	 * Give the value of the attribute with the given key.
+	 * 
+	 * @param key
+	 *            The attribute key.
+	 * @return The attribute value.
+	 */
+	public Object getAttribute(String key) {
+
+		return this.attributes.get(key);
+	}
+
+	/**
 	 * Give the attributes of the element.
 	 * 
 	 * @return The attributes.
@@ -117,4 +144,24 @@ public class ElementView {
 		return this.shape;
 	}
 
+	/**
+	 * Set the category of the element.
+	 * 
+	 * @param category The element category.
+	 */
+	public void setCategory(String category) {
+		
+		this.category = category;
+	}
+	
+	/**
+	 * Give the category of the element (given by the descriptor that matched
+	 * it).
+	 * 
+	 * @return The element category.
+	 */
+	public String getCategory() {
+
+		return new String(this.category);
+	}
 }

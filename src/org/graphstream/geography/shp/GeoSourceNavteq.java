@@ -38,11 +38,15 @@ import java.util.Map.Entry;
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.ElementDescriptor;
+import org.graphstream.geography.ElementDiff;
 import org.graphstream.geography.ElementShape;
 import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
+import org.graphstream.geography.LinePoint;
 import org.graphstream.geography.Point;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * This geographical source implementation produces a road network from Navteq
@@ -81,14 +85,16 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	/**
 	 * Instantiate a new Navteq source producing a road network.
 	 * 
-	 * @param TODO
+	 * @param fileNames
+	 *            A set of paths to the input files. The first file must contain
+	 *            the z-indexes and the second file must contain the roads.
 	 */
 	public GeoSourceNavteq(String... fileNames) {
 		super(fileNames);
-		
+
 		FileDescriptor zFileDescriptor = new FileDescriptor(fileNames[0]);
 		addFileDescriptor(zFileDescriptor);
-		
+
 		FileDescriptor roadFileDescriptor = new FileDescriptor(fileNames[1]);
 		addFileDescriptor(roadFileDescriptor);
 
@@ -105,9 +111,9 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 		// We are only interested in intersection points.
 
 		this.zDescriptor = new ElementDescriptor(this, "Z", this.zAttributeFilter);
-		
+
 		this.zDescriptor.mustHave("INTRSECT", "Y");
-		
+
 		this.zDescriptor.sendElementsToSpatialIndex();
 
 		zFileDescriptor.addDescriptor(this.zDescriptor);
@@ -177,25 +183,32 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		this.addedNodeIds = new ArrayList<String>();
 
-		ArrayList<ElementView> allElements = getElementViewsAtStep(0);
+		ArrayList<ElementView> roads = getElementViewsAtStep(0);
 
-		for(ElementView element : allElements) {
+		for(ElementView road : roads) {
 
-			Line line = (Line)element.getShape();
+			// Only consider the road elements and not the z-index points.
+
+			if(!road.getCategory().equals("ROAD")) // TODO
+				continue;
+
+			Line line = (Line)road.getShape();
 
 			// Add the two end points to the graph if necessary.
 
-			Point[] ends = line.getEndPoints();
+			LinePoint[] ends = line.getEndPoints();
 
-			String idNode1 = addNode(ends[0], line);
-			String idNode2 = addNode(ends[1], line);
+			String idNode1 = addNode(ends[0], line, road);
+			String idNode2 = addNode(ends[1], line, road);
 
 			// Draw an edge between the two points.
 
 			if(idNode1 != null && idNode2 != null)
-				sendEdgeAdded(this.id, line.id, idNode1, idNode2, false);
+				sendEdgeAdded(this.id, road.getId(), idNode1, idNode2, false);
 
 			// Bind the attributes
+
+			replicateEdgeAttributes(road.getId(), road);
 
 		}
 	}
@@ -214,35 +227,43 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	 *            The line containing the intersection.
 	 * @return The ID of the point used as a graph node.
 	 */
-	protected String addNode(Point point, Line line) {
+	protected String addNode(LinePoint point, Line line, ElementView road) {
 
 		// Retrieve the Z-level points at the same position as the road point.
 
 		ArrayList<Element> zPoints = this.index.getElementsAt(point.getPosition().x, point.getPosition().y);
 
-		// Among them, find the Z-level point with the same link ID as the road.
+		// Retrieve the views of these z points at the only time step that we
+		// consider.
 
-		Point lineZPoint = null;
+		ArrayList<ElementView> zPointViews = new ArrayList<ElementView>();
 
 		for(Element zPoint : zPoints)
-			if(zPoint.getChangedAttribute("LINK_ID").equals(line.getChangedAttribute("LINK_ID")))
-				lineZPoint = (Point)zPoint;
+			zPointViews.add(getElementViewAtStep(zPoint.getId(), 0));
 
-		if(lineZPoint == null)
+		// Among them, find the Z-level point with the same link ID as the road.
+
+		ElementView goodZPointView = null;
+
+		for(ElementView zPointView : zPointViews)
+			if(zPointView.getAttribute("LINK_ID").equals(road.getAttribute("LINK_ID")))
+				goodZPointView = zPointView;
+
+		if(goodZPointView == null)
 			return null;
 
 		// Get the Z level of the Z-level point.
 
-		Object zLevel = lineZPoint.getChangedAttribute("Z_LEVEL");
+		Object zLevel = goodZPointView.getAttribute("Z_LEVEL");
 
 		// Check if a point at the same position and with the same Z level is
 		// already in the output graph.
 
-		Point alreadyHerePoint = null;
+		ElementView alreadyHerePoint = null;
 
-		for(Element zPoint : zPoints)
-			if(zPoint.getChangedAttribute("Z_LEVEL").equals(zLevel) && this.addedNodeIds.contains(zPoint.id)) {
-				alreadyHerePoint = (Point)zPoint;
+		for(ElementView zPointView : zPointViews)
+			if(zPointView.getAttribute("Z_LEVEL").equals(zLevel) && this.addedNodeIds.contains(zPointView.getId())) {
+				alreadyHerePoint = zPointView;
 				break;
 			}
 
@@ -250,27 +271,28 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		if(alreadyHerePoint == null) {
 
-			alreadyHerePoint = lineZPoint;
+			alreadyHerePoint = goodZPointView;
 
-			sendNodeAdded(this.id, alreadyHerePoint.id);
+			sendNodeAdded(this.id, alreadyHerePoint.getId());
 
-			this.addedNodeIds.add(alreadyHerePoint.id);
+			this.addedNodeIds.add(alreadyHerePoint.getId());
 
 			// Place the new node at an appropriate position.
 
-			sendNodeAttributeAdded(this.id, alreadyHerePoint.id, "x", alreadyHerePoint.getPosition().x);
-			sendNodeAttributeAdded(this.id, alreadyHerePoint.id, "y", alreadyHerePoint.getPosition().y);
+			Coordinate pos = ((Point)alreadyHerePoint.getShape()).getPosition();
+			sendNodeAttributeAdded(this.id, alreadyHerePoint.getId(), "x", pos.x);
+			sendNodeAttributeAdded(this.id, alreadyHerePoint.getId(), "y", pos.y);
 
 			// Bind the attributes.
 
-			HashMap<String, Object> attributes = alreadyHerePoint.getChangedAttributes();
+			HashMap<String, Object> attributes = alreadyHerePoint.getAttributes();
 
 			if(attributes != null)
 				for(Entry<String, Object> entry : attributes.entrySet())
-					sendNodeAttributeAdded(this.id, alreadyHerePoint.id, entry.getKey(), entry.getValue());
+					sendNodeAttributeAdded(this.id, alreadyHerePoint.getId(), entry.getKey(), entry.getValue());
 		}
 
-		return alreadyHerePoint.id;
+		return alreadyHerePoint.getId();
 	}
 
 }

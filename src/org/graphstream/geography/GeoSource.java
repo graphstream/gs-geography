@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import org.graphstream.geography.index.SpatialIndex;
+import org.graphstream.geography.index.SpatialIndexPoint;
 import org.graphstream.stream.SourceBase;
 
 /**
@@ -84,6 +86,11 @@ public abstract class GeoSource extends SourceBase {
 	protected HashMap<String, Element> elements;
 
 	/**
+	 * 
+	 */
+	protected SpatialIndex index;
+	
+	/**
 	 * List of dates.
 	 */
 	protected ArrayList<Integer> dates;
@@ -117,6 +124,15 @@ public abstract class GeoSource extends SourceBase {
 		this.currentTimeStep = 0;
 	}
 
+	/**
+	 * Prepare the spatial index.
+	 */
+	public void prepareSpatialIndex() {
+
+		if(this.index == null)
+			this.index = new SpatialIndex();
+	}
+	
 	/**
 	 * 
 	 */
@@ -181,6 +197,12 @@ public abstract class GeoSource extends SourceBase {
 
 				previousDiff = currentDiff;
 				previousDate = date;
+				
+				// Reference the element in the spatial index if necesary.
+
+				if(this.index != null && aggregate.descriptorsUsed.get(currentDiff.getElementId()).areElementsSentToSpatialIndex())
+					for(SpatialIndexPoint p : currentDiff.getShape().toSpatialIndexPoints())
+						this.index.addPoint(p);
 			}
 		}
 	}

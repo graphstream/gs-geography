@@ -261,13 +261,4 @@ public class Element {
 		return s;
 	}
 
-	// TODO
-	/**
-	 * Give special points that spatially represent the shape of the element and
-	 * will be stored in a spatial index.
-	 * 
-	 * @return A list of spatial references to the shape of the element.
-	 */
-	// public abstract List<SpatialIndexPoint> toSpatialIndexPoints();
-
 }

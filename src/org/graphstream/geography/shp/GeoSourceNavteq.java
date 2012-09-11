@@ -38,7 +38,6 @@ import java.util.Map.Entry;
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.Element;
 import org.graphstream.geography.ElementDescriptor;
-import org.graphstream.geography.ElementDiff;
 import org.graphstream.geography.ElementShape;
 import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
@@ -189,7 +188,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 			// Only consider the road elements and not the z-index points.
 
-			if(!road.getCategory().equals("ROAD")) // TODO
+			if(!road.getCategory().equals("ROAD"))
 				continue;
 
 			Line line = (Line)road.getShape();

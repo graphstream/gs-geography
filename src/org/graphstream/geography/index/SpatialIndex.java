@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.graphstream.geography.Element;
+import org.graphstream.geography.ElementShape;
 import org.miv.pherd.Particle;
 import org.miv.pherd.ParticleBox;
 import org.miv.pherd.ntree.Anchor;
@@ -98,14 +99,14 @@ public class SpatialIndex {
 	}
 
 	/**
-	 * Add point references to an element into the spatial index.
+	 * Add references to the points of an element into the spatial index.
 	 * 
-	 * @param element
-	 *            The geographical element to reference.
+	 * @param shape
+	 *            The element shape to insert.
 	 */
-	public void add(Element element) {
+	public void addElementPoints(ElementShape shape) {
 
-		List<SpatialIndexPoint> points = element.toSpatialIndexPoints();
+		List<SpatialIndexPoint> points = shape.toSpatialIndexPoints();
 
 		for(SpatialIndexPoint point : points) {
 
@@ -114,6 +115,20 @@ public class SpatialIndex {
 			++this.modificationsSinceReorganization;
 		}
 
+		checkForReorganization();
+	}
+
+	/**
+	 * Add a point to the spatial index.
+	 * 
+	 * @param point
+	 *            The point.
+	 */
+	public void addPoint(SpatialIndexPoint point) {
+
+		this.box.addParticle(point);
+
+		++this.modificationsSinceReorganization;
 		checkForReorganization();
 	}
 
@@ -141,8 +156,16 @@ public class SpatialIndex {
 	 */
 	protected void checkForReorganization() {
 
-		if(this.modificationsSinceReorganization > this.stepsbetweenReorganizations)
+		if(this.modificationsSinceReorganization > this.stepsbetweenReorganizations) {
+
+			// Reorganize the quadtree.
+
 			this.box.step();
+
+			// Reset the counter.
+
+			this.modificationsSinceReorganization = 0;
+		}
 	}
 
 	/**
@@ -184,9 +207,9 @@ public class SpatialIndex {
 	public ArrayList<Element> getElementsAt(double x, double y) {
 
 		// Start the descent from the root of the quadtree.
-		
+
 		Cell root = this.box.getNTree().getRootCell();
-		
+
 		return searchInCell(root, x, y);
 	}
 

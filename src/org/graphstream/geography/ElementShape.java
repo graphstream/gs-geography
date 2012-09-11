@@ -31,6 +31,10 @@
 
 package org.graphstream.geography;
 
+import java.util.List;
+
+import org.graphstream.geography.index.SpatialIndexPoint;
+
 /**
  * ElementShape represents the shape and position of a geographic element at a
  * given time.
@@ -62,6 +66,16 @@ public abstract class ElementShape {
 	public ElementShape(Element element) {
 
 		this.element = element;
+	}
+
+	/**
+	 * Give the element associated with the shape.
+	 * 
+	 * @return The associated element.
+	 */
+	public Element getElement() {
+
+		return this.element;
 	}
 
 	/**
@@ -134,5 +148,13 @@ public abstract class ElementShape {
 
 		return this.type == Type.POLYGON;
 	}
+
+	/**
+	 * Give special points that spatially represent the shape of the element and
+	 * will be stored in a spatial index.
+	 * 
+	 * @return A list of spatial references to the shape of the element.
+	 */
+	public abstract List<SpatialIndexPoint> toSpatialIndexPoints();
 
 }

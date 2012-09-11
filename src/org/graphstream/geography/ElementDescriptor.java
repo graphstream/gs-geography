@@ -157,20 +157,18 @@ public class ElementDescriptor {
 
 		this.toSpatialIndex = true;
 
-		// TODO this.source.prepareSpatialIndex();
+		this.source.prepareSpatialIndex();
 	}
 
 	/**
-	 * Check if matching elements are referenced in a spatial index.
 	 * 
-	 * @return True if matching elements are spatially referenced, false
-	 *         otherwise.
+	 * @return
 	 */
 	public boolean areElementsSentToSpatialIndex() {
-
+		
 		return this.toSpatialIndex;
 	}
-
+	
 	/**
 	 * Set the descriptor to ignore the middle points of lines.
 	 */

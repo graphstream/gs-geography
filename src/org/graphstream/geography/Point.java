@@ -31,6 +31,11 @@
 
 package org.graphstream.geography;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.graphstream.geography.index.SpatialIndexPoint;
+
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
@@ -55,14 +60,14 @@ public class Point extends ElementShape {
 
 	public Point(Element element) {
 		super(element);
-		
+
 		this.type = Type.POINT;
 		this.position = new Coordinate();
 	}
 
 	public Point(Element element, String id) {
 		this(element);
-		
+
 		this.id = id;
 	}
 
@@ -101,59 +106,57 @@ public class Point extends ElementShape {
 	}
 
 	public String getId() {
-	
+
 		return this.id;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
-		
+
 		// Check if this is the same instance.
-		
+
 		if(o == this)
 			return true;
-		
+
 		// Check if the other shape is a point too.
-		
+
 		ElementShape oShape = (ElementShape)o;
-		
+
 		if(oShape.getType() != Type.POINT)
 			return false;
-		
+
 		// Check if the other shape is bound to the same element.
-		
+
 		if(!oShape.getElementId().equals(this.element.getId()))
 			return false;
-		
+
 		// Check if the other shape is at the same position.
-		
+
 		Point pShape = (Point)oShape;
-		
+
 		if(!this.position.equals(pShape.getPosition()))
 			return false;
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
-	
+
 		String s = new String();
-		
+
 		s += "Point (" + this.position.x + "," + this.position.y + ")";
-		
+
 		return s;
 	}
-	
-	/**
-	 * public List<SpatialIndexPoint> toSpatialIndexPoints() {
-	 * 
-	 * List<SpatialIndexPoint> spatialIndexPoints = new
-	 * ArrayList<SpatialIndexPoint>();
-	 * 
-	 * spatialIndexPoints.add(new SpatialIndexPoint(this, this.getId(),
-	 * this.position.x, this.position.y));
-	 * 
-	 * return spatialIndexPoints; }
-	 */
+
+	public List<SpatialIndexPoint> toSpatialIndexPoints() {
+
+		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
+
+		spatialIndexPoints.add(new SpatialIndexPoint(this, this.getId(), this.position.x, this.position.y));
+
+		return spatialIndexPoints;
+	}
+
 }

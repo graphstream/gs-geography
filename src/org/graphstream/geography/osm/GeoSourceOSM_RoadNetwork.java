@@ -162,7 +162,6 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 					}
 
 					replicateEdgeAttributes(edgeId, elementDiff);
-					sendEdgeAttributeAdded(this.id, edgeId, "label", elementDiff.getChangedAttributes().get("highway"));
 				}
 			}
 
@@ -184,9 +183,6 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 					String edgeId = line.getElementId() + "_" + from.getId() + "_" + to.getId();
 
 					replicateEdgeAttributes(edgeId, elementDiff);
-
-					if(elementDiff.getChangedAttributes() != null)
-						sendEdgeAttributeAdded(this.id, edgeId, "label", elementDiff.getChangedAttributes().get("highway"));
 				}
 			}
 		}

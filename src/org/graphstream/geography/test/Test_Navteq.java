@@ -45,20 +45,20 @@ public class Test_Navteq {
 
 	public static void main(String[] args) {
 
-		Graph graph = new MultiGraph("road network"); // XXX Exception raised when using a SingleGraph
+		// XXX Exception raised when using a SingleGraph. Weird.
+		Graph graph = new MultiGraph("road network");
 		graph.addAttribute("stylesheet", Test_Navteq.style);
-		
+
 		GeoSourceNavteq src = new GeoSourceNavteq("/home/merwan/navteq/Streets_lehavre.shp", "/home/merwan/navteq/Zlevels_lehavre.shp");
 		src.addSink(graph);
 
 		src.read();
-		
+
 		src.end();
 
 		graph.display(false);
 	}
 
-	private static final String style = 
-			"node { size: 3px; text-visibility-mode: hidden; }";
+	private static final String style = "node { size: 3px; text-visibility-mode: hidden; }";
 
 }

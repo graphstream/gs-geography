@@ -32,6 +32,9 @@
 package org.graphstream.geography;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.graphstream.geography.index.SpatialIndexPoint;
 
 /**
  * A Line.
@@ -155,33 +158,33 @@ public class Line extends ElementShape {
 
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
-	
+
 		String s = new String();
-		
+
 		s += "Line ";
-		
+
 		for(LinePoint point : this.points)
 			s += "(" + point.getPosition().x + "," + point.getPosition().y + ")-";
-		
+
 		return s;
 	}
 
-	/*
-	 * @Override public List<SpatialIndexPoint> toSpatialIndexPoints() {
-	 * 
-	 * List<SpatialIndexPoint> spatialIndexPoints = new
-	 * ArrayList<SpatialIndexPoint>();
-	 * 
-	 * for(Point point : this.points) {
-	 * 
-	 * SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this,
-	 * point.getId(), point.getPosition().x, point.getPosition().y);
-	 * 
-	 * spatialIndexPoints.add(spatialIndexPoint); }
-	 * 
-	 * return spatialIndexPoints; }
-	 */
+	@Override
+	public List<SpatialIndexPoint> toSpatialIndexPoints() {
+
+		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
+
+		for(LinePoint point : this.points) {
+
+			SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this, point.getId(), point.getPosition().x, point.getPosition().y);
+
+			spatialIndexPoints.add(spatialIndexPoint);
+		}
+
+		return spatialIndexPoints;
+	}
+
 }

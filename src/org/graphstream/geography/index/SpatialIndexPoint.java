@@ -1,6 +1,7 @@
 package org.graphstream.geography.index;
 
 import org.graphstream.geography.Element;
+import org.graphstream.geography.ElementShape;
 import org.miv.pherd.Particle;
 
 /**
@@ -30,10 +31,11 @@ public class SpatialIndexPoint extends Particle {
 	 * @param y
 	 *            The y-axis coordinate of the point.
 	 */
-	public SpatialIndexPoint(Element element, String id, double x, double y) {
+	public SpatialIndexPoint(ElementShape shape, String id, double x, double y) {
 		super(id, x, y, 0);
 
-		this.referencedElement = element;
+		if(shape != null)
+			this.referencedElement = shape.getElement();
 	}
 
 	/**

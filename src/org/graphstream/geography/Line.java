@@ -73,9 +73,9 @@ public class Line extends ElementShape {
 	 */
 	public void addPoint(String id, double x, double y) {
 
-		LinePoint point = new LinePoint();
+		LinePoint point = new LinePoint(x, y);
 
-		point.setPosition(x, y);
+		point.setId(id);
 
 		this.points.add(point);
 	}

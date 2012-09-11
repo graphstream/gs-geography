@@ -38,22 +38,82 @@ import com.vividsolutions.jts.geom.Coordinate;
  */
 public class LinePoint {
 
+	/**
+	 * Coordinates of the point.
+	 */
 	protected Coordinate position;
-	
+
+	/**
+	 * Optional ID.
+	 * 
+	 * Can be useful when a line element must refer to point elements.
+	 */
+	protected String id;
+
+	/**
+	 * Instantiate a new point at coordinates (0,0).
+	 */
 	public LinePoint() {
-		
+
 		this.position = new Coordinate(0, 0);
 	}
-	
+
+	/**
+	 * Instantiate a new point at coordinates (x,y).
+	 * 
+	 * @param x
+	 *            The x-axis coordinate.
+	 * @param y
+	 *            The y-axis coordinate.
+	 */
+	public LinePoint(double x, double y) {
+
+		this.position = new Coordinate(x, y);
+	}
+
+	/**
+	 * Set the position of the point to the coordinates (x,y).
+	 * 
+	 * @param x
+	 *            The x-axis coordinate.
+	 * @param y
+	 *            The y-axis coordinate.
+	 */
 	public void setPosition(double x, double y) {
-		
+
 		this.position.x = x;
 		this.position.y = y;
 	}
-	
+
+	/**
+	 * Give the coordinates of the point.
+	 * 
+	 * @return The coordinates.
+	 */
 	public Coordinate getPosition() {
-		
+
 		return new Coordinate(this.position);
 	}
-	
+
+	/**
+	 * Associate an ID with the point.
+	 * 
+	 * @param id
+	 *            The ID.
+	 */
+	public void setId(String id) {
+
+		this.id = id;
+	}
+
+	/**
+	 * Give the ID associated with the point.
+	 * 
+	 * @return The ID.
+	 */
+	public String getId() {
+
+		return new String(this.id);
+	}
+
 }

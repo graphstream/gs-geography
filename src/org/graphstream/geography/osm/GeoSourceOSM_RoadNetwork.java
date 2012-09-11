@@ -40,6 +40,7 @@ import org.graphstream.geography.ElementShape;
 import org.graphstream.geography.ElementDiff;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
+import org.graphstream.geography.LinePoint;
 import org.graphstream.geography.Point;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -143,22 +144,22 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 				// Add each point shaping the road to the graph, as nodes.
 
-				ArrayList<Point> points = line.getPoints();
+				ArrayList<LinePoint> points = line.getPoints();
 
 				// Start with the first point of the line.
 
-				Point from = points.get(0);
+				LinePoint from = points.get(0);
 				String idFrom = from.getId();
-
+				
 				addNode(from);
 
 				for(int i = 1, l = points.size(); i < l; ++i) {
 
 					// Add the next point.
 
-					Point to = points.get(i);
+					LinePoint to = points.get(i);
 					String idTo = to.getId();
-
+					
 					addNode(to);
 
 					// Link it to the previous point.
@@ -170,17 +171,17 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 					}
 
 					replicateEdgeAttributes(edgeId, elementDiff); // XXX
-					
+
 					idFrom = idTo;
 				}
 			}
-			
+
 			// Update attributes and shape.
-			
+
 			// TODO
-			
+
 			// Remove elements that disappeared.
-			
+
 			// TODO
 		}
 
@@ -192,7 +193,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 * @param point
 	 *            The point to transfer to the graph.
 	 */
-	protected void addNode(Point point) {
+	protected void addNode(LinePoint point) {
 
 		String nodeId = point.getId();
 

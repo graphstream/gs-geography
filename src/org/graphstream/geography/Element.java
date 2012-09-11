@@ -120,7 +120,10 @@ public class Element {
 				for(Entry<String, Object> keyValue : changedAttributes.entrySet())
 					rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
 
-			rebuiltElement.shape = currentDiff.shape;
+			// Update the shape if it has changed.
+			
+			if(currentDiff.shape != null)
+				rebuiltElement.shape = currentDiff.shape;
 
 			// Return the rebuilt element if the appropriate date is reached.
 

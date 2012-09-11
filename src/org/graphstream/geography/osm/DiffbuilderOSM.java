@@ -90,12 +90,12 @@ public class DiffbuilderOSM extends DiffBuilder {
 			nextDiff = new ElementDiff(element, true);
 
 			// Copy all attributes.
-			
+
 			for(Entry<String, Object> entry : currentAttributes.entrySet())
 				nextDiff.setChangedAttribute(entry.getKey(), entry.getValue());
 
 			// Copy the shape.
-			
+
 			ElementShape shape = baseShape(element, o);
 			nextDiff.setShape(shape);
 		}
@@ -121,7 +121,7 @@ public class DiffbuilderOSM extends DiffBuilder {
 					nextDiff.setChangedAttribute(entry.getKey(), entry.getValue());
 
 			// Only copy the shape if it has changed.
-			
+
 			ElementShape newShape = diffShape(element, elementAtPreviousDate, o);
 			nextDiff.setShape(newShape);
 		}
@@ -130,17 +130,17 @@ public class DiffbuilderOSM extends DiffBuilder {
 	}
 
 	protected ElementShape baseShape(Element element, Object o) {
-	
+
 		// Cast the object to a XOM element;
 
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
-		
+
 		// Determine the shape type of the element.
-		
+
 		ElementShape.Type type = this.source.getAggregator().getType(o);
-		
+
 		// Instantiate a new shape.
-		
+
 		if(type == Type.POINT) {
 
 			Point point = new Point(element);
@@ -161,8 +161,8 @@ public class DiffbuilderOSM extends DiffBuilder {
 
 			/*
 			 * if(this.onlyLineEndPointsConsidered) { addPointToLine(line,
-			 * lineNodes, 0); addPointToLine(line, lineNodes,
-			 * lineNodes.size() - 1); } else
+			 * lineNodes, 0); addPointToLine(line, lineNodes, lineNodes.size() -
+			 * 1); } else
 			 */// TODO
 			for(int i = 0, l = lineNodes.size(); i < l; ++i)
 				addPointToLine(line, lineNodes, i);
@@ -180,16 +180,25 @@ public class DiffbuilderOSM extends DiffBuilder {
 
 			return polygon;
 		}
-		
+
 		return null;
 	}
-	
+
 	protected ElementShape diffShape(Element element, ElementView elementAtPreviousDate, Object o) {
 
+		// Build a complete shape from the state of the current geographic
+		// object.
+
 		ElementShape newShape = baseShape(element, o);
-		
-		if(!newShape.equals(elementAtPreviousDate.getShape())) // TODO acc shape in view
+
+		// Compare the current shape to the previous shape. If they are
+		// different, the new shape is returned.
+
+		if(!newShape.equals(elementAtPreviousDate.getShape())) // TODO acc shape
+																// in view
 			return newShape;
+
+		// If they are the same, return null.
 		
 		return null;
 	}

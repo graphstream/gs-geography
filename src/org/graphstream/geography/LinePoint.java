@@ -116,4 +116,22 @@ public class LinePoint {
 		return new String(this.id);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+
+		// Check if this is the same instance.
+
+		if(o == this)
+			return true;
+
+		// Check if the other shape has the same position.
+
+		LinePoint point = (LinePoint)o;
+
+		if(this.position.equals(point.getPosition()))
+			return true;
+
+		return false;
+	}
+	
 }

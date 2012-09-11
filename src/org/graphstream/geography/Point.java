@@ -135,6 +135,16 @@ public class Point extends ElementShape {
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+	
+		String s = new String();
+		
+		s += "Point (" + this.position.x + "," + this.position.y + ")";
+		
+		return s;
+	}
+	
 	/**
 	 * public List<SpatialIndexPoint> toSpatialIndexPoints() {
 	 * 

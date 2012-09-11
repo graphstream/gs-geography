@@ -103,6 +103,26 @@ public class Line extends ElementShape {
 		};
 	}
 
+	/**
+	 * Give all successive pairs of points that compose the line.
+	 * 
+	 * For example, if the line is A->B->C->D then this method will return
+	 * [[A,B][B,C][C,D]].
+	 * 
+	 * @return All pairs of successive points.
+	 */
+	public LinePoint[][] getPointPairs() {
+
+		LinePoint[][] pairs = new LinePoint[this.points.size() - 1][];
+
+		for(int i = 0, l = this.points.size() - 1; i < l; ++i)
+			pairs[i] = new LinePoint[]{
+					this.points.get(i), this.points.get(i + 1)
+			};
+
+		return pairs;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 
@@ -121,19 +141,32 @@ public class Line extends ElementShape {
 
 		if(!oShape.getElementId().equals(this.element.getId()))
 			return false;
-		
+
 		// Check if the other shape has the same points.
-		
+
 		Line lShape = (Line)oShape;
 
 		if(lShape.getPoints().size() != this.points.size())
 			return false;
-		
+
 		for(int i = 0, l = lShape.getPoints().size(); i < l; ++i)
 			if(!lShape.getPoints().get(i).equals(points.get(i)))
 				return false;
 
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+	
+		String s = new String();
+		
+		s += "Line ";
+		
+		for(LinePoint point : this.points)
+			s += "(" + point.getPosition().x + "," + point.getPosition().y + ")-";
+		
+		return s;
 	}
 
 	/*

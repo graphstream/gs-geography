@@ -223,6 +223,8 @@ public class ElementDiff {
 			for(String key : this.removedAttributes)
 				s += " " + key;
 		s += " }";
+		
+		s += " | " + this.shape;
 
 		return s;
 	}

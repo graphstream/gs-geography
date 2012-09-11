@@ -304,6 +304,25 @@ public abstract class GeoSource extends SourceBase {
 
 	/**
 	 * 
+	 * @param id
+	 * @param step
+	 * @return
+	 */
+	public ElementView getElementViewAtStep(String id, int step) {
+
+		Integer date = stepToDate(step);
+		
+		Element element = this.elements.get(id);
+		if(element == null)
+			return null;
+		
+		ElementView elementViewAtDate = element.getElementViewAtDate(date);
+
+		return elementViewAtDate;
+	}
+
+	/**
+	 * 
 	 * @param step
 	 * @return
 	 */

@@ -117,5 +117,18 @@ public class Polygon extends Line {
 
 		return true;
 	}
-
+	
+	@Override
+	public String toString() {
+	
+		String s = new String();
+		
+		s += "Polygon ";
+		
+		for(LinePoint point : this.points)
+			s += point.getPosition().x + "," + point.getPosition().y + ")-";
+		
+		return s;
+	}
+	
 }

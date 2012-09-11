@@ -36,18 +36,21 @@ import java.util.List;
 
 import org.graphstream.geography.AttributeFilter;
 import org.graphstream.geography.ElementDescriptor;
-import org.graphstream.geography.ElementShape;
 import org.graphstream.geography.ElementDiff;
+import org.graphstream.geography.ElementShape;
+import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
 import org.graphstream.geography.LinePoint;
-import org.graphstream.geography.Point;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * This geographical source implementation produces a road network from an
  * OpenStreetMap XML file.
+ * 
+ * TODO take the change of shapes of the road into account when dealing with
+ * several time steps.
  * 
  * @author Merwan Achibet
  */
@@ -136,53 +139,56 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 		for(ElementDiff elementDiff : elementDiffsAtStep) {
 
-			// If the diff is a base, insert the road.
+			// If the diff is a base, insert the road for the first time.
 
 			if(elementDiff.isBase()) {
 
 				Line line = (Line)elementDiff.getShape();
 
-				// Add each point shaping the road to the graph, as nodes.
+				LinePoint[][] pointPairs = line.getPointPairs();
 
-				ArrayList<LinePoint> points = line.getPoints();
+				for(int i = 0, l = pointPairs.length; i < l; ++i) {
 
-				// Start with the first point of the line.
+					LinePoint from = pointPairs[i][0];
+					LinePoint to = pointPairs[i][1];
 
-				LinePoint from = points.get(0);
-				String idFrom = from.getId();
-				
-				addNode(from);
-
-				for(int i = 1, l = points.size(); i < l; ++i) {
-
-					// Add the next point.
-
-					LinePoint to = points.get(i);
-					String idTo = to.getId();
-					
+					addNode(from);
 					addNode(to);
 
-					// Link it to the previous point.
-
-					String edgeId = line.getElementId() + "_" + idFrom + "_" + idTo;
-					if(!this.addedEdgeIds.contains(edgeId)) {
-						sendEdgeAdded(this.id, edgeId, idFrom, idTo, false);
+					String edgeId = line.getElementId() + "_" + from.getId() + "_" + to.getId();
+					if(!this.addedEdgeIds.contains(edgeId)) { // XXX why?
+						sendEdgeAdded(this.id, edgeId, from.getId(), to.getId(), false);
 						this.addedEdgeIds.add(edgeId);
 					}
 
-					replicateEdgeAttributes(edgeId, elementDiff); // XXX
-
-					idFrom = idTo;
+					replicateEdgeAttributes(edgeId, elementDiff);
+					sendEdgeAttributeAdded(this.id, edgeId, "label", elementDiff.getChangedAttributes().get("highway"));
 				}
 			}
 
-			// Update attributes and shape.
+			// Otherwise, update the element.
 
-			// TODO
+			else {
 
-			// Remove elements that disappeared.
+				ElementView elementAtStep = getElementViewAtStep(elementDiff.getElementId(), this.currentTimeStep);
 
-			// TODO
+				Line line = (Line)elementAtStep.getShape();
+
+				LinePoint[][] pointPairs = line.getPointPairs();
+
+				for(int i = 0, l = pointPairs.length; i < l; ++i) {
+
+					LinePoint from = pointPairs[i][0];
+					LinePoint to = pointPairs[i][1];
+
+					String edgeId = line.getElementId() + "_" + from.getId() + "_" + to.getId();
+
+					replicateEdgeAttributes(edgeId, elementDiff);
+
+					if(elementDiff.getChangedAttributes() != null)
+						sendEdgeAttributeAdded(this.id, edgeId, "label", elementDiff.getChangedAttributes().get("highway"));
+				}
+			}
 		}
 
 	}

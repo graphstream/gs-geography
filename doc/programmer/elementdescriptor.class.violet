@@ -23,7 +23,7 @@ AttributeFilter filter</string>
      <void property="text">
       <string>ElementDescriptor(GeoSource source, String category, AttributeFilter filter)
 .
-void mustBe(Element.Type type)
+void mustBe(Type type)
 void mustHave(String key)
 void mustHave(String key, Object value)
 .

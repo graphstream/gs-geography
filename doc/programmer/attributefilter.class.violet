@@ -16,7 +16,7 @@
     <void property="attributes">
      <void property="text">
       <string>ArrayList&lt;String&gt; attributes
-AttributeFilter.Mode mode</string>
+Mode mode</string>
      </void>
     </void>
     <void property="methods">

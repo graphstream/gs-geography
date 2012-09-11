@@ -80,7 +80,7 @@ public class ElementView {
 	 */
 	public String getId() {
 
-		return new String(this.element.getId());
+		return this.element.getId();
 	}
 
 	/**

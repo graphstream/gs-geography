@@ -44,7 +44,7 @@ import org.graphstream.geography.index.SpatialIndexPoint;
 public abstract class ElementShape {
 
 	public static enum Type {
-		POINT, LINE, POLYGON
+		POINT, LINE, POLYGON, UNSPECIFIED
 	};
 
 	/**

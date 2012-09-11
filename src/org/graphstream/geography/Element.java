@@ -96,7 +96,7 @@ public class Element {
 		// Go through each state in ascending order and rebuild the element with
 		// its differential states until the date is reached.
 
-		ElementView rebuiltElement = new ElementView(this.id);
+		ElementView rebuiltElement = new ElementView(this);
 
 		for(Entry<Integer, ElementDiff> dateElementPair : this.diffs.entrySet()) {
 

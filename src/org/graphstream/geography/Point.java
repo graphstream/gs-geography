@@ -53,11 +53,6 @@ public class Point extends ElementShape {
 	 */
 	protected Coordinate position;
 
-	/**
-	 * Optional ID.
-	 */
-	protected String id;
-
 	public Point(Element element) {
 		super(element);
 
@@ -67,8 +62,6 @@ public class Point extends ElementShape {
 
 	public Point(Element element, String id) {
 		this(element);
-
-		this.id = id;
 	}
 
 	/**
@@ -103,11 +96,6 @@ public class Point extends ElementShape {
 	public double getY() {
 
 		return this.position.y;
-	}
-
-	public String getId() {
-
-		return this.id;
 	}
 
 	@Override
@@ -154,7 +142,7 @@ public class Point extends ElementShape {
 
 		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
 
-		spatialIndexPoints.add(new SpatialIndexPoint(this, this.getId(), this.position.x, this.position.y));
+		spatialIndexPoints.add(new SpatialIndexPoint(this, this.getElementId()+Math.random(), this.position.x, this.position.y));
 
 		return spatialIndexPoints;
 	}

@@ -287,7 +287,7 @@ public abstract class Aggregator {
 		if(isPolygon(o))
 			return Type.POLYGON;
 
-		return null;
+		return Type.UNSPECIFIED;
 	}
 
 }

@@ -46,9 +46,9 @@ import java.util.HashMap;
 public class ElementView {
 
 	/**
-	 * The ID of the element.
+	 * The associated element.
 	 */
-	protected String id;
+	protected Element element;
 
 	/**
 	 * The attributes of the element.
@@ -61,19 +61,14 @@ public class ElementView {
 	protected ElementShape shape;
 
 	/**
-	 * The category of the element.
-	 */
-	protected String category;
-
-	/**
 	 * Instantiate a new element view.
 	 * 
 	 * @param id
 	 *            The ID of the element.
 	 */
-	public ElementView(String id) {
+	public ElementView(Element element) {
 
-		this.id = id;
+		this.element = element;
 
 		this.attributes = new HashMap<String, Object>();
 	}
@@ -85,7 +80,7 @@ public class ElementView {
 	 */
 	public String getId() {
 
-		return new String(this.id);
+		return new String(this.element.getId());
 	}
 
 	/**
@@ -143,16 +138,6 @@ public class ElementView {
 
 		return this.shape;
 	}
-
-	/**
-	 * Set the category of the element.
-	 * 
-	 * @param category The element category.
-	 */
-	public void setCategory(String category) {
-		
-		this.category = category;
-	}
 	
 	/**
 	 * Give the category of the element (given by the descriptor that matched
@@ -162,6 +147,6 @@ public class ElementView {
 	 */
 	public String getCategory() {
 
-		return new String(this.category);
+		return this.element.getCategory();
 	}
 }

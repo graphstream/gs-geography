@@ -111,6 +111,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		this.zDescriptor = new ElementDescriptor(this, "Z", this.zAttributeFilter);
 
+		this.zDescriptor.mustBe(ElementShape.Type.POINT);
 		this.zDescriptor.mustHave("INTRSECT", "Y");
 
 		this.zDescriptor.sendElementsToSpatialIndex();

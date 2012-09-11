@@ -130,6 +130,8 @@ public class ElementDescriptor {
 		this.source = source;
 		this.category = category;
 		this.filter = filter;
+		
+		this.mustBeType = ElementShape.Type.UNSPECIFIED;
 
 		this.toSpatialIndex = false;
 		this.onlyLineEndPointsConsidered = false;
@@ -240,7 +242,7 @@ public class ElementDescriptor {
 
 		// Check for an optional geometric type condition.
 
-		if(this.mustBeType != null && !aggregator.isOfType(o, this.mustBeType))
+		if(this.mustBeType != ElementShape.Type.UNSPECIFIED && !aggregator.isOfType(o, this.mustBeType))
 			return false;
 
 		// Check for optional attribute presence conditions.

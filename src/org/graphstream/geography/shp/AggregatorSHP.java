@@ -59,7 +59,7 @@ public class AggregatorSHP extends Aggregator {
 
 	/**
 	 * 
-	 * @param source
+	 * @param source The source that uses this aggregator.
 	 */
 	public AggregatorSHP(GeoSource source) {
 		super(source);
@@ -93,13 +93,15 @@ public class AggregatorSHP extends Aggregator {
 
 			SimpleFeature feature = this.iterator.next();
 
-			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors())
+			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors()) {
+				
 				if(descriptor.matches(feature, this)) {
 					
 					Integer date = this.source.getTemporalLocator().date(feature);
 					
 					aggregate(feature, date, descriptor);
 				}
+			}
 		}
 	}
 
@@ -131,7 +133,9 @@ public class AggregatorSHP extends Aggregator {
 
 		// Check the binding.
 
-		return feature.getType().getGeometryDescriptor().getType().getBinding() == com.vividsolutions.jts.geom.Point.class;
+		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
+
+		return binding == com.vividsolutions.jts.geom.Point.class;
 	}
 
 	@Override

@@ -99,7 +99,7 @@ public class AggregatorOSM extends Aggregator {
 		for(int i = 0, l = xmlElements.size(); i < l; ++i) {
 
 			nu.xom.Element xmlElement = xmlElements.get(i);
-
+			
 			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors())
 				if(descriptor.matches(xmlElement, this)) {
 

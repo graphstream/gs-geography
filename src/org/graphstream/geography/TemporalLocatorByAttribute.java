@@ -65,6 +65,9 @@ public class TemporalLocatorByAttribute extends TemporalLocator {
 	 * 
 	 * Here, we use a predefined attribute to determine the date.
 	 * 
+	 * XXX this is kind of experimental, so this may be written differently
+	 * when a geographic format really using this presentation appears.
+	 * 
 	 * @param o
 	 *            The geographic object.
 	 * @return The date of appearance of the object.
@@ -83,7 +86,7 @@ public class TemporalLocatorByAttribute extends TemporalLocator {
 		// Check that the date attribute is specified.
 
 		if(dateString == null)
-			return null; // TODO warning message if not?
+			return null;
 
 		// Return the date as an Integer.
 

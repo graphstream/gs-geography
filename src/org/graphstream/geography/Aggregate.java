@@ -41,7 +41,7 @@ import java.util.Map.Entry;
  * 
  * Its storage structure is two-dimensional and depends on the ID of a stored
  * feature and its date of appearance. This way we can store different versions
- * of a same feature when time progression is taken into account.
+ * of a same geographic object when time progression is taken into account.
  * 
  * @author Merwan Achibet
  */
@@ -73,7 +73,7 @@ public class Aggregate implements Iterable<Entry<String, HashMap<Integer, Object
 	 * library-dependent form).
 	 * 
 	 * @param id
-	 *            The ID of the object.
+	 *            The object ID.
 	 * @param date
 	 *            The date of appearance of the object.
 	 * @param o
@@ -81,43 +81,55 @@ public class Aggregate implements Iterable<Entry<String, HashMap<Integer, Object
 	 */
 	public void add(String id, Integer date, Object o) {
 
-		HashMap<Integer, Object> objectsAtDate = this.content.get(id);
+		// Get the slot for all the versions of the object.
+		
+		HashMap<Integer, Object> objectVersions = this.content.get(id);
 
-		if(objectsAtDate == null) {
-			objectsAtDate = new HashMap<Integer, Object>();
-			this.content.put(id, objectsAtDate);
+		// If the slot does not exist yet, add it.
+		
+		if(objectVersions == null) {
+			
+			objectVersions = new HashMap<Integer, Object>();
+			
+			this.content.put(id, objectVersions);
 		}
+		
+		// Finally, add the object at the given date.
 
-		objectsAtDate.put(date, o);
+		objectVersions.put(date, o);
 	}
 
 	/**
-	 * Give the object of the aggregate with a specific ID and a specific
-	 * appearance date.
+	 * Give the object of the aggregate with a specific ID and a specific date.
 	 * 
 	 * @param id
 	 *            The object ID.
 	 * @param date
-	 *            The date of appearance of the object.
+	 *            The date of the object.
 	 * @return The object or null if it isn't aggregated.
 	 */
 	public Object get(String id, Integer date) {
 
-		HashMap<Integer, Object> objectAtDate = content.get(id);
+		// Retrieve all of the versions of the object appearing at different
+		// dates.
 
-		if(objectAtDate == null)
+		HashMap<Integer, Object> objectVersions = this.content.get(id);
+
+		if(objectVersions == null)
 			return null;
 
-		return objectAtDate.get(date);
+		// Return the version of the object at the given date.
+		
+		return objectVersions.get(date);
 	}
 
 	/**
 	 * Specify the descriptor that matched a given geographic object.
 	 * 
 	 * @param id
-	 *            The ID of the object.
+	 *            The object ID.
 	 * @param descriptor
-	 *            The descriptor.
+	 *            The descriptor that matched the object.
 	 */
 	public void setDescriptorUsed(String id, ElementDescriptor descriptor) {
 
@@ -125,11 +137,11 @@ public class Aggregate implements Iterable<Entry<String, HashMap<Integer, Object
 	}
 
 	/**
-	 * Give the descriptor that matched a geographic object.
+	 * Give the descriptor that matched an aggregated geographic object.
 	 * 
 	 * @param id
-	 *            The ID of the object.
-	 * @return The descriptor.
+	 *            The object ID.
+	 * @return The descriptor that matched the object.
 	 */
 	public ElementDescriptor getDescriptorUsed(String id) {
 

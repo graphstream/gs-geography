@@ -184,6 +184,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 					replicateEdgeAttributes(edgeId, elementDiff);
 				}
+				
+				// TODO Update the shape.
 			}
 		}
 

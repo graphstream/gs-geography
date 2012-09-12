@@ -51,17 +51,26 @@ import org.miv.pherd.ntree.QuadtreeCellSpace;
  * An instance of this class is optionally used to speed up spatial querying on
  * huge sets of geographic objects.
  * 
+ * TODO This spatial index uses a quadtree implementation (from pherd) that does
+ * not accept lines or polygons, only points. So it's not really adapted to
+ * complex spatial queries like intersection tests. I think gs-geometry would be
+ * better off using another quadtree implementation. Writing one from scratch
+ * would be a bit of work but it would be more adapted. Or maybe there are
+ * other libraries to achieve this work?
+ * 
  * @author Antoine Dutot
  * @author Merwan Achibet
  */
 public class SpatialIndex {
 
 	/**
-	 * The
+	 * The container for the quadtree.
 	 */
 	protected ParticleBox box;
 
-	// TODO let the user parameterize these values?
+	// TODO These parameters should be accessible and customizable as they have
+	// a huge impact on the performance and need to be tuned-up with the
+	// quantity of processed data.
 
 	/**
 	 * The number of points in a single cell of the quadtree.
@@ -79,11 +88,15 @@ public class SpatialIndex {
 	protected double distanceOffset = 0.1;
 
 	/**
-	 * The number of addition/removal before a reorganization of the quadtree is
-	 * needed.
+	 * The number of additions/removals before a reorganization of the quadtree
+	 * is needed.
 	 */
 	protected int stepsbetweenReorganizations = 1000;
 
+	/**
+	 * The number of additions/removals that occured since the last
+	 * reorganization.
+	 */
 	protected int modificationsSinceReorganization = 0;
 
 	/**
@@ -119,7 +132,7 @@ public class SpatialIndex {
 	}
 
 	/**
-	 * Add a point to the spatial index.
+	 * Add a given point to the spatial index.
 	 * 
 	 * @param point
 	 *            The point.
@@ -129,21 +142,6 @@ public class SpatialIndex {
 		this.box.addParticle(point);
 
 		++this.modificationsSinceReorganization;
-		checkForReorganization();
-	}
-
-	/**
-	 * Remove a point reference from the spatial index.
-	 * 
-	 * @param element
-	 *            The element to remove the reference of.
-	 */
-	public void remove(Element element) {
-
-		this.box.removeParticle(element.getId());
-
-		++this.modificationsSinceReorganization;
-
 		checkForReorganization();
 	}
 
@@ -169,7 +167,7 @@ public class SpatialIndex {
 	}
 
 	/**
-	 * Count the stored elements.
+	 * Get the number of stored elements.
 	 * 
 	 * @return The number of elements.
 	 */

@@ -5,6 +5,7 @@ import org.graphstream.geography.ElementShape;
 import org.miv.pherd.Particle;
 
 /**
+ * Point used in the spatial index to spatially reference geometric objects.
  * 
  * @author Merwan Achibet
  */

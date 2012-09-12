@@ -62,6 +62,11 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	protected double radius;
 
 	/**
+	 * Record of buildings already placed into the output graph.
+	 */
+	protected HashMap<String, Coordinate> placedBuildings;
+
+	/**
 	 * The descriptor matching geographic objects with representations of
 	 * buildings.
 	 */
@@ -85,6 +90,8 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		super(fileNames);
 
 		this.radius = radius;
+
+		this.placedBuildings = new HashMap<String, Coordinate>();
 
 		// By default, there is no attribute worth keeping.
 
@@ -132,11 +139,6 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	@Override
 	public void nextEvents() {
 
-		// Keep a record of the buildings that have already been inserted into
-		// the graph.
-
-		HashMap<String, Coordinate> placedBuildings = new HashMap<String, Coordinate>();
-
 		ArrayList<ElementDiff> elementDiffsAtStep = getElementDiffsAtStep(this.currentTimeStep);
 
 		for(ElementDiff elementDiff : elementDiffsAtStep) {
@@ -155,7 +157,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 				Coordinate centroid = ((Polygon)elementDiff.getShape()).getCentroid();
 				sendNodeAttributeAdded(this.id, id, "x", centroid.x);
 				sendNodeAttributeAdded(this.id, id, "y", centroid.y);
-				
+
 				replicateNodeAttributes(id, elementDiff);
 
 				// Draw an edge between the new node and already placed ones if
@@ -169,11 +171,34 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 				placedBuildings.put(id, centroid);
 			}
-		}
-		
-		// Update attributes and shape.
 
-		// TODO
+			// Otherwise, update the building.
+
+			else {
+
+				// Update the attributes.
+
+				replicateNodeAttributes(id, elementDiff);
+
+				// Update the shape if necessary.
+
+				if(elementDiff.getShape() != null) {
+
+					// XXX The question is: can a building really move? I added
+					// this possibility for the sake of completeness but I'm not
+					// sure that this will be useful.
+
+					// TODO
+
+					// Break the edges to the node.
+
+					// Move the node.
+
+					// Add new edges according to the distance from other
+					// buildings.
+				}
+			}
+		}
 	}
 
 }

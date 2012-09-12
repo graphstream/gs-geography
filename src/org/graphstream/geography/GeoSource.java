@@ -136,16 +136,20 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public void read() {
 
-		TreeSet<Integer> dates = new TreeSet<Integer>();
-
 		/**
 		 * First pass: go through all files and instantiate the elements and
 		 * their states.
 		 */
 
-		// Aggregate the ID of the elements and the times at which they appear.
+		// All the dates will be accumulated in this ordered set.
+
+		TreeSet<Integer> dates = new TreeSet<Integer>();
+
+		// Aggregate the geographic objects and the times at which they appear.
 
 		Aggregate aggregate = this.aggregator.read();
+
+		//
 
 		for(Entry<String, HashMap<Integer, Object>> entry : aggregate) {
 
@@ -157,23 +161,27 @@ public abstract class GeoSource extends SourceBase {
 
 				element = new Element(id);
 
+				element.setDescriptorUsed(aggregate.getDescriptorUsed(element.getId()));
+				
 				this.elements.put(id, element);
-
-				ElementDescriptor descriptorUsed = aggregate.getDescriptorUsed(element.getId());
-				element.setDescriptorUsed(descriptorUsed);
 			}
 
+			//System.out.println(id+ " " + entry.getValue().keySet());
 			for(Integer date : entry.getValue().keySet()) {
 
-				if(!element.hasDiffAtDate(date))
-					element.addDiffAtDate(null, date);
+				element.addDiffAtDate(null, date);
 
 				dates.add(date);
 			}
 		}
 
+		// Transfer the content of the ordered set of dates into our list of
+		// dates.
+
 		for(Integer date : dates)
 			this.dates.add(date);
+
+		System.out.println(this.dates);
 
 		/**
 		 * Second pass: go through all files and fill the element states with
@@ -293,7 +301,7 @@ public abstract class GeoSource extends SourceBase {
 			Line line = new Line(element);
 
 			List<Vertex> vertices = this.aggregator.getShapeVertices(o);
-			
+
 			for(Vertex vertex : vertices)
 				line.addPoint(vertex.getId(), vertex.getX(), vertex.getY());
 

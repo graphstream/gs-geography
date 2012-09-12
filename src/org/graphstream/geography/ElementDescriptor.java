@@ -85,6 +85,17 @@ public class ElementDescriptor {
 	protected HashMap<String, Object> mustHaveValues;
 
 	/**
+	 * Optional list of attribute keys that a matching object must not have.
+	 */
+	protected List<String> mustNotHaveKeys;
+
+	/**
+	 * Optional list of attribute keys/values pairs that a matching object must
+	 * not have.
+	 */
+	protected HashMap<String, Object> mustNotHaveValues;
+
+	/**
 	 * Should matching elements be stored in the spatial index?
 	 * 
 	 * In some cases, geographic elements should be referenced in a spatial
@@ -105,16 +116,6 @@ public class ElementDescriptor {
 	protected boolean toSpatialIndex;
 
 	/**
-	 * Should we consider the full line or only its end points?
-	 * 
-	 * When this flag is set to true, the intermediary points of lines are
-	 * ignored and only their extremities are considered. Ignoring these points
-	 * can be appropriate when intermediary points only serves to shape the line
-	 * and have no meaning other that this esthetic one.
-	 */
-	protected boolean onlyLineEndPointsConsidered;
-
-	/**
 	 * Instantiate a new descriptor.
 	 * 
 	 * @param source
@@ -130,55 +131,12 @@ public class ElementDescriptor {
 		this.source = source;
 		this.category = category;
 		this.filter = filter;
-		
+
 		this.mustBeType = ElementShape.Type.UNSPECIFIED;
 
 		this.toSpatialIndex = false;
-		this.onlyLineEndPointsConsidered = false;
-	}
-
-	/**
-	 * Give the name of the category of elements described by the descriptor.
-	 * 
-	 * @return The name of the element category.
-	 */
-	public String getCategory() {
-
-		return new String(this.category);
 	}
 	
-	public AttributeFilter getAttributeFilter() {
-		
-		return this.filter;
-	}
-
-	/**
-	 * Set the descriptor to reference matching elements in a spatial index.
-	 */
-	public void sendElementsToSpatialIndex() {
-
-		this.toSpatialIndex = true;
-
-		this.source.prepareSpatialIndex();
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean areElementsSentToSpatialIndex() {
-		
-		return this.toSpatialIndex;
-	}
-	
-	/**
-	 * Set the descriptor to ignore the middle points of lines.
-	 */
-	public void onlyConsiderLineEndPoints() {
-
-		this.onlyLineEndPointsConsidered = true;
-	}
-
 	/**
 	 * Specify the geometric type of geographic objects described by this
 	 * descriptor.
@@ -225,6 +183,41 @@ public class ElementDescriptor {
 
 		this.mustHaveValues.put(attributeKey, attributeValue);
 	}
+	
+	/**
+	 * Specify an attribute key that geographic objects must possess to be kept.
+	 * 
+	 * These keys are accumulated with each call of this method.
+	 * 
+	 * @param attributeKey
+	 *            The key of the attribute.
+	 */
+	public void mustNotHave(String attributeKey) {
+
+		if(this.mustNotHaveKeys == null)
+			this.mustNotHaveKeys = new ArrayList<String>();
+
+		this.mustHaveKeys.add(attributeKey);
+	}
+
+	/**
+	 * Specify an attribute key/value pair that geographic objects must possess
+	 * to be kept.
+	 * 
+	 * These keys/values are accumulated with each call of this method.
+	 * 
+	 * @param attributeKey
+	 *            The key of the attribute.
+	 * @param attributeValue
+	 *            The value of the attribute.
+	 */
+	public void mustNotHave(String attributeKey, Object attributeValue) {
+
+		if(this.mustNotHaveValues == null)
+			this.mustNotHaveValues = new HashMap<String, Object>();
+
+		this.mustNotHaveValues.put(attributeKey, attributeValue);
+	}
 
 	/**
 	 * Check if the supplied feature conforms to the inner definition of the
@@ -240,19 +233,33 @@ public class ElementDescriptor {
 	 */
 	public boolean matches(Object o, Aggregator aggregator) {
 
-		// Check for an optional geometric type condition.
+		// Check for the geometric type.
 
 		if(this.mustBeType != ElementShape.Type.UNSPECIFIED && !aggregator.isOfType(o, this.mustBeType))
 			return false;
 
-		// Check for optional attribute presence conditions.
+		// Check for forbidden attribute keys.
+
+		if(this.mustNotHaveKeys != null)
+			for(String key : this.mustNotHaveKeys)
+				if(aggregator.hasKey(o, key))
+					return false;
+
+		// Check for forbidden attribute key/value pairs.
+
+		if(this.mustNotHaveValues != null)
+			for(String key : this.mustNotHaveValues.keySet())
+				if(aggregator.hasKeyValue(o, key, this.mustNotHaveValues.get(key)))
+					return false;
+
+		// Check for required attribute keys.
 
 		if(this.mustHaveKeys != null)
 			for(String key : this.mustHaveKeys)
 				if(!aggregator.hasKey(o, key))
 					return false;
 
-		// Check for optional attribute value conditions.
+		// Check for required attribute key/value pairs.
 
 		if(this.mustHaveValues != null)
 			for(String key : this.mustHaveValues.keySet())
@@ -260,6 +267,40 @@ public class ElementDescriptor {
 					return false;
 
 		return true;
+	}
+
+	/**
+	 * Give the name of the category of elements described by the descriptor.
+	 * 
+	 * @return The name of the element category.
+	 */
+	public String getCategory() {
+
+		return new String(this.category);
+	}
+
+	public AttributeFilter getAttributeFilter() {
+
+		return this.filter;
+	}
+
+	/**
+	 * Set the descriptor to reference matching elements in a spatial index.
+	 */
+	public void sendElementsToSpatialIndex() {
+
+		this.toSpatialIndex = true;
+
+		this.source.prepareSpatialIndex();
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean areElementsSentToSpatialIndex() {
+
+		return this.toSpatialIndex;
 	}
 
 	@Override
@@ -291,9 +332,6 @@ public class ElementDescriptor {
 
 			s += "}";
 		}
-
-		if(this.onlyLineEndPointsConsidered)
-			s += " | only line end points are considered";
 
 		if(this.toSpatialIndex)
 			s += " | matching elements stored in a spatial index";

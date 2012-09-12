@@ -33,7 +33,10 @@ package org.graphstream.geography.shp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
@@ -45,6 +48,9 @@ import org.graphstream.geography.GeoSource;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * 
@@ -125,48 +131,6 @@ public class AggregatorSHP extends Aggregator {
 	}
 
 	@Override
-	public boolean isPoint(Object o) {
-
-		// Cast the object to a GeoTools feature.
-
-		SimpleFeature feature = (SimpleFeature)o;
-
-		// Check the binding.
-
-		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
-
-		return binding == com.vividsolutions.jts.geom.Point.class;
-	}
-
-	@Override
-	public boolean isLine(Object o) {
-
-		// Cast the object to a GeoTools feature.
-
-		SimpleFeature feature = (SimpleFeature)o;
-
-		// Check the binding.
-
-		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
-
-		return binding == com.vividsolutions.jts.geom.MultiLineString.class || binding == com.vividsolutions.jts.geom.LineString.class;
-	}
-
-	@Override
-	public boolean isPolygon(Object o) {
-
-		// Cast the object to a GeoTools feature.
-
-		SimpleFeature feature = (SimpleFeature)o;
-
-		// Check the binding.
-
-		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
-
-		return binding == com.vividsolutions.jts.geom.Polygon.class;
-	}
-
-	@Override
 	public boolean hasKey(Object o, String key) {
 
 		// Cast the object to a GeoTools feature.
@@ -220,6 +184,108 @@ public class AggregatorSHP extends Aggregator {
 				return property.getValue();
 
 		return null;
+	}
+
+	@Override
+	public HashMap<String, Object> getAttributes(Object o) {
+		
+		// Cast the object to a GeoTools feature.
+		
+		SimpleFeature feature = (SimpleFeature)o;
+		
+		// Retrieve all attributes.
+		
+		HashMap<String, Object> attributes = new HashMap<String, Object>();
+		
+		Collection<Property> properties = feature.getProperties();
+
+		for(Property property : properties)
+			attributes.put(property.getName().toString(), property.getValue());
+		
+		return attributes;
+	}
+	
+	@Override
+	public boolean isPoint(Object o) {
+
+		// Cast the object to a GeoTools feature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Check the binding.
+
+		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
+
+		return binding == com.vividsolutions.jts.geom.Point.class;
+	}
+
+	@Override
+	public boolean isLine(Object o) {
+
+		// Cast the object to a GeoTools feature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Check the binding.
+
+		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
+
+		return binding == com.vividsolutions.jts.geom.MultiLineString.class || binding == com.vividsolutions.jts.geom.LineString.class;
+	}
+
+	@Override
+	public boolean isPolygon(Object o) {
+
+		// Cast the object to a GeoTools feature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Check the binding.
+
+		Class<?> binding = feature.getType().getGeometryDescriptor().getType().getBinding();
+
+		return binding == com.vividsolutions.jts.geom.Polygon.class;
+	}
+
+	@Override
+	protected List<Coordinate> getPointCoordinates(Object o) {
+
+		// Cast the object to a GeoTools feature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Retrieve the only point.
+
+		List<Coordinate> coords = new ArrayList<Coordinate>();
+
+		coords.add(((Geometry)feature.getDefaultGeometry()).getCoordinates()[0]);
+		
+		return coords;
+	}
+
+	@Override
+	protected List<Coordinate> getLineCoordinates(Object o) {
+
+		// Cast the object to a GeoTools feature.
+
+		SimpleFeature feature = (SimpleFeature)o;
+
+		// Retrieve the points.
+
+		List<Coordinate> coords = new ArrayList<Coordinate>();
+
+		for(Coordinate coord : ((Geometry)feature.getDefaultGeometry()).getCoordinates())
+			coords.add(coord);
+		
+		// TODO lineEndPoint
+		
+		return coords;
+	}
+
+	@Override
+	protected List<Coordinate> getPolygonCoordinates(Object o) {
+
+		return getLineCoordinates(o);
 	}
 
 }

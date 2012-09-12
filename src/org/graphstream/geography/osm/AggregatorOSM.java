@@ -32,6 +32,9 @@
 package org.graphstream.geography.osm;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.graphstream.geography.Aggregator;
 import org.graphstream.geography.ElementDescriptor;
@@ -99,7 +102,7 @@ public class AggregatorOSM extends Aggregator {
 		for(int i = 0, l = xmlElements.size(); i < l; ++i) {
 
 			nu.xom.Element xmlElement = xmlElements.get(i);
-			
+
 			for(ElementDescriptor descriptor : fileDescriptor.getDescriptors())
 				if(descriptor.matches(xmlElement, this)) {
 
@@ -126,6 +129,89 @@ public class AggregatorOSM extends Aggregator {
 		// Return its ID.
 
 		return xmlElement.getAttributeValue("id");
+	}
+
+	@Override
+	public boolean hasKey(Object o, String key) {
+
+		// Cast the object to a XOM element.
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
+
+		// Check if the attribute exists.
+
+		for(int i = 0, l = xmlTags.size(); i < l; ++i)
+			if(xmlTags.get(i).getAttribute("k").getValue().equals(key))
+				return true;
+
+		return false;
+	}
+
+	@Override
+	public boolean hasKeyValue(Object o, String key, Object value) {
+
+		// Cast the object to a XOM element.
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// Check if the attribute exists and has the correct value.
+
+		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
+
+		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
+
+			nu.xom.Element xmlTag = xmlTags.get(i);
+
+			if(xmlTag.getAttribute("k").getValue().equals(key) && xmlTag.getAttribute("v").getValue().equals(value))
+				return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public Object getAttributeValue(Object o, String key) {
+
+		// Cast the object to a XOM element.
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// Get the value of the attribute.
+
+		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
+
+		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
+
+			nu.xom.Element xmlTag = xmlTags.get(i);
+
+			if(xmlTag.getAttribute("k").getValue().equals(key))
+				return xmlTag.getAttribute("v").getValue();
+		}
+
+		// Return null if the attribute does not exist.
+
+		return null;
+	}
+
+	@Override
+	public HashMap<String, Object> getAttributes(Object o) {
+
+		// Cast the object to a XOM element.
+
+		nu.xom.Element xmlElement = (nu.xom.Element)o;
+
+		// Retrieve all attributes.
+
+		HashMap<String, Object> attributes = new HashMap<String, Object>();
+
+		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
+
+		for(int i = 0, l = xmlTags.size(); i < l; ++i)
+			attributes.put(xmlTags.get(i).getAttributeValue("k"), xmlTags.get(i).getAttributeValue("v"));
+
+		return attributes;
 	}
 
 	@Override
@@ -196,53 +282,42 @@ public class AggregatorOSM extends Aggregator {
 	}
 
 	@Override
-	public boolean hasKey(Object o, String key) {
+	protected List<Coordinate> getPointCoordinates(Object o) {
 
-		nu.xom.Element xmlElement = (nu.xom.Element)o;
+		// Retrieve the position of the node.
 
-		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
+		List<Coordinate> coords = new ArrayList<Coordinate>();
 
-		for(int i = 0, l = xmlTags.size(); i < l; ++i)
-			if(xmlTags.get(i).getAttribute("k").getValue().equals(key))
-				return true;
+		coords.add(new Coordinate(((GeoSourceOSM)this.source).getNodePosition(getFeatureId(o))));
 
-		return false;
+		return coords;
 	}
 
 	@Override
-	public boolean hasKeyValue(Object o, String key, Object value) {
+	protected List<Coordinate> getLineCoordinates(Object o) {
+
+		// Cast the object to a XOM element.
 
 		nu.xom.Element xmlElement = (nu.xom.Element)o;
 
-		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
+		// Retrieve the positions of all nodes referenced in the path.
 
-		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
+		List<Coordinate> coords = new ArrayList<Coordinate>();
 
-			nu.xom.Element xmlTag = xmlTags.get(i);
+		nu.xom.Elements xmlNodes = xmlElement.getChildElements("nd");
 
-			if(xmlTag.getAttribute("k").getValue().equals(key) && xmlTag.getAttribute("v").getValue().equals(value))
-				return true;
-		}
+		GeoSourceOSM sourceOSM = (GeoSourceOSM)this.source;
 
-		return false;
+		for(int i = 0, l = xmlNodes.size(); i < l; ++i)
+			coords.add(sourceOSM.getNodePosition(xmlNodes.get(i).getAttributeValue("ref")));
+
+		return coords;
 	}
 
 	@Override
-	public Object getAttributeValue(Object o, String key) {
-		
-		nu.xom.Element xmlElement = (nu.xom.Element)o;
+	protected List<Coordinate> getPolygonCoordinates(Object o) {
 
-		nu.xom.Elements xmlTags = xmlElement.getChildElements("tag");
-
-		for(int i = 0, l = xmlTags.size(); i < l; ++i) {
-
-			nu.xom.Element xmlTag = xmlTags.get(i);
-
-			if(xmlTag.getAttribute("k").getValue().equals(key))
-				return xmlTag.getAttribute("v").getValue();
-		}
-
-		return null;
+		return getLineCoordinates(o);
 	}
 
 }

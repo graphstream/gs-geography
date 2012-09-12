@@ -145,7 +145,7 @@ public class ElementDiff {
 	 * @param value
 	 *            The value of the attribute.
 	 */
-	public void setChangedAttribute(String key, Object value) {
+	public void addChangedAttribute(String key, Object value) {
 
 		// Instantiate the map if it has not been done yet.
 

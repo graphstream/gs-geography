@@ -74,7 +74,6 @@ public abstract class GeoSourceOSM extends GeoSource {
 		super(fileNames);
 		
 		this.aggregator = new AggregatorOSM(this);
-		this.diffBuilder = new DiffbuilderOSM(this);
 		
 		this.nodePositions = new HashMap<String, Coordinate>();
 	}

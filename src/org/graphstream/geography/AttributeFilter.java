@@ -32,6 +32,8 @@
 package org.graphstream.geography;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * Specify which attributes must be kept/filtered when converting a geographic
@@ -40,6 +42,8 @@ import java.util.ArrayList;
  * A filter has a mode. If it is KEEP, only the matched attributes will be kept
  * in the converted element. If is is FILTER, all attributes except the matched
  * ones will be kept.
+ * 
+ * TODO clean up
  * 
  * @author Antoine Dutot
  * @author Merwan Achibet
@@ -69,6 +73,22 @@ public class AttributeFilter {
 	public AttributeFilter() {
 
 		this.mode = AttributeFilter.Mode.KEEP;
+	}
+	
+	/**
+	 * 
+	 * @param allAttributes
+	 * @return
+	 */
+	public HashMap<String, Object> filter(HashMap<String, Object> allAttributes) {
+		
+		HashMap<String, Object> filtered = new HashMap<String, Object>();
+		
+		for(Entry<String, Object> keyValue : allAttributes.entrySet())
+			if(isKept(keyValue.getKey()))
+				filtered.put(keyValue.getKey(), keyValue.getValue());
+		
+		return filtered;
 	}
 
 	/**

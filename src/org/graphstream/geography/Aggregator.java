@@ -32,8 +32,12 @@
 package org.graphstream.geography;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.graphstream.geography.ElementShape.Type;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * An aggregator is a format-specific reader that goes through all input files
@@ -219,6 +223,13 @@ public abstract class Aggregator {
 	public abstract Object getAttributeValue(Object o, String key);
 
 	/**
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public abstract HashMap<String, Object> getAttributes(Object o);
+	
+	/**
 	 * Check if the geographic object is a point.
 	 * 
 	 * @param o
@@ -290,4 +301,29 @@ public abstract class Aggregator {
 		return Type.UNSPECIFIED;
 	}
 
+	/**
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public List<Coordinate> getShapeCoordinates(Object o) {
+
+		if(isPoint(o))
+			return getPointCoordinates(o);
+		
+		if(isLine(o))
+			return getLineCoordinates(o);
+		
+		if(isPolygon(o))
+			return getPolygonCoordinates(o);
+		
+		return null;
+	}
+
+	protected abstract List<Coordinate> getPointCoordinates(Object o);
+	
+	protected abstract List<Coordinate> getLineCoordinates(Object o);
+	
+	protected abstract List<Coordinate> getPolygonCoordinates(Object o);
+	
 }

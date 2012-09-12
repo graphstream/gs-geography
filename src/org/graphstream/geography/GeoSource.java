@@ -33,12 +33,16 @@ package org.graphstream.geography;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import org.graphstream.geography.ElementShape.Type;
 import org.graphstream.geography.index.SpatialIndex;
 import org.graphstream.geography.index.SpatialIndexPoint;
 import org.graphstream.stream.SourceBase;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * The geo source is the main class used when importing geographic data.
@@ -71,11 +75,6 @@ public abstract class GeoSource extends SourceBase {
 	protected Aggregator aggregator;
 
 	/**
-	 * Differential version builder.
-	 */
-	protected DiffBuilder diffBuilder;
-
-	/**
 	 * Temporal locator that date elements.
 	 */
 	protected TemporalLocator temporalLocator;
@@ -89,7 +88,7 @@ public abstract class GeoSource extends SourceBase {
 	 * 
 	 */
 	protected SpatialIndex index;
-	
+
 	/**
 	 * List of dates.
 	 */
@@ -103,7 +102,8 @@ public abstract class GeoSource extends SourceBase {
 	/**
 	 * Instantiate a new geo source with a set of input files.
 	 * 
-	 * @param fileNames The paths to the input files.
+	 * @param fileNames
+	 *            The paths to the input files.
 	 */
 	public GeoSource(String... fileNames) {
 
@@ -132,7 +132,7 @@ public abstract class GeoSource extends SourceBase {
 		if(this.index == null)
 			this.index = new SpatialIndex();
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -156,9 +156,9 @@ public abstract class GeoSource extends SourceBase {
 			Element element = this.elements.get(id);
 
 			if(element == null) {
-				
+
 				element = new Element(id);
-				
+
 				this.elements.put(id, element);
 
 				ElementDescriptor descriptorUsed = aggregate.getDescriptorUsed(element.getId());
@@ -191,13 +191,13 @@ public abstract class GeoSource extends SourceBase {
 
 				Object currentObject = aggregate.get(element.getId(), date);
 
-				ElementDiff currentDiff = this.diffBuilder.diff(element, previousDiff, previousDate, currentObject);
+				ElementDiff currentDiff = diff(element, previousDiff, previousDate, currentObject);
 
 				element.addDiffAtDate(currentDiff, date);
 
 				previousDiff = currentDiff;
 				previousDate = date;
-				
+
 				// Reference the element in the spatial index if necesary.
 
 				if(this.index != null && aggregate.descriptorsUsed.get(currentDiff.getElementId()).areElementsSentToSpatialIndex())
@@ -205,6 +205,133 @@ public abstract class GeoSource extends SourceBase {
 						this.index.addPoint(p);
 			}
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public ElementDiff diff(Element element, ElementDiff previousDiff, Integer previousDate, Object o) {
+
+		ElementDiff nextDiff = null;
+
+		// Retrieve all of the object attributes.
+
+		HashMap<String, Object> allAttributes = this.aggregator.getAttributes(o);
+
+		// Retrieve the filter to apply to the attributes.
+
+		AttributeFilter filter = element.getDescriptorUsed().getAttributeFilter();
+
+		// Filter.
+
+		HashMap<String, Object> filteredAttributes = filter.filter(allAttributes);
+
+		// If there is no previous diff, create a "base" diff.
+
+		if(previousDiff == null) {
+
+			nextDiff = new ElementDiff(element, true);
+
+			// Copy all attributes.
+
+			for(Entry<String, Object> entry : filteredAttributes.entrySet())
+				nextDiff.addChangedAttribute(entry.getKey(), entry.getValue());
+
+			// Copy the shape.
+
+			ElementShape shape = baseShape(element, o);
+			nextDiff.setShape(shape);
+		}
+
+		// Otherwise, only copy the changes.
+
+		else {
+
+			nextDiff = new ElementDiff(element);
+
+			ElementView elementAtPreviousDate = element.getElementViewAtDate(previousDate);
+
+			for(Entry<String, Object> entry : elementAtPreviousDate.getAttributes().entrySet())
+				if(!filteredAttributes.containsKey(entry.getKey()))
+					nextDiff.addRemovedAttribute(entry.getKey());
+
+			for(Entry<String, Object> entry : filteredAttributes.entrySet())
+				if(!elementAtPreviousDate.getAttributes().containsKey(entry.getKey()))
+					nextDiff.addChangedAttribute(entry.getKey(), entry.getValue());
+
+			for(Entry<String, Object> entry : filteredAttributes.entrySet())
+				if(elementAtPreviousDate.getAttributes().containsKey(entry.getKey()) && !elementAtPreviousDate.getAttributes().get(entry.getKey()).equals(entry.getValue()))
+					nextDiff.addChangedAttribute(entry.getKey(), entry.getValue());
+
+			// Only copy the shape if it has changed.
+
+			ElementShape newShape = diffShape(element, elementAtPreviousDate, o);
+			nextDiff.setShape(newShape);
+		}
+
+		return nextDiff;
+	}
+
+	protected ElementShape baseShape(Element element, Object o) {
+
+		// Determine the shape type of the element.
+
+		ElementShape.Type type = this.aggregator.getType(o);
+
+		// Instantiate a new shape.
+
+		if(type == Type.POINT) {
+
+			Point point = new Point(element);
+
+			List<Coordinate> coords = this.aggregator.getShapeCoordinates(o);
+
+			point.setPosition(coords.get(0).x, coords.get(0).y);
+
+			return point;
+		}
+		else if(type == Type.LINE) {
+
+			Line line = new Line(element);
+
+			List<Coordinate> coords = this.aggregator.getShapeCoordinates(o);
+			
+			for(Coordinate coord : coords)
+				line.addPoint(null, coord.x, coord.y);
+
+			return line;
+		}
+		else if(type == Type.POLYGON) {
+
+			Polygon polygon = new Polygon(element);
+
+			List<Coordinate> coords = this.aggregator.getShapeCoordinates(o);
+
+			for(Coordinate coord : coords)
+				polygon.addPoint(null, coord.x, coord.y);
+
+			return polygon;
+		}
+
+		return null;
+	}
+
+	protected ElementShape diffShape(Element element, ElementView elementAtPreviousDate, Object o) {
+
+		// Build a complete shape from the state of the current geographic
+		// object.
+
+		ElementShape newShape = baseShape(element, o);
+
+		// Compare the current shape to the previous shape. If they are
+		// different, the new shape is returned.
+
+		if(!newShape.equals(elementAtPreviousDate.getShape()))
+			return newShape;
+
+		// If they are the same, return null.
+
+		return null;
 	}
 
 	/**
@@ -266,7 +393,7 @@ public abstract class GeoSource extends SourceBase {
 			for(String key : diff.getRemovedAttributes())
 				sendNodeAttributeRemoved(this.id, nodeId, key);
 	}
-	
+
 	/**
 	 * Replicate the attribute changes of an element represented as a node in
 	 * the output graph.
@@ -308,7 +435,7 @@ public abstract class GeoSource extends SourceBase {
 			for(String key : diff.getRemovedAttributes())
 				sendNodeAttributeRemoved(this.id, edgeId, key);
 	}
-	
+
 	/**
 	 * Replicate the attribute changes of an element represented as an edge in
 	 * the output graph.
@@ -371,11 +498,11 @@ public abstract class GeoSource extends SourceBase {
 	public ElementView getElementViewAtStep(String id, int step) {
 
 		Integer date = stepToDate(step);
-		
+
 		Element element = this.elements.get(id);
 		if(element == null)
 			return null;
-		
+
 		ElementView elementViewAtDate = element.getElementViewAtDate(date);
 
 		return elementViewAtDate;

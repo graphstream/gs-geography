@@ -51,7 +51,6 @@ public abstract class GeoSourceSHP extends GeoSource {
 		super(fileNames);
 		
 		this.aggregator = new AggregatorSHP(this);
-		this.diffBuilder = new DiffbuilderSHP(this);
 	}
 
 }

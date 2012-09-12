@@ -42,8 +42,6 @@ import org.graphstream.geography.index.SpatialIndex;
 import org.graphstream.geography.index.SpatialIndexPoint;
 import org.graphstream.stream.SourceBase;
 
-import com.vividsolutions.jts.geom.Coordinate;
-
 /**
  * The geo source is the main class used when importing geographic data.
  * 
@@ -296,8 +294,8 @@ public abstract class GeoSource extends SourceBase {
 
 			List<Vertex> vertices = this.aggregator.getShapeVertices(o);
 			
-			for(Coordinate coord : coords)
-				line.addPoint(null, coord.x, coord.y);
+			for(Vertex vertex : vertices)
+				line.addPoint(vertex.getId(), vertex.getX(), vertex.getY());
 
 			return line;
 		}
@@ -307,8 +305,8 @@ public abstract class GeoSource extends SourceBase {
 
 			List<Vertex> vertices = this.aggregator.getShapeVertices(o);
 
-			for(Coordinate coord : coords)
-				polygon.addPoint(null, coord.x, coord.y);
+			for(Vertex vertex : vertices)
+				polygon.addPoint(vertex.getId(), vertex.getX(), vertex.getY());
 
 			return polygon;
 		}

@@ -140,12 +140,15 @@ public class Vertex {
 	}
 
 	/**
-	 * Give the ID associated with the point.
+	 * Give the optional ID associated with the point.
 	 * 
 	 * @return The ID.
 	 */
 	public String getId() {
 
+		if(this.id == null)
+			return null;
+		
 		return new String(this.id);
 	}
 

@@ -49,7 +49,7 @@ public class Line extends ElementShape {
 	/**
 	 * The list of points forming the line.
 	 */
-	protected ArrayList<Vertex> points;
+	protected ArrayList<Vertex> vertices;
 
 	/**
 	 * Instantiate a new line.
@@ -61,7 +61,7 @@ public class Line extends ElementShape {
 		super(element);
 
 		this.type = Type.LINE;
-		this.points = new ArrayList<Vertex>();
+		this.vertices = new ArrayList<Vertex>();
 	}
 
 	/**
@@ -74,13 +74,13 @@ public class Line extends ElementShape {
 	 * @param y
 	 *            The y-axis coordinate of the new point.
 	 */
-	public void addPoint(String id, double x, double y) {
+	public void addVertex(String id, double x, double y) {
 
-		Vertex point = new Vertex(x, y);
+		Vertex vertex = new Vertex(x, y);
 
-		point.setId(id);
+		vertex.setId(id);
 
-		this.points.add(point);
+		this.vertices.add(vertex);
 	}
 
 	/**
@@ -88,9 +88,9 @@ public class Line extends ElementShape {
 	 * 
 	 * @return The list of points.
 	 */
-	public ArrayList<Vertex> getPoints() {
+	public ArrayList<Vertex> getVertices() {
 
-		return this.points;
+		return this.vertices;
 	}
 
 	/**
@@ -99,10 +99,10 @@ public class Line extends ElementShape {
 	 * @return An array of point. The point at index 0 is the starting point,
 	 *         the point at index 1 is the ending point.
 	 */
-	public Vertex[] getEndPoints() {
+	public Vertex[] getEndVertices() {
 
 		return new Vertex[]{
-				this.points.get(0), this.points.get(this.points.size() - 1)
+				this.vertices.get(0), this.vertices.get(this.vertices.size() - 1)
 		};
 	}
 
@@ -114,13 +114,13 @@ public class Line extends ElementShape {
 	 * 
 	 * @return All pairs of successive points.
 	 */
-	public Vertex[][] getPointPairs() {
+	public Vertex[][] getVertexPairs() {
 
-		Vertex[][] pairs = new Vertex[this.points.size() - 1][];
+		Vertex[][] pairs = new Vertex[this.vertices.size() - 1][];
 
-		for(int i = 0, l = this.points.size() - 1; i < l; ++i)
+		for(int i = 0, l = this.vertices.size() - 1; i < l; ++i)
 			pairs[i] = new Vertex[]{
-					this.points.get(i), this.points.get(i + 1)
+					this.vertices.get(i), this.vertices.get(i + 1)
 			};
 
 		return pairs;
@@ -149,11 +149,11 @@ public class Line extends ElementShape {
 
 		Line lShape = (Line)oShape;
 
-		if(lShape.getPoints().size() != this.points.size())
+		if(lShape.getVertices().size() != this.vertices.size())
 			return false;
 
-		for(int i = 0, l = lShape.getPoints().size(); i < l; ++i)
-			if(!lShape.getPoints().get(i).equals(points.get(i)))
+		for(int i = 0, l = lShape.getVertices().size(); i < l; ++i)
+			if(!lShape.getVertices().get(i).equals(vertices.get(i)))
 				return false;
 
 		return true;
@@ -166,8 +166,8 @@ public class Line extends ElementShape {
 
 		s += "Line ";
 
-		for(Vertex point : this.points)
-			s += "(" + point.getPosition().x + "," + point.getPosition().y + ")-";
+		for(Vertex vertex : this.vertices)
+			s += "(" + vertex.getPosition().x + "," + vertex.getPosition().y + ")-";
 
 		return s;
 	}
@@ -177,9 +177,9 @@ public class Line extends ElementShape {
 
 		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
 
-		for(Vertex point : this.points) {
+		for(Vertex vertex : this.vertices) {
 
-			SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this, point.getId(), point.getPosition().x, point.getPosition().y);
+			SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this, vertex.getId(), vertex.getPosition().x, vertex.getPosition().y);
 
 			spatialIndexPoints.add(spatialIndexPoint);
 		}

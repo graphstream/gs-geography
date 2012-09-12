@@ -145,7 +145,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 				Line line = (Line)elementDiff.getShape();
 
-				Vertex[][] pointPairs = line.getPointPairs();
+				Vertex[][] pointPairs = line.getVertexPairs();
 
 				for(int i = 0, l = pointPairs.length; i < l; ++i) {
 
@@ -173,7 +173,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 				Line line = (Line)elementAtStep.getShape();
 
-				Vertex[][] pointPairs = line.getPointPairs();
+				Vertex[][] pointPairs = line.getVertexPairs();
 
 				for(int i = 0, l = pointPairs.length; i < l; ++i) {
 

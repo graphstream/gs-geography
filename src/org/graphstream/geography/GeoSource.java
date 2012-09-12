@@ -127,8 +127,7 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public void prepareSpatialIndex() {
 
-		if(this.index == null)
-			this.index = new SpatialIndex();
+		this.index = new SpatialIndex();
 	}
 
 	/**
@@ -162,11 +161,10 @@ public abstract class GeoSource extends SourceBase {
 				element = new Element(id);
 
 				element.setDescriptorUsed(aggregate.getDescriptorUsed(element.getId()));
-				
+
 				this.elements.put(id, element);
 			}
 
-			//System.out.println(id+ " " + entry.getValue().keySet());
 			for(Integer date : entry.getValue().keySet()) {
 
 				element.addDiffAtDate(null, date);
@@ -181,11 +179,8 @@ public abstract class GeoSource extends SourceBase {
 		for(Integer date : dates)
 			this.dates.add(date);
 
-		System.out.println(this.dates);
-
 		/**
-		 * Second pass: go through all files and fill the element states with
-		 * attribute and shape data.
+		 * Second pass: fill the element states with attribute and shape data.
 		 */
 
 		for(Element element : this.elements.values()) {
@@ -257,6 +252,8 @@ public abstract class GeoSource extends SourceBase {
 
 			ElementView elementAtPreviousDate = element.getElementViewAtDate(previousDate);
 
+			// TODO filter!!!
+
 			for(Entry<String, Object> entry : elementAtPreviousDate.getAttributes().entrySet())
 				if(!filteredAttributes.containsKey(entry.getKey()))
 					nextDiff.addRemovedAttribute(entry.getKey());
@@ -303,7 +300,7 @@ public abstract class GeoSource extends SourceBase {
 			List<Vertex> vertices = this.aggregator.getShapeVertices(o);
 
 			for(Vertex vertex : vertices)
-				line.addPoint(vertex.getId(), vertex.getX(), vertex.getY());
+				line.addVertex(vertex.getId(), vertex.getX(), vertex.getY());
 
 			return line;
 		}
@@ -314,7 +311,7 @@ public abstract class GeoSource extends SourceBase {
 			List<Vertex> vertices = this.aggregator.getShapeVertices(o);
 
 			for(Vertex vertex : vertices)
-				polygon.addPoint(vertex.getId(), vertex.getX(), vertex.getY());
+				polygon.addVertex(vertex.getId(), vertex.getX(), vertex.getY());
 
 			return polygon;
 		}

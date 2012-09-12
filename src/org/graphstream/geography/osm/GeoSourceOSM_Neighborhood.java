@@ -167,7 +167,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 					if(centroid.distance(idPosPair.getValue()) < this.radius)
 						sendEdgeAdded(this.id, id + idPosPair.getKey(), id, idPosPair.getKey(), false);
 
-				// Record the this building has been added to the graph.
+				// Record that this building has been added to the graph.
 
 				placedBuildings.put(id, centroid);
 			}

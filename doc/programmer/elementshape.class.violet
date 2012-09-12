@@ -88,24 +88,24 @@ double getY()</string>
       <void method="setRect">
        <double>550.0</double>
        <double>300.0</double>
-       <double>280.0</double>
+       <double>300.0</double>
        <double>140.0</double>
       </void>
      </object>
     </void>
     <void property="attributes">
      <void property="text">
-      <string>ArrayList&lt;LinePoint&gt; points</string>
+      <string>ArrayList&lt;Vertex&gt; vertices</string>
      </void>
     </void>
     <void property="methods">
      <void property="text">
       <string>Line(Element element)
 .
-void addPoint(String id, double x, double y)
-ArrayList&lt;LinePoint&gt; getPoints()
-LinePoint[] getEndPoints()
-LinePoint[][] getPointPairs()</string>
+void addVertex(String id, double x, double y)
+ArrayList&lt;Vertex&gt; getVertices()
+Vertex[] getEndVertices()
+Vertex[][] getVertexPairs()</string>
      </void>
     </void>
     <void property="name">

@@ -196,7 +196,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 			// Add the two end points to the graph if necessary.
 
-			Vertex[] ends = line.getEndPoints();
+			Vertex[] ends = line.getEndVertices();
 
 			String idNode1 = addNode(ends[0], line, road);
 			String idNode2 = addNode(ends[1], line, road);

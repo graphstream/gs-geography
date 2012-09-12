@@ -70,16 +70,16 @@ public class Polygon extends Line {
 
 		Coordinate sum = new Coordinate();
 
-		for(int i = 0; i < this.points.size(); ++i) {
+		for(int i = 0; i < this.vertices.size(); ++i) {
 
-			Coordinate p = this.points.get(i).getPosition();
+			Coordinate p = this.vertices.get(i).getPosition();
 
 			sum.x += p.x;
 			sum.y += p.y;
 		}
 
-		sum.x /= this.points.size();
-		sum.y /= this.points.size();
+		sum.x /= this.vertices.size();
+		sum.y /= this.vertices.size();
 
 		return sum;
 	}
@@ -108,11 +108,11 @@ public class Polygon extends Line {
 		
 		Polygon pShape = (Polygon)oShape;
 
-		if(pShape.getPoints().size() != this.points.size())
+		if(pShape.getVertices().size() != this.vertices.size())
 			return false;
 		
-		for(int i = 0, l = pShape.getPoints().size(); i < l; ++i)
-			if(!pShape.getPoints().get(i).equals(points.get(i)))
+		for(int i = 0, l = pShape.getVertices().size(); i < l; ++i)
+			if(!pShape.getVertices().get(i).equals(vertices.get(i)))
 				return false;
 
 		return true;
@@ -125,7 +125,7 @@ public class Polygon extends Line {
 		
 		s += "Polygon ";
 		
-		for(Vertex point : this.points)
+		for(Vertex point : this.vertices)
 			s += point.getPosition().x + "," + point.getPosition().y + ")-";
 		
 		return s;

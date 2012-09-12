@@ -284,9 +284,9 @@ public abstract class GeoSource extends SourceBase {
 
 			Point point = new Point(element);
 
-			List<Coordinate> coords = this.aggregator.getShapeCoordinates(o);
+			List<Vertex> vertices = this.aggregator.getShapeVertices(o);
 
-			point.setPosition(coords.get(0).x, coords.get(0).y);
+			point.setPosition(vertices.get(0).getX(), vertices.get(0).getY());
 
 			return point;
 		}
@@ -294,7 +294,7 @@ public abstract class GeoSource extends SourceBase {
 
 			Line line = new Line(element);
 
-			List<Coordinate> coords = this.aggregator.getShapeCoordinates(o);
+			List<Vertex> vertices = this.aggregator.getShapeVertices(o);
 			
 			for(Coordinate coord : coords)
 				line.addPoint(null, coord.x, coord.y);
@@ -305,7 +305,7 @@ public abstract class GeoSource extends SourceBase {
 
 			Polygon polygon = new Polygon(element);
 
-			List<Coordinate> coords = this.aggregator.getShapeCoordinates(o);
+			List<Vertex> vertices = this.aggregator.getShapeVertices(o);
 
 			for(Coordinate coord : coords)
 				polygon.addPoint(null, coord.x, coord.y);

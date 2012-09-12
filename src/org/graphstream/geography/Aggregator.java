@@ -37,8 +37,6 @@ import java.util.List;
 
 import org.graphstream.geography.ElementShape.Type;
 
-import com.vividsolutions.jts.geom.Coordinate;
-
 /**
  * An aggregator is a format-specific reader that goes through all input files
  * specified by a geo source and stores (aggregates) the geographic features
@@ -306,24 +304,24 @@ public abstract class Aggregator {
 	 * @param o
 	 * @return
 	 */
-	public List<Coordinate> getShapeCoordinates(Object o) {
+	public List<Vertex> getShapeVertices(Object o) {
 
 		if(isPoint(o))
-			return getPointCoordinates(o);
+			return getPointVertices(o);
 		
 		if(isLine(o))
-			return getLineCoordinates(o);
+			return getLineVertices(o);
 		
 		if(isPolygon(o))
-			return getPolygonCoordinates(o);
+			return getPolygonVertices(o);
 		
 		return null;
 	}
 
-	protected abstract List<Coordinate> getPointCoordinates(Object o);
+	protected abstract List<Vertex> getPointVertices(Object o);
 	
-	protected abstract List<Coordinate> getLineCoordinates(Object o);
+	protected abstract List<Vertex> getLineVertices(Object o);
 	
-	protected abstract List<Coordinate> getPolygonCoordinates(Object o);
+	protected abstract List<Vertex> getPolygonVertices(Object o);
 	
 }

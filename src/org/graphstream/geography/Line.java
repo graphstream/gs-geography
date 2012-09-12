@@ -49,7 +49,7 @@ public class Line extends ElementShape {
 	/**
 	 * The list of points forming the line.
 	 */
-	protected ArrayList<LinePoint> points;
+	protected ArrayList<Vertex> points;
 
 	/**
 	 * Instantiate a new line.
@@ -61,7 +61,7 @@ public class Line extends ElementShape {
 		super(element);
 
 		this.type = Type.LINE;
-		this.points = new ArrayList<LinePoint>();
+		this.points = new ArrayList<Vertex>();
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class Line extends ElementShape {
 	 */
 	public void addPoint(String id, double x, double y) {
 
-		LinePoint point = new LinePoint(x, y);
+		Vertex point = new Vertex(x, y);
 
 		point.setId(id);
 
@@ -88,7 +88,7 @@ public class Line extends ElementShape {
 	 * 
 	 * @return The list of points.
 	 */
-	public ArrayList<LinePoint> getPoints() {
+	public ArrayList<Vertex> getPoints() {
 
 		return this.points;
 	}
@@ -99,9 +99,9 @@ public class Line extends ElementShape {
 	 * @return An array of point. The point at index 0 is the starting point,
 	 *         the point at index 1 is the ending point.
 	 */
-	public LinePoint[] getEndPoints() {
+	public Vertex[] getEndPoints() {
 
-		return new LinePoint[]{
+		return new Vertex[]{
 				this.points.get(0), this.points.get(this.points.size() - 1)
 		};
 	}
@@ -114,12 +114,12 @@ public class Line extends ElementShape {
 	 * 
 	 * @return All pairs of successive points.
 	 */
-	public LinePoint[][] getPointPairs() {
+	public Vertex[][] getPointPairs() {
 
-		LinePoint[][] pairs = new LinePoint[this.points.size() - 1][];
+		Vertex[][] pairs = new Vertex[this.points.size() - 1][];
 
 		for(int i = 0, l = this.points.size() - 1; i < l; ++i)
-			pairs[i] = new LinePoint[]{
+			pairs[i] = new Vertex[]{
 					this.points.get(i), this.points.get(i + 1)
 			};
 
@@ -166,7 +166,7 @@ public class Line extends ElementShape {
 
 		s += "Line ";
 
-		for(LinePoint point : this.points)
+		for(Vertex point : this.points)
 			s += "(" + point.getPosition().x + "," + point.getPosition().y + ")-";
 
 		return s;
@@ -177,7 +177,7 @@ public class Line extends ElementShape {
 
 		List<SpatialIndexPoint> spatialIndexPoints = new ArrayList<SpatialIndexPoint>();
 
-		for(LinePoint point : this.points) {
+		for(Vertex point : this.points) {
 
 			SpatialIndexPoint spatialIndexPoint = new SpatialIndexPoint(this, point.getId(), point.getPosition().x, point.getPosition().y);
 

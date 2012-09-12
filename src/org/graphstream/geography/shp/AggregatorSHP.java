@@ -45,6 +45,7 @@ import org.graphstream.geography.Aggregator;
 import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.GeoSource;
+import org.graphstream.geography.Vertex;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -248,7 +249,7 @@ public class AggregatorSHP extends Aggregator {
 	}
 
 	@Override
-	protected List<Coordinate> getPointCoordinates(Object o) {
+	protected List<Vertex> getPointVertices(Object o) {
 
 		// Cast the object to a GeoTools feature.
 
@@ -256,15 +257,17 @@ public class AggregatorSHP extends Aggregator {
 
 		// Retrieve the only point.
 
-		List<Coordinate> coords = new ArrayList<Coordinate>();
+		List<Vertex> vertices = new ArrayList<Vertex>();
 
-		coords.add(((Geometry)feature.getDefaultGeometry()).getCoordinates()[0]);
+		Coordinate coord = ((Geometry)feature.getDefaultGeometry()).getCoordinates()[0];
 		
-		return coords;
+		vertices.add(new Vertex(coord.x, coord.y));
+		
+		return vertices;
 	}
 
 	@Override
-	protected List<Coordinate> getLineCoordinates(Object o) {
+	protected List<Vertex> getLineVertices(Object o) {
 
 		// Cast the object to a GeoTools feature.
 
@@ -272,20 +275,20 @@ public class AggregatorSHP extends Aggregator {
 
 		// Retrieve the points.
 
-		List<Coordinate> coords = new ArrayList<Coordinate>();
+		List<Vertex> vertices = new ArrayList<Vertex>();
 
 		for(Coordinate coord : ((Geometry)feature.getDefaultGeometry()).getCoordinates())
-			coords.add(coord);
+			vertices.add(new Vertex(coord.x, coord.y));
 		
 		// TODO lineEndPoint
 		
-		return coords;
+		return vertices;
 	}
 
 	@Override
-	protected List<Coordinate> getPolygonCoordinates(Object o) {
+	protected List<Vertex> getPolygonVertices(Object o) {
 
-		return getLineCoordinates(o);
+		return getLineVertices(o);
 	}
 
 }

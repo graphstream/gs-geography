@@ -36,7 +36,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 /**
  * @author Merwan Achibet
  */
-public class LinePoint {
+public class Vertex {
 
 	/**
 	 * Coordinates of the point.
@@ -53,7 +53,7 @@ public class LinePoint {
 	/**
 	 * Instantiate a new point at coordinates (0,0).
 	 */
-	public LinePoint() {
+	public Vertex() {
 
 		this.position = new Coordinate(0, 0);
 	}
@@ -66,9 +66,22 @@ public class LinePoint {
 	 * @param y
 	 *            The y-axis coordinate.
 	 */
-	public LinePoint(double x, double y) {
+	public Vertex(double x, double y) {
 
 		this.position = new Coordinate(x, y);
+	}
+	
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @param id
+	 */
+	public Vertex(double x, double y, String id) {
+		
+		this(x, y);
+		
+		this.id = id;
 	}
 
 	/**
@@ -85,6 +98,16 @@ public class LinePoint {
 		this.position.y = y;
 	}
 
+	public void setX(double x) {
+		
+		this.position.x = x;
+	}
+	
+	public void setY(double y) {
+		
+		this.position.y = y;
+	}
+
 	/**
 	 * Give the coordinates of the point.
 	 * 
@@ -95,6 +118,16 @@ public class LinePoint {
 		return new Coordinate(this.position);
 	}
 
+	public double getX() {
+		
+		return this.position.x;
+	}
+	
+	public double getY() {
+	
+		return this.position.y;
+	}
+	
 	/**
 	 * Associate an ID with the point.
 	 * 
@@ -126,7 +159,7 @@ public class LinePoint {
 
 		// Check if the other shape has the same position.
 
-		LinePoint point = (LinePoint)o;
+		Vertex point = (Vertex)o;
 
 		if(this.position.equals(point.getPosition()))
 			return true;

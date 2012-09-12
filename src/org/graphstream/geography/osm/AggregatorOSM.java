@@ -40,6 +40,7 @@ import org.graphstream.geography.Aggregator;
 import org.graphstream.geography.ElementDescriptor;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.GeoSource;
+import org.graphstream.geography.Vertex;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -282,19 +283,21 @@ public class AggregatorOSM extends Aggregator {
 	}
 
 	@Override
-	protected List<Coordinate> getPointCoordinates(Object o) {
+	protected List<Vertex> getPointVertices(Object o) {
 
 		// Retrieve the position of the node.
 
-		List<Coordinate> coords = new ArrayList<Coordinate>();
+		List<Vertex> vertices = new ArrayList<Vertex>();
 
-		coords.add(new Coordinate(((GeoSourceOSM)this.source).getNodePosition(getFeatureId(o))));
+		Coordinate coord = ((GeoSourceOSM)this.source).getNodePosition(getFeatureId(o));
+		
+		vertices.add(new Vertex(coord.x, coord.y, getFeatureId(o)));
 
-		return coords;
+		return vertices;
 	}
 
 	@Override
-	protected List<Coordinate> getLineCoordinates(Object o) {
+	protected List<Vertex> getLineVertices(Object o) {
 
 		// Cast the object to a XOM element.
 
@@ -302,22 +305,28 @@ public class AggregatorOSM extends Aggregator {
 
 		// Retrieve the positions of all nodes referenced in the path.
 
-		List<Coordinate> coords = new ArrayList<Coordinate>();
+		List<Vertex> vertices = new ArrayList<Vertex>();
 
 		nu.xom.Elements xmlNodes = xmlElement.getChildElements("nd");
 
 		GeoSourceOSM sourceOSM = (GeoSourceOSM)this.source;
 
-		for(int i = 0, l = xmlNodes.size(); i < l; ++i)
-			coords.add(sourceOSM.getNodePosition(xmlNodes.get(i).getAttributeValue("ref")));
-
-		return coords;
+		for(int i = 0, l = xmlNodes.size(); i < l; ++i) {
+			
+			String nodeId = xmlNodes.get(i).getAttributeValue("ref");
+			
+			Coordinate coord = sourceOSM.getNodePosition(nodeId);
+			
+			vertices.add(new Vertex(coord.x, coord.y, nodeId));
+		}
+		
+		return vertices;
 	}
 
 	@Override
-	protected List<Coordinate> getPolygonCoordinates(Object o) {
+	protected List<Vertex> getPolygonVertices(Object o) {
 
-		return getLineCoordinates(o);
+		return getLineVertices(o);
 	}
 
 }

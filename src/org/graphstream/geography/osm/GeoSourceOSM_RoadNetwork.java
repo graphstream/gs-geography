@@ -41,7 +41,7 @@ import org.graphstream.geography.ElementShape;
 import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
-import org.graphstream.geography.LinePoint;
+import org.graphstream.geography.Vertex;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -145,12 +145,12 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 				Line line = (Line)elementDiff.getShape();
 
-				LinePoint[][] pointPairs = line.getPointPairs();
+				Vertex[][] pointPairs = line.getPointPairs();
 
 				for(int i = 0, l = pointPairs.length; i < l; ++i) {
 
-					LinePoint from = pointPairs[i][0];
-					LinePoint to = pointPairs[i][1];
+					Vertex from = pointPairs[i][0];
+					Vertex to = pointPairs[i][1];
 
 					addNode(from);
 					addNode(to);
@@ -173,12 +173,12 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 				Line line = (Line)elementAtStep.getShape();
 
-				LinePoint[][] pointPairs = line.getPointPairs();
+				Vertex[][] pointPairs = line.getPointPairs();
 
 				for(int i = 0, l = pointPairs.length; i < l; ++i) {
 
-					LinePoint from = pointPairs[i][0];
-					LinePoint to = pointPairs[i][1];
+					Vertex from = pointPairs[i][0];
+					Vertex to = pointPairs[i][1];
 
 					String edgeId = line.getElementId() + "_" + from.getId() + "_" + to.getId();
 
@@ -195,7 +195,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	 * @param point
 	 *            The point to transfer to the graph.
 	 */
-	protected void addNode(LinePoint point) {
+	protected void addNode(Vertex point) {
 
 		String nodeId = point.getId();
 

@@ -42,7 +42,7 @@ import org.graphstream.geography.ElementShape;
 import org.graphstream.geography.ElementView;
 import org.graphstream.geography.FileDescriptor;
 import org.graphstream.geography.Line;
-import org.graphstream.geography.LinePoint;
+import org.graphstream.geography.Vertex;
 import org.graphstream.geography.Point;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -196,7 +196,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 			// Add the two end points to the graph if necessary.
 
-			LinePoint[] ends = line.getEndPoints();
+			Vertex[] ends = line.getEndPoints();
 
 			String idNode1 = addNode(ends[0], line, road);
 			String idNode2 = addNode(ends[1], line, road);
@@ -227,7 +227,7 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 	 *            The line containing the intersection.
 	 * @return The ID of the point used as a graph node.
 	 */
-	protected String addNode(LinePoint point, Line line, ElementView road) {
+	protected String addNode(Vertex point, Line line, ElementView road) {
 
 		// Retrieve the Z-level points at the same position as the road point.
 

@@ -125,7 +125,7 @@ public class Polygon extends Line {
 		
 		s += "Polygon ";
 		
-		for(LinePoint point : this.points)
+		for(Vertex point : this.points)
 			s += point.getPosition().x + "," + point.getPosition().y + ")-";
 		
 		return s;

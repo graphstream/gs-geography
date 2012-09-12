@@ -37,13 +37,11 @@ import java.util.Map.Entry;
 
 /**
  * Specify which attributes must be kept/filtered when converting a geographic
- * object from a library-dependent format to the simple geometric one.
+ * object from a library-dependent format to a simple geometric element.
  * 
  * A filter has a mode. If it is KEEP, only the matched attributes will be kept
- * in the converted element. If is is FILTER, all attributes except the matched
- * ones will be kept.
- * 
- * TODO clean up
+ * in the converted element. If is is FILTER, all attributes except for the
+ * matched ones will be kept.
  * 
  * @author Antoine Dutot
  * @author Merwan Achibet
@@ -74,25 +72,9 @@ public class AttributeFilter {
 
 		this.mode = AttributeFilter.Mode.KEEP;
 	}
-	
-	/**
-	 * 
-	 * @param allAttributes
-	 * @return
-	 */
-	public HashMap<String, Object> filter(HashMap<String, Object> allAttributes) {
-		
-		HashMap<String, Object> filtered = new HashMap<String, Object>();
-		
-		for(Entry<String, Object> keyValue : allAttributes.entrySet())
-			if(isKept(keyValue.getKey()))
-				filtered.put(keyValue.getKey(), keyValue.getValue());
-		
-		return filtered;
-	}
 
 	/**
-	 * instantiate a new filter with the given mode.
+	 * Instantiate a new filter with the given mode.
 	 * 
 	 * @param mode
 	 *            The filtering mode.
@@ -100,6 +82,24 @@ public class AttributeFilter {
 	public AttributeFilter(Mode mode) {
 
 		this.mode = mode;
+	}
+
+	/**
+	 * Give a list of filtered attributes from a list of attributes.
+	 * 
+	 * @param allAttributes
+	 *            A list of attributes.
+	 * @return A filtered list of attributes.
+	 */
+	public HashMap<String, Object> filter(HashMap<String, Object> allAttributes) {
+
+		HashMap<String, Object> filtered = new HashMap<String, Object>();
+
+		for(Entry<String, Object> keyValue : allAttributes.entrySet())
+			if(isKept(keyValue.getKey()))
+				filtered.put(keyValue.getKey(), keyValue.getValue());
+
+		return filtered;
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class AttributeFilter {
 
 		if(this.attributes == null)
 			return false;
-		
+
 		return mode == Mode.KEEP ? attributes.contains(attribute) : !attributes.contains(attribute);
 	}
 
@@ -128,28 +128,18 @@ public class AttributeFilter {
 
 		if(this.attributes == null)
 			return false;
-		
+
 		return mode == Mode.KEEP ? !attributes.contains(attribute) : attributes.contains(attribute);
 	}
 
 	/**
-	 * Check if the filter defines the attributes to keep.
+	 * Give the filtering mode.
 	 * 
-	 * @return True if matching attributes are kept, false otherwise.
+	 * @return The filtering mode, KEEP or FILTER.
 	 */
-	public boolean isKeepMode() {
+	public Mode getMode() {
 
-		return mode == Mode.KEEP;
-	}
-
-	/**
-	 * Check if the filter defines the attributes to ignore.
-	 * 
-	 * @return True if matching attributes are ignored, false otherwise.
-	 */
-	boolean isFilterMode() {
-
-		return mode == Mode.FILTER;
+		return this.mode;
 	}
 
 	/**
@@ -162,19 +152,8 @@ public class AttributeFilter {
 
 		if(this.attributes == null)
 			this.attributes = new ArrayList<String>();
-		
+
 		this.attributes.add(attribute);
-	}
-
-	/**
-	 * Remove an attribute from the set of kept/filtered attributes.
-	 * 
-	 * @param attribute
-	 *            The attribute name.
-	 */
-	public void remove(String attribute) {
-
-		this.attributes.remove(attribute);
 	}
 
 	@Override

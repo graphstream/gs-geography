@@ -32,11 +32,9 @@
 package org.graphstream.geography;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.SortedMap;
 import java.util.TreeSet;
 
 import org.graphstream.geography.ElementShape.Type;

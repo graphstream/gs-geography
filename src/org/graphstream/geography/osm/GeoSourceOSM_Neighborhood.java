@@ -147,50 +147,99 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 			if(buildingDiff.isDeleted()) {
 
-				sendNodeRemoved(this.id, buildingDiff.getElementId());
-				
-				// Also remove it from our local record.
-				
-				this.placedBuildings.remove(buildingDiff.getElementId());
+				removeBuilding(buildingDiff);
 			}
 
 			// Otherwise, if the diff is a base, insert the building.
 
 			else if(buildingDiff.isBase()) {
 
-				// Compute the center of the current building and add a new node
-				// at this position.
+				placeBuilding(buildingDiff);
 
-				String id = buildingDiff.getElementId();
-
-				sendNodeAdded(this.id, id);
-
-				Coordinate centroid = ((Polygon)buildingDiff.getShape()).getCentroid();
-				sendNodeAttributeAdded(this.id, id, "x", centroid.x);
-				sendNodeAttributeAdded(this.id, id, "y", centroid.y);
-
-				replicateNodeAttributes(id, buildingDiff);
-
-				// Draw an edge between the new node and already placed ones if
-				// their distance is below the neighborhood radius.
-
-				for(Entry<String, Coordinate> idPosPair : placedBuildings.entrySet())
-					if(centroid.distance(idPosPair.getValue()) < this.radius)
-						sendEdgeAdded(this.id, id + idPosPair.getKey(), id, idPosPair.getKey(), false);
-
-				// Record that this building has been added to the graph.
-
-				placedBuildings.put(id, centroid);
+				computeNeighborhood(buildingDiff);
 			}
 
 			// Otherwise, update the building.
 
 			else {
 
+				// Replicate to the graph the attributes that may have changed.
+
 				replicateNodeAttributes(buildingDiff.getElementId(), buildingDiff);
-				
+
+				// If the shape of the building has changed (in particular, its
+				// position), replace it and then recompute its neighborhood
+				// relationships.
+
+				if(buildingDiff.getShape() != null) {
+
+					removeBuilding(buildingDiff);
+
+					placeBuilding(buildingDiff);
+
+					computeNeighborhood(buildingDiff);
+				}
 			}
 		}
+	}
+
+	/**
+	 * Add a node representing a building to the output graph.
+	 * 
+	 * @param buildingDiff
+	 *            The building diff.
+	 */
+	protected void placeBuilding(ElementDiff buildingDiff) {
+
+		// Add a node to the graph.
+
+		sendNodeAdded(this.id, buildingDiff.getElementId());
+
+		// Put it at the appropriate position.
+
+		Coordinate centroid = ((Polygon)buildingDiff.getShape()).getCentroid();
+
+		sendNodeAttributeAdded(this.id, buildingDiff.getElementId(), "x", centroid.x);
+		sendNodeAttributeAdded(this.id, buildingDiff.getElementId(), "y", centroid.y);
+
+		// Record that the building has been added.
+
+		this.placedBuildings.put(buildingDiff.getElementId(), centroid);
+	}
+
+	/**
+	 * Remove the node representing a building from the graph.
+	 * 
+	 * @param buildingDiff
+	 *            The building diff.
+	 */
+	protected void removeBuilding(ElementDiff buildingDiff) {
+
+		// Remove the associated node from the graph.
+
+		sendNodeRemoved(this.id, buildingDiff.getElementId());
+
+		// Remove the building from our local record.
+
+		this.placedBuildings.remove(buildingDiff.getElementId());
+	}
+
+	/**
+	 * Add edges between the node representing a given building and all the
+	 * other nodes representing other buildings if they are close enough to be
+	 * considered neighbors.
+	 * 
+	 * @param buildingDiff The building diff.
+	 */
+	protected void computeNeighborhood(ElementDiff buildingDiff) {
+
+		Coordinate centroid = this.placedBuildings.get(buildingDiff.getElementId());
+
+		String buildingId = buildingDiff.getElementId();
+
+		for(Entry<String, Coordinate> idPosPair : placedBuildings.entrySet())
+			if(centroid.distance(idPosPair.getValue()) < this.radius)
+				sendEdgeAdded(this.id, buildingId + idPosPair.getKey(), buildingId, idPosPair.getKey(), false);
 	}
 
 }

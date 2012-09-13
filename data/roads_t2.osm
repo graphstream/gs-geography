@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version='0.6' generator='JOSM'>
+  <node id='-65' visible='true' lat='-0.023895185864902288' lon='-0.008264500613899597' />
+  <node id='-62' visible='true' lat='0.026320636898947817' lon='-0.014732370659560151' />
+  <node id='-55' visible='true' lat='0.017157821670234035' lon='0.029464741319120302' />
+  <node id='-53' visible='true' lat='0.006378038504069842' lon='0.018235800267626286' />
+  <node id='-51' visible='true' lat='-0.011139109452917871' lon='0.01760697956874262' />
+  <node id='-49' visible='true' lat='-0.013923886766807081' lon='1.796630568239043E-4' />
+  <node id='-47' visible='true' lat='0.004401744887849392' lon='-0.0051203971194812735' />
+  <node id='-45' visible='true' lat='0.01392388676679436' lon='-0.018145968739214334' />
+  <node id='-44' visible='true' lat='0.0030542719645534847' lon='-0.030183393546415922' />
+  <way id='-66' action='modify' visible='true'>
+    <nd ref='-49' />
+    <nd ref='-65' />
+    <tag k='highway' v='residential' />
+  </way>
+  <way id='-63' action='modify' visible='true'>
+    <nd ref='-45' />
+    <nd ref='-62' />
+    <tag k='highway' v='residential' />
+  </way>
+  <way id='-46' action='modify' visible='true'>
+    <nd ref='-44' />
+    <nd ref='-45' />
+    <nd ref='-47' />
+    <nd ref='-49' />
+    <nd ref='-51' />
+    <nd ref='-53' />
+    <nd ref='-55' />
+    <tag k='highway' v='residential' />
+  </way>
+</osm>

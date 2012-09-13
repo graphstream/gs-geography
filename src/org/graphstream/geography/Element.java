@@ -106,30 +106,34 @@ public class Element {
 			if(dateDiffPair.getKey() > date)
 				return rebuiltElement;
 
-			// Retrieve the differential state of the element at this date.
+			if(dateDiffPair.getValue() != null) {
 
-			ElementDiff currentDiff = dateDiffPair.getValue();
+				// Retrieve the differential state of the element at this date.
 
-			// Remove the attributes that disappeared with this diff.
+				ElementDiff currentDiff = dateDiffPair.getValue();
 
-			ArrayList<String> removedAttributes = currentDiff.getRemovedAttributes();
+				// Remove the attributes that disappeared with this diff.
 
-			if(removedAttributes != null)
-				for(String key : removedAttributes)
-					rebuiltElement.removeAttribute(key);
+				ArrayList<String> removedAttributes = currentDiff.getRemovedAttributes();
 
-			// Update the attributes which value changed with this diff.
+				if(removedAttributes != null)
+					for(String key : removedAttributes)
+						rebuiltElement.removeAttribute(key);
 
-			HashMap<String, Object> changedAttributes = currentDiff.getChangedAttributes();
+				// Update the attributes which value changed with this diff.
 
-			if(changedAttributes != null)
-				for(Entry<String, Object> keyValue : changedAttributes.entrySet())
-					rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
+				HashMap<String, Object> changedAttributes = currentDiff.getChangedAttributes();
 
-			// Update the shape if it has changed.
+				if(changedAttributes != null)
+					for(Entry<String, Object> keyValue : changedAttributes.entrySet())
+						rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
 
-			if(currentDiff.shape != null)
-				rebuiltElement.shape = currentDiff.shape;
+				// Update the shape if it has changed.
+
+				if(currentDiff.shape != null)
+					rebuiltElement.shape = currentDiff.shape;
+
+			}
 
 			// Return the rebuilt element if the exact date is reached.
 
@@ -218,6 +222,17 @@ public class Element {
 	public void addDiffAtDate(ElementDiff diff, Integer date) {
 
 		this.diffs.put(date, diff);
+	}
+
+	/**
+	 * Remove the diff at a given date.
+	 * 
+	 * @param date
+	 *            The date.
+	 */
+	public void removeDiffAtDate(Integer date) {
+
+		this.diffs.remove(date);
 	}
 
 	/**

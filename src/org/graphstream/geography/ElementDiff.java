@@ -256,6 +256,9 @@ public class ElementDiff {
 		if(this.shape != null)
 			return false;
 
+		if(this.isDeletedFlag)
+			return false;
+
 		return true;
 	}
 
@@ -278,7 +281,10 @@ public class ElementDiff {
 				s += " " + key;
 		s += " }";
 
-		s += " | " + this.shape;
+		s += " | shape: " + this.shape;
+		
+		if(this.isDeletedFlag)
+			s += " | deletion diff";
 
 		return s;
 	}

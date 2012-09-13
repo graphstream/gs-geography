@@ -48,13 +48,13 @@ public class Test_OSM_Neighborhood {
 
 		Graph graph = new SingleGraph("neighborhood");
 
-		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, "/home/merwan/map.osm");
+		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, "/home/merwan/neighborhood.osm");
 		src.addSink(graph);
 
 		src.read();
 
 		src.end();
-
+		
 		graph.display(false);
 	}
 

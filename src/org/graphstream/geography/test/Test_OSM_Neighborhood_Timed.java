@@ -48,14 +48,25 @@ public class Test_OSM_Neighborhood_Timed {
 
 		Graph graph = new SingleGraph("neighborhood");
 
-		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, "/home/merwan/map.osm");
+		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, "/home/merwan/neighborhood_t0.osm", "/home/merwan/neighborhood_t1.osm", "/home/merwan/neighborhood_t2.osm");
 		src.addSink(graph);
+		
+		src.timeDependsOnFile();
 
 		src.read();
 
-		src.end();
-
 		graph.display(false);
+
+		do {
+
+			try {
+				Thread.sleep(1000);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} while(src.next());
 	}
 
 }

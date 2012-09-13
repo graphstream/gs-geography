@@ -47,7 +47,7 @@ public class Test_OSM_RoadNetwork {
 
 		Graph graph = new SingleGraph("road network");
 
-		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork("/home/merwan/map.osm");
+		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork("/home/merwan/roads.osm");
 		src.addSink(graph);
 
 		src.read();

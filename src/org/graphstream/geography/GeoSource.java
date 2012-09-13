@@ -32,9 +32,11 @@
 package org.graphstream.geography;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.SortedMap;
 import java.util.TreeSet;
 
 import org.graphstream.geography.ElementShape.Type;
@@ -170,7 +172,7 @@ public abstract class GeoSource extends SourceBase {
 				this.elements.put(id, element);
 			}
 
-			// Create an empty diff each time the element appears.
+			// Create an empty slot for a diff each time the element appears.
 
 			for(Integer date : entry.getValue().keySet()) {
 
@@ -237,6 +239,18 @@ public abstract class GeoSource extends SourceBase {
 
 				element.addDiffAtDate(deletionDiff, deletionDate);
 			}
+
+			// Remove the empty diff slots that were not filled up because their
+			// diff was useless.
+
+			ArrayList<Integer> datesToBeDeleted = new ArrayList<Integer>();
+			
+			for(Entry<Integer, ElementDiff> dateDiffPair : element.getDiffs().entrySet())
+				if(dateDiffPair.getValue() == null)
+					datesToBeDeleted.add(dateDiffPair.getKey());
+
+			for(Integer dateToBeDeleted : datesToBeDeleted)
+				element.removeDiffAtDate(dateToBeDeleted);
 		}
 	}
 
@@ -428,7 +442,7 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public boolean next() {
 
-		System.out.println("step " + this.currentTimeStep+ " (date: " + stepToDate(this.currentTimeStep)+ ")");
+		System.out.println("step " + this.currentTimeStep + " (date: " + stepToDate(this.currentTimeStep) + ")");
 
 		nextEvents();
 

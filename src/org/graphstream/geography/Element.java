@@ -90,7 +90,7 @@ public class Element {
 
 		// Check that the element exists at this date.
 
-		if(!this.diffs.containsKey(date))
+		if(!existsAtDate(date))
 			return null;
 
 		// Go through each state in ascending order and rebuild the element with
@@ -98,11 +98,11 @@ public class Element {
 
 		ElementView rebuiltElement = new ElementView(this);
 
-		for(Entry<Integer, ElementDiff> dateElementPair : this.diffs.entrySet()) {
+		for(Entry<Integer, ElementDiff> dateDiffPair : this.diffs.entrySet()) {
 
 			// Retrieve the differential state of the element at this date.
 
-			ElementDiff currentDiff = dateElementPair.getValue();
+			ElementDiff currentDiff = dateDiffPair.getValue();
 
 			// Remove the attributes that disappeared with this diff.
 
@@ -127,12 +127,12 @@ public class Element {
 
 			// Return the rebuilt element if the appropriate date is reached.
 
-			if(dateElementPair.getKey() >= date)
+			if(dateDiffPair.getKey() >= date)
 				return rebuiltElement;
 
 		}
 
-		//
+		// Return null if the element has no diff.
 
 		return null;
 	}
@@ -246,7 +246,22 @@ public class Element {
 
 		ElementDiff firstDiff = this.diffs.firstEntry().getValue();
 
-		return firstDiff != null && !firstDiff.isEmpty();
+		return firstDiff != null && firstDiff.isBase();
+	}
+
+	/**
+	 * Check if the element exists at a given date.
+	 * 
+	 * @param date
+	 *            The date.
+	 * @return True if the element exists at the date, false otherwise.
+	 */
+	public boolean existsAtDate(Integer date) {
+
+		Integer birth = this.diffs.firstKey();
+		Integer death = this.diffs.lastKey();
+
+		return date >= birth && date <= death;
 	}
 
 	/**

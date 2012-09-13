@@ -591,13 +591,16 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public ArrayList<ElementDiff> getElementDiffsAtStep(int step) {
 
+		// Get the date associated with this time step.
+		
+		Integer date = stepToDate(step);
+		
 		ArrayList<ElementDiff> elementDiffsAtStep = new ArrayList<ElementDiff>();
 
 		for(Element element : this.elements.values()) {
 
 			// Retrieve the element diff at this step.
-
-			Integer date = stepToDate(step);
+			
 			ElementDiff elementAtDate = element.getElementDiffAtDate(date);
 
 			if(elementAtDate != null)

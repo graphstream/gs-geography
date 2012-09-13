@@ -428,7 +428,7 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public boolean next() {
 
-		System.out.println("step " + this.currentTimeStep);
+		System.out.println("step " + this.currentTimeStep+ " (date: " + stepToDate(this.currentTimeStep)+ ")");
 
 		nextEvents();
 

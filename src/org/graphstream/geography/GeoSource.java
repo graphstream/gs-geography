@@ -244,7 +244,7 @@ public abstract class GeoSource extends SourceBase {
 			// diff was useless.
 
 			ArrayList<Integer> datesToBeDeleted = new ArrayList<Integer>();
-			
+
 			for(Entry<Integer, ElementDiff> dateDiffPair : element.getDiffs().entrySet())
 				if(dateDiffPair.getValue() == null)
 					datesToBeDeleted.add(dateDiffPair.getKey());
@@ -616,6 +616,29 @@ public abstract class GeoSource extends SourceBase {
 	 *            The time step.
 	 * @return The diff of the element at this step or null if it does not exist
 	 *         at this time.
+	 */
+	public ElementDiff getElementDiffAtStep(String id, int step) {
+
+		// Get the real date from the time step index.
+
+		Integer date = stepToDate(step);
+
+		Element element = this.elements.get(id);
+		
+		if(element == null)
+			return null;
+		
+		ElementDiff diffAtDate = element.getDiffAtDate(date);
+		
+		return diffAtDate;
+	}
+
+	/**
+	 * Give the diff of all elements at a given date.
+	 * 
+	 * @param step
+	 *            The time step.
+	 * @return The diffs of the elements at this step.
 	 */
 	public ArrayList<ElementDiff> getElementDiffsAtStep(int step) {
 

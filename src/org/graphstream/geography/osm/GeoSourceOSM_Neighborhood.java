@@ -143,7 +143,6 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 		for(ElementDiff buildingDiff : buildingDiffsAtStep) {
 
-			System.out.println(buildingDiff);
 			// It the building is deleted remove it from the graph.
 
 			if(buildingDiff.isDeleted()) {

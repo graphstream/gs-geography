@@ -8,8 +8,8 @@
       <void method="setRect">
        <double>120.0</double>
        <double>90.0</double>
-       <double>380.0</double>
-       <double>260.0</double>
+       <double>340.0</double>
+       <double>320.0</double>
       </void>
      </object>
     </void>
@@ -19,8 +19,10 @@
 .
 protected ElementShape shape;
 .
-protected HashMap&lt;String, Object&gt; changedAttributes;
-protected ArrayList&lt;String&gt; removedAttributes;</string>
+HashMap&lt;String, Object&gt; changedAttributes;
+ArrayList&lt;String&gt; removedAttributes;
+.
+boolean isDeletedFlag</string>
      </void>
     </void>
     <void property="methods">
@@ -33,7 +35,9 @@ ElementShape getShape()
 void setChangedAttribute(String key, Object value)
 HashMap&lt;String, Object&gt; getChangedAttributes()
 void addRemovedAttribute(String key)
-ArrayList&lt;String&gt; getRemovedAttributes()</string>
+ArrayList&lt;String&gt; getRemovedAttributes()
+.
+boolean isDeleted()</string>
      </void>
     </void>
     <void property="name">

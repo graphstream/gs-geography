@@ -9,7 +9,7 @@
        <double>200.0</double>
        <double>60.0</double>
        <double>480.0</double>
-       <double>160.0</double>
+       <double>200.0</double>
       </void>
      </object>
     </void>
@@ -26,6 +26,8 @@ AttributeFilter filter</string>
 void mustBe(Type type)
 void mustHave(String key)
 void mustHave(String key, Object value)
+void mustNotHave(String key)
+void mustNotHave(String key, Object value)
 .
 boolean matches(Object o)</string>
      </void>

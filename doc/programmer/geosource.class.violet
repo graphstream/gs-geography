@@ -9,7 +9,7 @@
        <double>220.0</double>
        <double>0.0</double>
        <double>580.0</double>
-       <double>340.0</double>
+       <double>360.0</double>
       </void>
      </object>
     </void>
@@ -34,6 +34,7 @@ ElementShape diffShape(Element element, ElementView elementAtPreviousDate, Objec
 ElementView getElementViewAtStep(String id, int step)
 ArrayList&lt;ElementView&gt; getElementViewsAtStep(int step)
 .
+ElementDiff getElementDiffAtStep(String id, int step)
 ArrayList&lt;ElementDiff&gt; getElementDiffsAtStep(int step)
 .
 void end()
@@ -123,7 +124,7 @@ abstract boolean nextEvent()</string>
        <double>70.0</double>
        <double>490.0</double>
        <double>260.0</double>
-       <double>100.0</double>
+       <double>160.0</double>
       </void>
      </object>
     </void>
@@ -131,7 +132,13 @@ abstract boolean nextEvent()</string>
      <void property="text">
       <string>GeoSourceNavteq(String... fileNames)
 .
-boolean nextEvents()</string>
+boolean nextEvents()
+.
+ElementDescriptor getRoadDescriptor()
+AttributeFilter getRoadFilter()
+ElementDescriptor getZDescriptor()
+AttributeFilter getZFilter()
+</string>
      </void>
     </void>
     <void property="name">
@@ -155,7 +162,7 @@ boolean nextEvents()</string>
        <double>370.0</double>
        <double>490.0</double>
        <double>340.0</double>
-       <double>100.0</double>
+       <double>200.0</double>
       </void>
      </object>
     </void>
@@ -163,7 +170,14 @@ boolean nextEvents()</string>
      <void property="text">
       <string>GeoSourceOSM_Neighborhood(String... fileNames)
 .
-boolean nextEvents()</string>
+boolean nextEvents()
+.
+ElementDescriptor getBuildingDescriptor()
+AttributeFilter getBuildingFilter()
+.
+void placeBuilding(ElementDiff buildingDiff)
+void removeBuilding(ElementDiff buildingDiff)
+void computeNeighborhood(ElementDiff buildingDiff)</string>
      </void>
     </void>
     <void property="name">
@@ -187,7 +201,7 @@ boolean nextEvents()</string>
        <double>750.0</double>
        <double>490.0</double>
        <double>320.0</double>
-       <double>100.0</double>
+       <double>160.0</double>
       </void>
      </object>
     </void>
@@ -195,7 +209,12 @@ boolean nextEvents()</string>
      <void property="text">
       <string>GeoSourceOSM_RoadNetwork(String... fileNames)
 .
-boolean nextEvents()</string>
+boolean nextEvents()
+.
+.
+ElementDescriptor getRoadDescriptor()
+AttributeFilter getRoadFilter()
+</string>
      </void>
     </void>
     <void property="name">

@@ -132,23 +132,22 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 	@Override
 	protected void nextEvents() {
 
-		ArrayList<ElementDiff> elementDiffsAtStep = getElementDiffsAtStep(this.currentTimeStep);
+		ArrayList<ElementDiff> roadDiffsAtStep = getElementDiffsAtStep(this.currentTimeStep);
 
-		for(ElementDiff elementDiff : elementDiffsAtStep) {
+		for(ElementDiff roadDiff : roadDiffsAtStep) {
 
-			// If the element is deleted, remove it from the graph.
-			
-			if(elementDiff.isDeleted()) {
+			// If the road is deleted, remove it from the graph.
+
+			if(roadDiff.isDeleted()) {
 
 				// TODO
 			}
 
 			// If the diff is a base, insert the road for the first time.
 
-			else if(elementDiff.isBase()) {
+			else if(roadDiff.isBase()) {
 
-				Line line = (Line)elementDiff.getShape();
-
+				Line line = (Line)roadDiff.getShape();
 				Vertex[][] pointPairs = line.getVertexPairs();
 
 				for(int i = 0, l = pointPairs.length; i < l; ++i) {
@@ -165,18 +164,20 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 						this.addedEdgeIds.add(edgeId);
 					}
 
-					replicateEdgeAttributes(edgeId, elementDiff);
+					// Send every attribute from the road element to each of the
+					// edges shaping it in the output graph.
+					
+					replicateEdgeAttributes(edgeId, roadDiff);
 				}
 			}
 
-			// Otherwise, update the element.
+			// Otherwise, update the road.
 
 			else {
 
-				ElementView elementAtStep = getElementViewAtStep(elementDiff.getElementId(), this.currentTimeStep);
+				ElementView elementAtStep = getElementViewAtStep(roadDiff.getElementId(), this.currentTimeStep);
 
 				Line line = (Line)elementAtStep.getShape();
-
 				Vertex[][] pointPairs = line.getVertexPairs();
 
 				for(int i = 0, l = pointPairs.length; i < l; ++i) {
@@ -186,12 +187,23 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 					String edgeId = line.getElementId() + "_" + from.getId() + "_" + to.getId();
 
-					replicateEdgeAttributes(edgeId, elementDiff);
+					// Send every attribute from the road element to each of the
+					// edges shaping it in the output graph.
+					
+					replicateEdgeAttributes(edgeId, roadDiff);
 				}
-
-				// Update the shape if necesary.
-
 			}
+
+			/*
+			 * TODO
+			 * 
+			 * Finish to take time into account.
+			 * 
+			 * This means watching for new roads, watching for deleted roads,
+			 * watching for roads which shape may have changed (may be a bit
+			 * tricky). The addition/change/removal of attributes is already
+			 * done (but that was the easiest part!).
+			 */
 		}
 
 	}

@@ -139,26 +139,33 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	@Override
 	public void nextEvents() {
 
-		ArrayList<ElementDiff> elementDiffsAtStep = getElementDiffsAtStep(this.currentTimeStep);
+		ArrayList<ElementDiff> buildingDiffsAtStep = getElementDiffsAtStep(this.currentTimeStep);
 
-		for(ElementDiff elementDiff : elementDiffsAtStep) {
+		for(ElementDiff buildingDiff : buildingDiffsAtStep) {
 
-			// If the diff is a base, insert the building.
+			// It the building is deleted remove it from the graph.
 
-			if(elementDiff.isBase()) {
+			if(buildingDiff.isDeleted()) {
+
+				sendNodeRemoved(this.id, buildingDiff.getElementId());
+			}
+
+			// Otherwise, if the diff is a base, insert the building.
+
+			else if(buildingDiff.isBase()) {
 
 				// Compute the center of the current building and add a new node
 				// at this position.
 
-				String id = elementDiff.getElementId();
+				String id = buildingDiff.getElementId();
 
 				sendNodeAdded(this.id, id);
 
-				Coordinate centroid = ((Polygon)elementDiff.getShape()).getCentroid();
+				Coordinate centroid = ((Polygon)buildingDiff.getShape()).getCentroid();
 				sendNodeAttributeAdded(this.id, id, "x", centroid.x);
 				sendNodeAttributeAdded(this.id, id, "y", centroid.y);
 
-				replicateNodeAttributes(id, elementDiff);
+				replicateNodeAttributes(id, buildingDiff);
 
 				// Draw an edge between the new node and already placed ones if
 				// their distance is below the neighborhood radius.
@@ -176,12 +183,8 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 			else {
 
-				// Update the attributes.
-
-				replicateNodeAttributes(id, elementDiff);
-
-				// Update the shape if necessary.
-
+				replicateNodeAttributes(buildingDiff.getElementId(), buildingDiff);
+				
 			}
 		}
 	}

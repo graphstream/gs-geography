@@ -347,7 +347,7 @@ public abstract class GeoSource extends SourceBase {
 
 		// Determine the geometric type of the element.
 
-		ElementShape.Type type = this.aggregator.getType(o);
+		ElementShape.Type type = this.aggregator.getShapeType(o);
 
 		// Instantiate a new shape.
 

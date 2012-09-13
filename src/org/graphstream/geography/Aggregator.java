@@ -287,7 +287,7 @@ public abstract class Aggregator {
 	 *            The geographic object.
 	 * @return The shape type of the object.
 	 */
-	public ElementShape.Type getType(Object o) {
+	public ElementShape.Type getShapeType(Object o) {
 
 		if(isPoint(o))
 			return Type.POINT;

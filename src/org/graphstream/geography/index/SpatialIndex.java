@@ -51,7 +51,7 @@ import org.miv.pherd.ntree.QuadtreeCellSpace;
  * An instance of this class is optionally used to speed up spatial querying on
  * huge sets of geographic objects.
  * 
- * TODO This spatial index uses a quadtree implementation (from pherd) that does
+ * XXX This spatial index uses a quadtree implementation (from pherd) that does
  * not accept lines or polygons, only points. So it's not really adapted to
  * complex spatial queries like intersection tests. I think gs-geometry would be
  * better off using another quadtree implementation. Writing one from scratch
@@ -67,10 +67,6 @@ public class SpatialIndex {
 	 * The container for the quadtree.
 	 */
 	protected ParticleBox box;
-
-	// TODO These parameters should be accessible and customizable as they have
-	// a huge impact on the performance and need to be tuned-up with the
-	// quantity of processed data.
 
 	/**
 	 * The number of points in a single cell of the quadtree.

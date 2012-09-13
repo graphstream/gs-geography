@@ -65,7 +65,7 @@ public class TemporalLocatorByAttribute extends TemporalLocator {
 	 * 
 	 * Here, we use a predefined attribute to determine the date.
 	 * 
-	 * XXX this is kind of experimental, so this may be written differently
+	 * XXX This is kind of experimental, so this may be written differently
 	 * when a geographic format really using this presentation appears.
 	 * 
 	 * @param o

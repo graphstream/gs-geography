@@ -130,8 +130,6 @@ public class GeoSourceNavteq extends GeoSourceSHP {
 
 		this.roadDescriptor = new ElementDescriptor(this, "ROAD", this.roadAttributeFilter);
 
-		this.roadDescriptor.onlyConsiderLineEndPoints();
-
 		this.roadDescriptor.mustBe(ElementShape.Type.LINE);
 
 		roadFileDescriptor.addDescriptor(roadDescriptor);

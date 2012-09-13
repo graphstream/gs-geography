@@ -280,8 +280,6 @@ public class AggregatorSHP extends Aggregator {
 		for(Coordinate coord : ((Geometry)feature.getDefaultGeometry()).getCoordinates())
 			vertices.add(new Vertex(coord.x, coord.y));
 		
-		// TODO lineEndPoint
-		
 		return vertices;
 	}
 

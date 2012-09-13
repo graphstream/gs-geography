@@ -221,12 +221,14 @@ public abstract class Aggregator {
 	public abstract Object getAttributeValue(Object o, String key);
 
 	/**
+	 * Give the attributes of the given geographic object.
 	 * 
 	 * @param o
-	 * @return
+	 *            The geographic object.
+	 * @return The attributes of the object.
 	 */
 	public abstract HashMap<String, Object> getAttributes(Object o);
-	
+
 	/**
 	 * Check if the geographic object is a point.
 	 * 
@@ -300,28 +302,31 @@ public abstract class Aggregator {
 	}
 
 	/**
+	 * Give a list of vertices describing the shape of the given geographic
+	 * object.
 	 * 
 	 * @param o
-	 * @return
+	 *            The geographic object.
+	 * @return The vertices describing the shape.
 	 */
 	public List<Vertex> getShapeVertices(Object o) {
 
 		if(isPoint(o))
 			return getPointVertices(o);
-		
+
 		if(isLine(o))
 			return getLineVertices(o);
-		
+
 		if(isPolygon(o))
 			return getPolygonVertices(o);
-		
+
 		return null;
 	}
 
 	protected abstract List<Vertex> getPointVertices(Object o);
-	
+
 	protected abstract List<Vertex> getLineVertices(Object o);
-	
+
 	protected abstract List<Vertex> getPolygonVertices(Object o);
-	
+
 }

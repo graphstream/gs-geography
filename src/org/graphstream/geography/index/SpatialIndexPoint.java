@@ -69,22 +69,18 @@ public class SpatialIndexPoint extends Particle {
 		return this.pos.x > x - offset && this.pos.x < x + offset && this.pos.y > y - offset && this.pos.y < y + offset;
 	}
 
-	// TODO ???
-
 	@Override
 	public void inserted() {
-		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void move(int arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void removed() {
-		// TODO Auto-generated method stub
 
 	}
 

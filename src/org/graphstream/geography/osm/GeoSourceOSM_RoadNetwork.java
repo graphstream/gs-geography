@@ -49,9 +49,6 @@ import com.vividsolutions.jts.geom.Coordinate;
  * This geographical source implementation produces a road network from an
  * OpenStreetMap XML file.
  * 
- * TODO take the change of shapes of the road into account when dealing with
- * several time steps.
- * 
  * @author Merwan Achibet
  */
 public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
@@ -156,7 +153,7 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 					addNode(to);
 
 					String edgeId = line.getElementId() + "_" + from.getId() + "_" + to.getId();
-					if(!this.addedEdgeIds.contains(edgeId)) { // XXX why?
+					if(!this.addedEdgeIds.contains(edgeId)) {
 						sendEdgeAdded(this.id, edgeId, from.getId(), to.getId(), false);
 						this.addedEdgeIds.add(edgeId);
 					}
@@ -185,7 +182,8 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 					replicateEdgeAttributes(edgeId, elementDiff);
 				}
 				
-				// TODO Update the shape.
+				// Update the shape if necesary.
+				
 			}
 		}
 

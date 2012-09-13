@@ -45,8 +45,9 @@ import org.graphstream.stream.SourceBase;
 /**
  * The geo source is the main class used when importing geographic data.
  * 
- * It manages all of the different modules (aggregator, descriptors, diff
- * builder, temporal locator) and stores matching elements from the input files.
+ * It manages all of the different modules (aggregator, descriptors, temporal
+ * locator, stores matching elements from the input files and populate the
+ * output graph.
  * 
  * @author Merwan Achibet
  */
@@ -56,7 +57,6 @@ public abstract class GeoSource extends SourceBase {
 	 * ID of this source.
 	 */
 	protected String id;
-
 	/**
 	 * Paths to the input files.
 	 */
@@ -83,7 +83,7 @@ public abstract class GeoSource extends SourceBase {
 	protected HashMap<String, Element> elements;
 
 	/**
-	 * 
+	 * The spatial index optionally used to store spatial references.
 	 */
 	protected SpatialIndex index;
 
@@ -124,6 +124,9 @@ public abstract class GeoSource extends SourceBase {
 
 	/**
 	 * Prepare the spatial index.
+	 * 
+	 * This method is only called if a descriptor is setup to store matching
+	 * elements in a spatial index.
 	 */
 	public void prepareSpatialIndex() {
 
@@ -131,26 +134,28 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * 
+	 * Go through the input files, aggregate the relevant data and convert the
+	 * geographic objects to standard geometric elements.
 	 */
 	public void read() {
 
 		/**
-		 * First pass: go through all files and instantiate the elements and
-		 * their states.
+		 * First pass: go through all files and instantiate the elements.
 		 */
 
 		// All the dates will be accumulated in this ordered set.
 
 		TreeSet<Integer> dates = new TreeSet<Integer>();
 
-		// Aggregate the geographic objects and the times at which they appear.
+		// Aggregate the geographic objects and the dates at which they appear.
 
 		Aggregate aggregate = this.aggregator.read();
 
-		//
+		// For each accumulated geographic object...
 
 		for(Entry<String, HashMap<Integer, Object>> entry : aggregate) {
+
+			// Create the corresponding element.
 
 			String id = entry.getKey();
 
@@ -164,6 +169,8 @@ public abstract class GeoSource extends SourceBase {
 
 				this.elements.put(id, element);
 			}
+
+			// Create an empty diff each time the element appears.
 
 			for(Integer date : entry.getValue().keySet()) {
 
@@ -180,7 +187,7 @@ public abstract class GeoSource extends SourceBase {
 			this.dates.add(date);
 
 		/**
-		 * Second pass: fill the element states with attribute and shape data.
+		 * Second pass: fill the element diffs with attribute and shape data.
 		 */
 
 		for(Element element : this.elements.values()) {
@@ -199,7 +206,7 @@ public abstract class GeoSource extends SourceBase {
 				previousDiff = currentDiff;
 				previousDate = date;
 
-				// Reference the element in the spatial index if necesary.
+				// Reference the element in the spatial index if necessary.
 
 				if(this.index != null && aggregate.descriptorsUsed.get(currentDiff.getElementId()).areElementsSentToSpatialIndex())
 					for(SpatialIndexPoint p : currentDiff.getShape().toSpatialIndexPoints())
@@ -209,7 +216,17 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
+	 * Build an element diff.
 	 * 
+	 * @param element
+	 *            The element.
+	 * @param previousDiff
+	 *            The previous diff of the element.
+	 * @param previousDate
+	 *            The date of the previous diff.
+	 * @param o
+	 *            The geographic object to convert to a diff.
+	 * @return A diff representing the changes that occured since the last diff.
 	 */
 	public ElementDiff diff(Element element, ElementDiff previousDiff, Integer previousDate, Object o) {
 
@@ -233,34 +250,37 @@ public abstract class GeoSource extends SourceBase {
 
 			nextDiff = new ElementDiff(element, true);
 
-			// Copy all attributes.
+			// Copy the filtered attributes.
 
 			for(Entry<String, Object> entry : filteredAttributes.entrySet())
 				nextDiff.addChangedAttribute(entry.getKey(), entry.getValue());
 
 			// Copy the shape.
 
-			ElementShape shape = baseShape(element, o);
-			nextDiff.setShape(shape);
+			nextDiff.setShape(baseShape(element, o));
 		}
 
-		// Otherwise, only copy the changes.
+		// Otherwise, only copy the changes since the last diff.
 
 		else {
 
-			nextDiff = new ElementDiff(element);
+			nextDiff = new ElementDiff(element, false);
 
 			ElementView elementAtPreviousDate = element.getElementViewAtDate(previousDate);
 
-			// TODO filter!!!
+			// Check for attributes that were removed since the previous date.
 
 			for(Entry<String, Object> entry : elementAtPreviousDate.getAttributes().entrySet())
 				if(!filteredAttributes.containsKey(entry.getKey()))
 					nextDiff.addRemovedAttribute(entry.getKey());
 
+			// Check for attributes that were added since the previous date.
+
 			for(Entry<String, Object> entry : filteredAttributes.entrySet())
 				if(!elementAtPreviousDate.getAttributes().containsKey(entry.getKey()))
 					nextDiff.addChangedAttribute(entry.getKey(), entry.getValue());
+
+			// Check for attributes that were modified since the previous date.
 
 			for(Entry<String, Object> entry : filteredAttributes.entrySet())
 				if(elementAtPreviousDate.getAttributes().containsKey(entry.getKey()) && !elementAtPreviousDate.getAttributes().get(entry.getKey()).equals(entry.getValue()))
@@ -269,15 +289,26 @@ public abstract class GeoSource extends SourceBase {
 			// Only copy the shape if it has changed.
 
 			ElementShape newShape = diffShape(element, elementAtPreviousDate, o);
+
 			nextDiff.setShape(newShape);
 		}
 
 		return nextDiff;
 	}
 
+	/**
+	 * Build the the shape of an element from the geographic object it
+	 * represents.
+	 * 
+	 * @param element
+	 *            The element.
+	 * @param o
+	 *            The geographic object.
+	 * @return The shape of the geographic object.
+	 */
 	protected ElementShape baseShape(Element element, Object o) {
 
-		// Determine the shape type of the element.
+		// Determine the geometric type of the element.
 
 		ElementShape.Type type = this.aggregator.getType(o);
 
@@ -319,6 +350,18 @@ public abstract class GeoSource extends SourceBase {
 		return null;
 	}
 
+	/**
+	 * Give the new shape of an element if it changed since the last diff.
+	 * 
+	 * @param element
+	 *            The element.
+	 * @param elementAtPreviousDate
+	 *            The complete state of the element at the previous date.
+	 * @param o
+	 *            The geographic object at the current date.
+	 * @return The new shape if it is different from its previous diff,
+	 *         otherwise null.
+	 */
 	protected ElementShape diffShape(Element element, ElementView elementAtPreviousDate, Object o) {
 
 		// Build a complete shape from the state of the current geographic
@@ -357,21 +400,22 @@ public abstract class GeoSource extends SourceBase {
 	 * After this method has been executed, all the events occurring during a
 	 * single time step (new elements, modified attributes, removed elements,
 	 * ...) should be reflected to the output graph.
-	 * 
-	 * This is were the magic happens. A programmer that wants to build a
-	 * specific implementation of GeoSource will do most of its work in this
-	 * method. A geographer that simply wants to import geographic data into a
-	 * graph will prefer to directly use an implemented use-case.
 	 */
 	public boolean next() {
 
-		System.out.println(this.currentTimeStep);
+		System.out.println("step " + this.currentTimeStep);
 
 		nextEvents();
 
 		return ++this.currentTimeStep < this.dates.size();
 	}
 
+	/**
+	 * This is were the magic happens. A programmer that wants to build a
+	 * specific implementation of GeoSource will do most of its work in this
+	 * method. A geographer that simply wants to import geographic data into a
+	 * graph will prefer to directly use an implemented use-case.
+	 */
 	protected abstract void nextEvents();
 
 	/**
@@ -379,10 +423,10 @@ public abstract class GeoSource extends SourceBase {
 	 * the output graph.
 	 * 
 	 * The node must have already been added to the graph prior to any call to
-	 * this function.
+	 * this method.
 	 * 
 	 * @param nodeId
-	 *            The ID of the node.
+	 *            The node ID.
 	 * @param diff
 	 *            The element diff representing the node.
 	 */
@@ -398,33 +442,14 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * Replicate the attribute changes of an element represented as a node in
-	 * the output graph.
-	 * 
-	 * The node must have already been added to the graph prior to any call to
-	 * this function.
-	 * 
-	 * @param nodeId
-	 *            The ID of the node.
-	 * @param diff
-	 *            The element view representing the node.
-	 */
-	protected void replicateNodeAttributes(String nodeId, ElementView view) {
-
-		if(view.getAttributes() != null)
-			for(Entry<String, Object> keyValuePair : view.getAttributes().entrySet())
-				sendNodeAttributeChanged(this.id, nodeId, keyValuePair.getKey(), null, keyValuePair.getValue());
-	}
-
-	/**
 	 * Replicate the attribute changes of an element represented as an edge in
 	 * the output graph.
 	 * 
 	 * The edge must have already been added to the graph prior to any call to
-	 * this function.
+	 * this method.
 	 * 
 	 * @param edgeId
-	 *            The ID of the edge.
+	 *            The edge ID.
 	 * @param diff
 	 *            The element diff representing the edge.
 	 */
@@ -444,10 +469,10 @@ public abstract class GeoSource extends SourceBase {
 	 * the output graph.
 	 * 
 	 * The edge must have already been added to the graph prior to any call to
-	 * this function.
+	 * this method.
 	 * 
 	 * @param edgeId
-	 *            The ID of the edge.
+	 *            The edge ID.
 	 * @param view
 	 *            The element view representing the edge.
 	 */
@@ -459,7 +484,7 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * 
+	 * TODO
 	 */
 	protected ArrayList<Element> getExpiredElements() {
 
@@ -473,9 +498,16 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
+	 * Give the date associated with a given time step.
+	 * 
+	 * In some cases, the time step number and the date are the same (for
+	 * example, when each time step corresponds to a different file: step 0 =
+	 * date 0, step 1 = date 1, ...) but they can be different (step 0 = date
+	 * 1950, step 1 = date 1965, ...).
 	 * 
 	 * @param date
-	 * @return
+	 *            The date.
+	 * @return The time step associated with this date.
 	 */
 	public Integer dateToStep(Integer date) {
 
@@ -483,9 +515,11 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
+	 * Give the time step associated with a given date.
 	 * 
 	 * @param step
-	 * @return
+	 *            The time step index.
+	 * @return The date associated with this time step.
 	 */
 	public Integer stepToDate(int step) {
 
@@ -493,10 +527,13 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
+	 * Give the complete state of an element at a given date.
 	 * 
 	 * @param id
+	 *            The element ID.
 	 * @param step
-	 * @return
+	 *            The time step.
+	 * @return The state of the element at this step.
 	 */
 	public ElementView getElementViewAtStep(String id, int step) {
 
@@ -512,9 +549,11 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
+	 * Give the complete state of all elements at a given date.
 	 * 
 	 * @param step
-	 * @return
+	 *            The time step.
+	 * @return The state of all elements at this step.
 	 */
 	public ArrayList<ElementView> getElementViewsAtStep(int step) {
 
@@ -535,9 +574,14 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
+	 * Give the diff of an element at a given date.
 	 * 
+	 * @param id
+	 *            The element ID.
 	 * @param step
-	 * @return
+	 *            The time step.
+	 * @return The diff of the element at this step or null if it does not exist
+	 *         at this time.
 	 */
 	public ArrayList<ElementDiff> getElementDiffsAtStep(int step) {
 
@@ -558,7 +602,7 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * 
+	 * Time will not be considered.
 	 */
 	public void noTime() {
 
@@ -566,7 +610,7 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * 
+	 * Each file will correspond to a different time step.
 	 */
 	public void timeDependsOnFile() {
 
@@ -574,34 +618,62 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
+	 * The date of an element will depend on a special attribute.
 	 * 
 	 * @param attributeName
+	 *            The name of the date attribute.
 	 */
 	public void timeDependsOnAttribute(String attributeName) {
 
 		this.temporalLocator = new TemporalLocatorByAttribute(this, attributeName);
 	}
 
+	/**
+	 * Add a file descriptor containing element descriptors to this source.
+	 * 
+	 * @param fileDescriptor
+	 *            The descriptor.
+	 */
 	public void addFileDescriptor(FileDescriptor fileDescriptor) {
 
 		this.fileDescriptors.add(fileDescriptor);
 	}
 
+	/**
+	 * Give the file descriptors associated with this source.
+	 * 
+	 * @return The file descriptors.
+	 */
 	public ArrayList<FileDescriptor> getFileDescriptors() {
 
 		return this.fileDescriptors;
 	}
 
+	/**
+	 * Give the paths to the input files.
+	 * 
+	 * @return The paths.
+	 */
 	public ArrayList<String> getFileNames() {
 
 		return this.fileNames;
 	}
 
+	/**
+	 * Give the aggregator used by this source.
+	 * 
+	 * @return The aggregator.
+	 */
 	public Aggregator getAggregator() {
 
 		return this.aggregator;
 	}
 
+	/**
+	 * Give the temporal locator used by this source.
+	 * 
+	 * @return The temporal locator.
+	 */
 	public TemporalLocator getTemporalLocator() {
 
 		return this.temporalLocator;

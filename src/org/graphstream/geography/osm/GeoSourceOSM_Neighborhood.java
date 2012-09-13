@@ -104,7 +104,7 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 		this.buildingDescriptor.mustBe(ElementShape.Type.POLYGON);
 		this.buildingDescriptor.mustHave("building", "yes");
 
-		// Attach this descriptor to every file.
+		// Attach this descriptor to the input file.
 
 		for(String fileName : fileNames) {
 
@@ -182,21 +182,6 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 
 				// Update the shape if necessary.
 
-				if(elementDiff.getShape() != null) {
-
-					// XXX The question is: can a building really move? I added
-					// this possibility for the sake of completeness but I'm not
-					// sure that this will be useful.
-
-					// TODO
-
-					// Break the edges to the node.
-
-					// Move the node.
-
-					// Add new edges according to the distance from other
-					// buildings.
-				}
 			}
 		}
 	}

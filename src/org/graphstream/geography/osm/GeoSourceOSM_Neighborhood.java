@@ -229,11 +229,12 @@ public class GeoSourceOSM_Neighborhood extends GeoSourceOSM {
 	 * other nodes representing other buildings if they are close enough to be
 	 * considered neighbors.
 	 * 
-	 * @param buildingDiff The building diff.
+	 * @param buildingDiff
+	 *            The building diff.
 	 */
 	protected void computeNeighborhood(ElementDiff buildingDiff) {
 
-		Coordinate centroid = this.placedBuildings.get(buildingDiff.getElementId());
+		Coordinate centroid = ((Polygon)buildingDiff.getShape()).getCentroid();
 
 		String buildingId = buildingDiff.getElementId();
 

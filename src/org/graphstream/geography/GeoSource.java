@@ -218,6 +218,25 @@ public abstract class GeoSource extends SourceBase {
 
 				previousDate = date;
 			}
+
+			// Add a diff at the end of the diff chain to express the
+			// disappearance of the element.
+
+			// Special case: we don't add a deletion diff if the element still
+			// exists at the last time step or we would end with an empty graph.
+
+			Integer elementLastDate = element.getDiffs().lastKey();
+			Integer globalLastDate = this.dates.get(this.dates.size() - 1);
+
+			if(!elementLastDate.equals(this.dates.get(globalLastDate))) {
+
+				ElementDiff deletionDiff = new ElementDiff(element);
+				deletionDiff.setDeleted();
+
+				Integer deletionDate = this.dates.get(this.dates.indexOf(elementLastDate) + 1);
+
+				element.addDiffAtDate(deletionDiff, deletionDate);
+			}
 		}
 	}
 
@@ -490,20 +509,6 @@ public abstract class GeoSource extends SourceBase {
 	}
 
 	/**
-	 * TODO
-	 */
-	protected ArrayList<Element> getExpiredElements() {
-
-		ArrayList<Element> expiredElements = new ArrayList<Element>();
-
-		for(Element element : this.elements.values())
-			if(element.hasExpiredByDate(this.currentTimeStep))
-				expiredElements.add(element);
-
-		return expiredElements;
-	}
-
-	/**
 	 * Give the date associated with a given time step.
 	 * 
 	 * In some cases, the time step number and the date are the same (for
@@ -543,15 +548,19 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public ElementView getElementViewAtStep(String id, int step) {
 
+		// Get the real date from the time step index.
+
 		Integer date = stepToDate(step);
+
+		// Check that the element exists.
 
 		Element element = this.elements.get(id);
 		if(element == null)
 			return null;
 
-		ElementView elementViewAtDate = element.getElementViewAtDate(date);
+		// Return the state of the element at this date.
 
-		return elementViewAtDate;
+		return element.getElementViewAtDate(date);
 	}
 
 	/**
@@ -563,13 +572,18 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public ArrayList<ElementView> getElementViewsAtStep(int step) {
 
+		// Get the real date from the time step index.
+
+		Integer date = stepToDate(step);
+
+		//
+
 		ArrayList<ElementView> elementViewsAtStep = new ArrayList<ElementView>();
 
 		for(Element element : this.elements.values()) {
 
 			// Retrieve the element view at this step.
 
-			Integer date = stepToDate(step);
 			ElementView elementAtDate = element.getElementViewAtDate(date);
 
 			if(elementAtDate != null)
@@ -591,16 +605,18 @@ public abstract class GeoSource extends SourceBase {
 	 */
 	public ArrayList<ElementDiff> getElementDiffsAtStep(int step) {
 
-		// Get the date associated with this time step.
-		
+		// Get the real date from the time step index.
+
 		Integer date = stepToDate(step);
-		
+
+		//
+
 		ArrayList<ElementDiff> elementDiffsAtStep = new ArrayList<ElementDiff>();
 
 		for(Element element : this.elements.values()) {
 
 			// Retrieve the element diff at this step.
-			
+
 			ElementDiff elementAtDate = element.getElementDiffAtDate(date);
 
 			if(elementAtDate != null)
@@ -608,6 +624,34 @@ public abstract class GeoSource extends SourceBase {
 		}
 
 		return elementDiffsAtStep;
+	}
+
+	/**
+	 * Give the list of elements deleted at a given time step.
+	 * 
+	 * @param step
+	 *            The time step.
+	 * @return The elements that disappear at this time step.
+	 */
+	protected ArrayList<Element> getDeletedElements(int step) {
+
+		// Get the real date from the step index.
+
+		Integer date = stepToDate(step);
+
+		// Build a list of elements deleted at this date.
+
+		ArrayList<Element> deletedElements = new ArrayList<Element>();
+
+		for(Element element : this.elements.values()) {
+
+			ElementDiff diffAtDate = element.getDiffAtDate(date);
+
+			if(diffAtDate != null && diffAtDate.isDeleted())
+				deletedElements.add(diffAtDate.getElement());
+		}
+
+		return deletedElements;
 	}
 
 	/**

@@ -67,6 +67,11 @@ public class ElementDiff {
 	protected ArrayList<String> removedAttributes;
 
 	/**
+	 * Flag explicitely expressing the disappearance of an element.
+	 */
+	protected boolean isDeletedFlag;
+
+	/**
 	 * Is this diff first in the chain of diffs?
 	 */
 	protected boolean isBaseFlag;
@@ -200,6 +205,24 @@ public class ElementDiff {
 	public ArrayList<String> getRemovedAttributes() {
 
 		return this.removedAttributes;
+	}
+
+	/**
+	 * State that the element disappears with this diff.
+	 */
+	public void setDeleted() {
+
+		this.isDeletedFlag = true;
+	}
+
+	/**
+	 * Check if this diff expresses the disappearance of the element.
+	 * 
+	 * @return True if the element disappears with this diff, false otherwise.
+	 */
+	public boolean isDeleted() {
+
+		return this.isDeletedFlag;
 	}
 
 	/**

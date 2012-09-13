@@ -136,9 +136,16 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 		for(ElementDiff elementDiff : elementDiffsAtStep) {
 
+			// If the element is deleted, remove it from the graph.
+			
+			if(elementDiff.isDeleted()) {
+
+				// TODO
+			}
+
 			// If the diff is a base, insert the road for the first time.
 
-			if(elementDiff.isBase()) {
+			else if(elementDiff.isBase()) {
 
 				Line line = (Line)elementDiff.getShape();
 
@@ -181,9 +188,9 @@ public class GeoSourceOSM_RoadNetwork extends GeoSourceOSM {
 
 					replicateEdgeAttributes(edgeId, elementDiff);
 				}
-				
+
 				// Update the shape if necesary.
-				
+
 			}
 		}
 

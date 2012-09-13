@@ -84,7 +84,8 @@ public class Element {
 	 * 
 	 * @param date
 	 *            The date of the returned element.
-	 * @return The element as it is at a given date.
+	 * @return The element as it is at a given date or null if it does not exist
+	 *         at this date.
 	 */
 	public ElementView getElementViewAtDate(Integer date) {
 
@@ -93,12 +94,17 @@ public class Element {
 		if(!existsAtDate(date))
 			return null;
 
-		// Go through each state in ascending order and rebuild the element with
-		// its differential states until the date is reached.
+		// Go through each diff in ascending order and rebuild the element until
+		// the date is reached.
 
 		ElementView rebuiltElement = new ElementView(this);
 
 		for(Entry<Integer, ElementDiff> dateDiffPair : this.diffs.entrySet()) {
+
+			// Return the rebuilt element if we are beyond the date.
+
+			if(dateDiffPair.getKey() > date)
+				return rebuiltElement;
 
 			// Retrieve the differential state of the element at this date.
 
@@ -125,11 +131,10 @@ public class Element {
 			if(currentDiff.shape != null)
 				rebuiltElement.shape = currentDiff.shape;
 
-			// Return the rebuilt element if the appropriate date is reached.
+			// Return the rebuilt element if the exact date is reached.
 
-			if(dateDiffPair.getKey() >= date)
+			if(dateDiffPair.getKey() == date)
 				return rebuiltElement;
-
 		}
 
 		// Return null if the element has no diff.
@@ -216,6 +221,19 @@ public class Element {
 	}
 
 	/**
+	 * Give the diff representing the element at a given date.
+	 * 
+	 * @param date
+	 *            The date.
+	 * @return The diff if the element at the date or null if there is no diff
+	 *         (no changes at this date or the element does not exist).
+	 */
+	public ElementDiff getDiffAtDate(Integer date) {
+
+		return this.diffs.get(date);
+	}
+
+	/**
 	 * Give all the diffs of the element.
 	 * 
 	 * @return The diffs.
@@ -262,18 +280,6 @@ public class Element {
 		Integer death = this.diffs.lastKey();
 
 		return date >= birth && date <= death;
-	}
-
-	/**
-	 * Check if the element still exists at the given date.
-	 * 
-	 * @param date
-	 *            The date.
-	 * @return True if the element still exists at the date, false otherwise.
-	 */
-	public boolean hasExpiredByDate(Integer date) {
-
-		return this.diffs.lastKey() < date;
 	}
 
 	@Override

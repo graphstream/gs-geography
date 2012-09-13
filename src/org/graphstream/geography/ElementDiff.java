@@ -215,6 +215,27 @@ public class ElementDiff {
 		return this.isBaseFlag;
 	}
 
+	/**
+	 * Check if the diff is really useful or if it does not represent any
+	 * change.
+	 * 
+	 * @return True if the diff is useless, false it contains differential
+	 *         information.
+	 */
+	public boolean isEmpty() {
+
+		if(this.changedAttributes != null)
+			return false;
+
+		if(this.removedAttributes != null)
+			return false;
+
+		if(this.shape != null)
+			return false;
+
+		return true;
+	}
+
 	@Override
 	public String toString() {
 

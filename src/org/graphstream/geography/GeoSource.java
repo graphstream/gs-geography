@@ -192,25 +192,31 @@ public abstract class GeoSource extends SourceBase {
 
 		for(Element element : this.elements.values()) {
 
-			ElementDiff previousDiff = null;
 			Integer previousDate = null;
 
 			for(Integer date : element.getDiffs().keySet()) {
 
 				Object currentObject = aggregate.get(element.getId(), date);
 
-				ElementDiff currentDiff = diff(element, previousDiff, previousDate, currentObject);
+				ElementDiff currentDiff = diff(element, previousDate, currentObject);
 
-				element.addDiffAtDate(currentDiff, date);
+				// Only add the diff to the diff chain if the element changed
+				// since the last date.
 
-				previousDiff = currentDiff;
+				if(!currentDiff.isEmpty()) {
+
+					element.addDiffAtDate(currentDiff, date);
+
+					// Reference the element in the spatial index if necessary.
+
+					if(this.index != null && aggregate.descriptorsUsed.get(currentDiff.getElementId()).areElementsSentToSpatialIndex())
+						for(SpatialIndexPoint p : currentDiff.getShape().toSpatialIndexPoints())
+							this.index.addPoint(p);
+				}
+
+				//
+
 				previousDate = date;
-
-				// Reference the element in the spatial index if necessary.
-
-				if(this.index != null && aggregate.descriptorsUsed.get(currentDiff.getElementId()).areElementsSentToSpatialIndex())
-					for(SpatialIndexPoint p : currentDiff.getShape().toSpatialIndexPoints())
-						this.index.addPoint(p);
 			}
 		}
 	}
@@ -228,7 +234,7 @@ public abstract class GeoSource extends SourceBase {
 	 *            The geographic object to convert to a diff.
 	 * @return A diff representing the changes that occured since the last diff.
 	 */
-	public ElementDiff diff(Element element, ElementDiff previousDiff, Integer previousDate, Object o) {
+	public ElementDiff diff(Element element, Integer previousDate, Object o) {
 
 		ElementDiff nextDiff = null;
 
@@ -246,7 +252,7 @@ public abstract class GeoSource extends SourceBase {
 
 		// If there is no previous diff, create a "base" diff.
 
-		if(previousDiff == null) {
+		if(!element.hasBaseDiff()) {
 
 			nextDiff = new ElementDiff(element, true);
 

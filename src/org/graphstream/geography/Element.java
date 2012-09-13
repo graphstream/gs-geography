@@ -121,7 +121,7 @@ public class Element {
 					rebuiltElement.setAttribute(keyValue.getKey(), keyValue.getValue());
 
 			// Update the shape if it has changed.
-			
+
 			if(currentDiff.shape != null)
 				rebuiltElement.shape = currentDiff.shape;
 
@@ -235,6 +235,18 @@ public class Element {
 	public boolean hasDiffAtDate(Integer date) {
 
 		return this.diffs.containsKey(date);
+	}
+
+	/**
+	 * Check if the element already has a base diff.
+	 * 
+	 * @return True if there is already a base diff, false otherwise.
+	 */
+	public boolean hasBaseDiff() {
+
+		ElementDiff firstDiff = this.diffs.firstEntry().getValue();
+
+		return firstDiff != null && !firstDiff.isEmpty();
 	}
 
 	/**

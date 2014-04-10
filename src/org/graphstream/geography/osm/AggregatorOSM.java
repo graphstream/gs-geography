@@ -317,7 +317,9 @@ public class AggregatorOSM extends Aggregator {
 			
 			Coordinate coord = sourceOSM.getNodePosition(nodeId);
 			
-			vertices.add(new Vertex(coord.x, coord.y, nodeId));
+			if(coord != null)
+				vertices.add(new Vertex(coord.x, coord.y, nodeId));
+			else System.err.printf("ignoring coord for node %s, referenced in line, but not found%n", nodeId);
 		}
 		
 		return vertices;

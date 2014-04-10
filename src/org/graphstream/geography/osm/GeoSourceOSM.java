@@ -91,8 +91,15 @@ public abstract class GeoSourceOSM extends GeoSource {
 	 * @return The coordinates of the node.
 	 */
 	public Coordinate getNodePosition(String id) {
-		
-		return new Coordinate(this.nodePositions.get(id));
+		Coordinate coo = this.nodePositions.get(id);
+		if(coo != null)
+			return new Coordinate(this.nodePositions.get(id));
+		else {
+			System.err.printf("cannot find node position id %s%n", id);
+			//return new Coordinate(0, 0);
+			return null;
+			//throw new RuntimeException("XXX");
+		}
 	}
 
 }

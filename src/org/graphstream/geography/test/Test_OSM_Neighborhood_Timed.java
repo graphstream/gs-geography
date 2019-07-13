@@ -48,7 +48,7 @@ public class Test_OSM_Neighborhood_Timed {
 
 		Graph graph = new SingleGraph("neighborhood");
 
-		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, "/home/merwan/neighborhood_t0.osm", "/home/merwan/neighborhood_t1.osm", "/home/merwan/neighborhood_t2.osm");
+		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, System.getProperty("user.dir")+"/data/neighborhood_t0.osm", System.getProperty("user.dir")+"/data/neighborhood_t1.osm", System.getProperty("user.dir")+"/data/neighborhood_t2.osm");
 		src.addSink(graph);
 		
 		src.timeDependsOnFile();

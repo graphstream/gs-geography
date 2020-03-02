@@ -48,7 +48,7 @@ public class Test_OSM_Neighborhood {
 
 		Graph graph = new SingleGraph("neighborhood");
 
-		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, System.getProperty("user.dir")+"/data/neighborhood.osm");
+		GeoSource src = new GeoSourceOSM_Neighborhood(0.0003, System.getProperty("user.dir")+"/data/aquila.osm");//"/data/neighborhood.osm");
 
 		src.addSink(graph);
 

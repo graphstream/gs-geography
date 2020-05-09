@@ -148,7 +148,7 @@ public class Aggregate implements Iterable<Entry<String, HashMap<Integer, Object
 		return this.descriptorsUsed.get(id);
 	}
 
-	@Override
+	
 	public Iterator<Entry<String, HashMap<Integer, Object>>> iterator() {
 
 		return this.content.entrySet().iterator();

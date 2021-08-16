@@ -1,5 +1,11 @@
+This repo was migrated to gitlab and the work is now done overthere: https://gitlab.com/dedale/gs-geography
+
+
 GraphStream
 ===========
+
+See https://gitlab.com/dedale/gs-geography
+
 
 Welcome to GraphStream, and thank you for your download, we hope you will find it
 useful and practical.

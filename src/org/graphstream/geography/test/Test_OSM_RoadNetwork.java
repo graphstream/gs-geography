@@ -31,10 +31,15 @@
 
 package org.graphstream.geography.test;
 
+import java.io.IOException;
+
 import org.graphstream.geography.osm.GeoSourceOSM;
 import org.graphstream.geography.osm.GeoSourceOSM_RoadNetwork;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.stream.file.FileSink;
+import org.graphstream.stream.file.FileSinkDGS;
 
 /**
  * Test the import of a road network from an OpenStreetMap XML file.
@@ -45,16 +50,44 @@ public class Test_OSM_RoadNetwork {
 
 	public static void main(String args[]) {
 
+		String n= "node {size: 1px;	fill-color: #777;text-mode: hidden;z-index: 0;}";
+		String e = "edge { shape: line; fill-color: #222; arrow-size: 3px, 2px; }";
+		String e1="edge.tollway { size: 2px; stroke-color: red; stroke-width: 1px; stroke-mode: plain; }";
+		String e2="edge.tunnel { stroke-color: blue; stroke-width: 1px; stroke-mode: plain; }";
+		String e3="edge.bridge { stroke-color: yellow; stroke-width: 1px; stroke-mode: plain; }";
+		
 		Graph graph = new SingleGraph("road network");
+		graph.setAttribute("ui.stylesheet",n+e+e1+e2+e3);
+		graph.addAttribute("ui.quality");
+		graph.addAttribute("ui.antialias");
+		//System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 
-		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork("/home/merwan/roads.osm");
+		GeoSourceOSM src = new GeoSourceOSM_RoadNetwork(System.getProperty("user.dir")+"/data/aquila.osm");//roads.osm");
 		src.addSink(graph);
 
 		src.read();
 		
 		src.end();
+		
+		for(Edge edge: graph.getEachEdge()) {
+			if(edge.hasAttribute("isTollway")) {
+				edge.addAttribute("ui.class", "tollway");
+			} else if(edge.hasAttribute("isTunnel")) {
+				edge.addAttribute("ui.class", "tunnel");
+			} else if(edge.hasAttribute("isBridge")) {
+				edge.addAttribute("ui.class", "bridge");
+			}
+		}
+		
 
 		graph.display(false);
+		try {
+			FileSink fs= new FileSinkDGS();
+			fs.writeAll(graph, System.getProperty("user.dir")+"/data/aquila2");
+		} catch (IOException e4) {
+			// TODO Auto-generated catch block
+			e4.printStackTrace();
+		}
 	}
 
 }

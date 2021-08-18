@@ -46,7 +46,7 @@ public class Test_OSM_RoadNetwork_Timed {
 
 		Graph graph = new SingleGraph("road network");
 
-		GeoSourceOSM_RoadNetwork src = new GeoSourceOSM_RoadNetwork("/home/merwan/roads_t0.osm", "/home/merwan/roads_t1.osm", "/home/merwan/roads_t2.osm");
+		GeoSourceOSM_RoadNetwork src = new GeoSourceOSM_RoadNetwork(System.getProperty("user.dir")+"/data/roads_t0.osm", System.getProperty("user.dir")+"/data/roads_t1.osm", System.getProperty("user.dir")+"/data/roads_t2.osm");
 		src.addSink(graph);
 		
 		src.timeDependsOnFile();
